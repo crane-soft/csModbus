@@ -293,12 +293,8 @@ namespace csModbusLib
             return RawData.Data[REQST_SINGLE_DATA_IDX] != 0;
         }
 
-        public void GetRequestBits(int BaseAddr, bool[] DestBits)
-        {
-            GetBitData(DestBits, DataAddress - BaseAddr, REQST_DATA_IDX);
-        }
 
-        public void PutResponseBits(int BaseAddr, bool[] SrcBits)
+        public void PutResponseValues(int BaseAddr, bool[] SrcBits)
         {
             PutBitData(SrcBits, DataAddress - BaseAddr, RESPNS_DATA_IDX);
         }
@@ -312,6 +308,12 @@ namespace csModbusLib
             }
             RawData.Data[RESPNS_LEN_IDX] = (byte)(DataCount * 2);
         }
+
+        public void GetRequestValues(int BaseAddr, bool[] DestBits)
+        {
+            GetBitData(DestBits, DataAddress - BaseAddr, REQST_DATA_IDX);
+        }
+
         public void GetRequestValues(int BaseAddr, UInt16[] DestArray)
         {
             RawData.CopyUInt16(DestArray, REQST_DATA_IDX, DataAddress - BaseAddr, DataCount);

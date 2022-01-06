@@ -113,6 +113,7 @@ namespace csModbusView
             itemCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
             itemCell.Tag = this;
             Rows[Row].Cells[Col] = itemCell;
+            // All Coils Read-Only becaus chec changed is done in CellClick Event
             itemCell.ReadOnly = IsCoil;
         }
 
@@ -159,7 +160,7 @@ namespace csModbusView
             {
                 DataGridViewCell CurrentCell = this.Rows[e.RowIndex].Cells[e.ColumnIndex];
                 if (CurrentCell.Tag != null)
-                    MbCellContentClick?.Invoke(CurrentCell, e);
+                   MbCellContentClick?.Invoke(CurrentCell, e);
             }
         }
 
@@ -187,13 +188,6 @@ namespace csModbusView
             for (int i = BaseIdx; i <= BaseIdx + Size - 1; i++)
             {
                 DataGridViewCell mbCell = this.Rows[iRow].Cells[iCol];
-                if (mbCell.IsInEditMode) {
-                    // update cell by modbus can have a collistion when use edits the cell
-                    // provisionally solution here is ti cancel the User Edit 
-                    this.EndEdit();
-                    this.ClearSelection();
-                }
-
                 mbCell.Value = ModbusData[i];
                 iCol += 1;
                 if ((iCol == this.ColumnCount))

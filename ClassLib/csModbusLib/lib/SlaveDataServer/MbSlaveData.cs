@@ -98,106 +98,73 @@ namespace csModbusLib {
 
     }
 
-    public class ModbusBoolData : ModbusData {
-        public bool[] Data;
+    public class ModbusDataT<DataT> : ModbusData
+    {
+        public DataT[] Data;
 
-        public ModbusBoolData()
-        {   Data = null;
+        public ModbusDataT()
+        {
+            Data = null;
         }
 
-        public ModbusBoolData (int Address, int Length)
+        public ModbusDataT(int Address, int Length)
             : base(Address, Length)
         {
-            Data = new bool[Length];
+            Data = new DataT[Length];
         }
 
-        public ModbusBoolData(int Address, bool[] bData)
+        public ModbusDataT(int Address, DataT[] bData)
             : base(Address, bData.Length)
         {
             Data = bData;
         }
 
-        public void AddBools (int aAddress, int Length)
+        public void AddData(int aAddress, int Length)
         {
             if (base.MySize == 0) {
                 base.Init(aAddress, Length);
-                Data = new bool[Length];
+                Data = new DataT[Length];
             } else {
-                AddModbusData(new ModbusBoolData(aAddress, Length));
+                AddModbusData(new ModbusDataT<DataT>(aAddress, Length));
             }
         }
 
-        public void AddBools(int aAddress, bool[] bData)
+        public void AddData(int aAddress, DataT[] bData)
         {
             if (base.MySize == 0) {
                 base.Init(aAddress, bData.Length);
                 Data = bData;
             } else {
-                AddModbusData(new ModbusBoolData(aAddress, bData));
+                AddModbusData(new ModbusDataT<DataT>(aAddress, bData));
             }
         }
 
         protected override void ReadMultiple(MBSFrame Frame)
-        {   Frame.PutResponseBits(MyBaseAddr,Data);
-        }
-
-        protected override void WriteMultiple(MBSFrame Frame)
-        {    Frame.GetRequestBits(MyBaseAddr,Data);
-        }
-
-        protected override void WriteSingle(MBSFrame Frame)
-        {   Data[Frame.DataAddress-MyBaseAddr] = Frame.GetRequestSingleBit();
-        }
-    }
-
-    public class ModbusRegsData : ModbusData {
-        public ushort[] Data;
-
-        public ModbusRegsData()
-        {   Data = null;
-        }
-
-        public ModbusRegsData(int Address, ushort[] uData)
-            : base(Address, uData.Length)
         {
-            Data = uData;
-        }
-
-        public ModbusRegsData (int Address, int Length)
-            : base(Address, Length)
-        {
-            Data = new UInt16[Length];
-        }
-
-        public void AddRegister (int aAddress, int Length)
-        {
-            if (base.MySize == 0) {
-                base.Init(aAddress, Length);
-                Data = new UInt16[Length];
+            if (typeof(DataT) == typeof(bool)) {
+                Frame.PutResponseValues(MyBaseAddr, (bool[])(object)Data);
             } else {
-                AddModbusData(new ModbusRegsData(aAddress, Length));
+                Frame.PutResponseValues(MyBaseAddr, (ushort[])(object)Data);
             }
         }
 
-        public void AddRegister(int aAddress, ushort[] uData)
+        protected override void WriteMultiple(MBSFrame Frame)
         {
-            if (base.MySize == 0) {
-                base.Init(aAddress, uData.Length);
-                Data = uData;
+            if (typeof(DataT) == typeof(bool)) {
+                Frame.GetRequestValues(MyBaseAddr, (bool[])(object)Data);
             } else {
-                AddModbusData(new ModbusRegsData(aAddress, uData));
+                Frame.GetRequestValues(MyBaseAddr, (ushort[])(object)Data);
+
             }
         }
-
-        protected override void ReadMultiple(MBSFrame Frame)
-        {    Frame.PutResponseValues(MyBaseAddr, Data);
-        }
-
-        protected override void WriteMultiple(MBSFrame Frame)
-        {    Frame.GetRequestValues(MyBaseAddr,Data);
-        }
         protected override void WriteSingle(MBSFrame Frame)
-        {    Data[Frame.DataAddress-MyBaseAddr] = Frame.GetRequestSingleUInt16();
+        {
+            if (typeof(DataT) == typeof(bool)) {
+                Data[Frame.DataAddress - MyBaseAddr] = (DataT)(object)Frame.GetRequestSingleBit();
+            } else {
+                Data[Frame.DataAddress - MyBaseAddr] = (DataT)(object)Frame.GetRequestSingleUInt16();
+            }
+
         }
     }
 }

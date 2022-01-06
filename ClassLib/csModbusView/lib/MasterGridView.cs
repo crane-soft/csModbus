@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Windows.Forms;
+using System;
 using csModbusLib;
 
 namespace csModbusView
@@ -8,7 +9,7 @@ namespace csModbusView
     public abstract class MasterGridView : ModbusView
     {
         protected MbMaster MyMaster;
-        protected csModbusLib.ErrorCodes ErrCode;
+        protected ErrorCodes ErrCode;
         protected static Mutex mut = new Mutex();
 
         public MasterGridView(ModbusDataType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
@@ -22,7 +23,7 @@ namespace csModbusView
             MyMaster = Master;
         }
 
-        public csModbusLib.ErrorCodes Update_ModbusData()
+        public ErrorCodes Update_ModbusData()
         {
             mut.WaitOne();
             ErrCode = Modbus_ReadData();
@@ -48,15 +49,22 @@ namespace csModbusView
             }
         }
 
-        protected abstract csModbusLib.ErrorCodes Modbus_ReadData();
+        protected ushort MbDataAddress(DataGridViewCellEventArgs e)
+        {
+            int DataIdx = e.RowIndex * ItemColumns + e.ColumnIndex;
+            return (ushort)(BaseAddr + DataIdx);
+        }
+
+        protected abstract ErrorCodes Modbus_ReadData();
         protected abstract void UpdateCellValues();
+
     }
 
-    public abstract class MasterRegsGridView : MasterGridView
+    public abstract class MasterGridViewDataT<DataT> : MasterGridView
     {
-        protected ushort[] MbRegsData;
+        protected DataT[] MbRegsData;
 
-        public MasterRegsGridView(ModbusDataType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns)
+        public MasterGridViewDataT(ModbusDataType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns)
             : base(MbType, Title, BaseAddr, NumItems, ItemColumns)
         {
         }
@@ -64,66 +72,16 @@ namespace csModbusView
         public override void InitGridView(MbMaster Master)
         {
             base.InitGridView(Master);
-            MbRegsData = new ushort[NumItems];
+            MbRegsData = new DataT[NumItems];
         }
 
         protected override void UpdateCellValues()
         {
             GridView.UpDateModbusCells(MbRegsData);
         }
-
-        protected override void CellValueChanged(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
-        {
-            mut.WaitOne();
-            ModBusSendRegs((ushort)e.RowIndex, (ushort)CurrentCell.Value);
-            mut.ReleaseMutex();
-        }
-
-        protected virtual void ModBusSendRegs(ushort Idx, ushort Value) { }
     }
 
-    public abstract class MasterBoolGridView : MasterGridView
-    {
-        protected bool[] MbCoilsData;
-
-        public MasterBoolGridView(ModbusDataType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
-            : base(MbType, Title, BaseAddr, NumItems, ItemColumns)
-        {
-        }
-
-        public override void InitGridView(MbMaster Master)
-        {
-            base.InitGridView(Master);
-            MbCoilsData = new bool[NumItems];
-        }
-
-        protected override void UpdateCellValues()
-        {
-            GridView.UpDateModbusCells(MbCoilsData);
-        }
-
-        protected override void CellContentClick(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
-        {
-            // Tricky solution here because CheckBoxCell CellValueChanged does sometimes not fires 
-            // I use CellContentClick which works with MousClick as well as wit keyboard
-            // The cell is set to ReadOnly and the check status is changed here
-            // so I'm sure the grisview cell is equal to the mosbus data
-            if (!CurrentCell.ReadOnly) {
-                bool NewCellValue = ! (bool) CurrentCell.Value;
-                CurrentCell.Value = NewCellValue;
-                mut.WaitOne();
-                int DataIdx = e.RowIndex * ItemColumns + e.ColumnIndex;
-                ModbusSendCoils(DataIdx, NewCellValue);
-                mut.ReleaseMutex();
-            }
-        }
-
-        protected virtual void ModbusSendCoils(int Idx, bool Value)
-        {
-        }
-    }
-
-    public class MasterHoldingRegsGridView : MasterRegsGridView
+    public class MasterHoldingRegsGridView : MasterGridViewDataT<ushort>
     {
         public MasterHoldingRegsGridView() 
             : this(0, 1)
@@ -140,19 +98,26 @@ namespace csModbusView
         {
         }
 
-        protected override csModbusLib.ErrorCodes Modbus_ReadData()
+        protected override ErrorCodes Modbus_ReadData()
         {
             return MyMaster.ReadHoldingRegisters(BaseAddr, NumItems, MbRegsData, 0);
         }
 
-        protected override void ModBusSendRegs(ushort Idx, ushort Value)
+        protected override void CellValueChanged(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
         {
+            ModBusSendRegs(MbDataAddress(e), Convert.ToUInt16(CurrentCell.Value));
+        }
+
+        private void ModBusSendRegs(ushort Address, ushort Value)
+        {
+            mut.WaitOne();
             // TODO Async Call ?
-            ErrCode = MyMaster.WriteSingleRegister((ushort)(BaseAddr + Idx), Value);
+            ErrCode = MyMaster.WriteSingleRegister(Address, Value);
+            mut.ReleaseMutex();
         }
     }
 
-    public class MasterInputRegsGridView : MasterRegsGridView
+    public class MasterInputRegsGridView : MasterGridViewDataT<ushort>
     {
         public MasterInputRegsGridView() : this(0, 1)
         {
@@ -168,13 +133,13 @@ namespace csModbusView
         {
         }
 
-        protected override csModbusLib.ErrorCodes Modbus_ReadData()
+        protected override ErrorCodes Modbus_ReadData()
         {
             return MyMaster.ReadInputRegisters(BaseAddr, NumItems, MbRegsData, 0);
         }
     }
 
-    public class MasterCoilsGridView : MasterBoolGridView
+    public class MasterCoilsGridView : MasterGridViewDataT<bool>
     {
         public MasterCoilsGridView() 
             : this(0, 8)
@@ -191,19 +156,28 @@ namespace csModbusView
         {
         }
 
-        protected override csModbusLib.ErrorCodes Modbus_ReadData()
+        protected override ErrorCodes Modbus_ReadData()
         {
-            return MyMaster.ReadCoils(BaseAddr, NumItems, MbCoilsData, 0);
+            return MyMaster.ReadCoils(BaseAddr, NumItems, MbRegsData, 0);
         }
 
-        protected override void ModbusSendCoils(int Idx, bool Value)
+        protected override void CellContentClick(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
+        {
+            bool NewCellValue = !(bool)CurrentCell.Value;
+            CurrentCell.Value = NewCellValue;
+            ModbusSendCoils(MbDataAddress(e), NewCellValue);
+        }
+
+        private  void ModbusSendCoils(ushort Address, bool Value)
         {
             // TODO Async Call ?
-            ErrCode = MyMaster.WriteSingleCoil((ushort)(BaseAddr + Idx), Value);
+            mut.WaitOne();
+            ErrCode = MyMaster.WriteSingleCoil(Address, Value);
+            mut.ReleaseMutex();
         }
     }
 
-    public class MasterDiscretInputsGridView : MasterBoolGridView
+    public class MasterDiscretInputsGridView : MasterGridViewDataT<bool>
     {
         public MasterDiscretInputsGridView() : this(0, 8)
         {
@@ -219,9 +193,9 @@ namespace csModbusView
         {
         }
 
-        protected override csModbusLib.ErrorCodes Modbus_ReadData()
+        protected override ErrorCodes Modbus_ReadData()
         {
-            return MyMaster.ReadDiscreteInputs(BaseAddr, NumItems, MbCoilsData, 0);
+            return MyMaster.ReadDiscreteInputs(BaseAddr, NumItems, MbRegsData, 0);
         }
     }
 }

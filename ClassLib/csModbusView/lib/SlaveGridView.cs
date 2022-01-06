@@ -1,25 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
-using csModbusLib;
 using System.Windows.Forms;
+using csModbusLib;
 
 namespace csModbusView
 {
     [System.ComponentModel.DesignerCategory("")]
     public abstract  class SlaveGridView : ModbusView
     {
-        private csModbusLib.ModbusData MbData;
+        private ModbusData MbData;
 
         public SlaveGridView(ModbusDataType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) : base(MbType, Title, false)
         {
             this.SetDataSize(BaseAddr, NumItems, ItemColumns);
         }
 
-        protected void InitData(csModbusLib.ModbusData nMbData)
+        protected void InitData(ModbusData nMbData)
         {
             MbData = nMbData;
             GridView.DisableCellEvents = true;
@@ -52,75 +47,57 @@ namespace csModbusView
         protected abstract void UpdateCellValues();
     }
 
-    public abstract  class SlaveRegsGridView : SlaveGridView
+    public abstract  class SlaveGridViewDataT<DataT> : SlaveGridView
     {
-        protected csModbusLib.ModbusRegsData MbRegsData;
+        protected ModbusDataT<DataT> ModbusData;
+        public DataT[] Data {
+            get {
+                return ModbusData.Data;
+            }
+        }
 
-        public SlaveRegsGridView(ModbusDataType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
+        public SlaveGridViewDataT(ModbusDataType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
             : base(MbType, Title, BaseAddr, NumItems, ItemColumns)
         {
         }
 
-        public void SetValue(int Idx, ushort Value)
+        public void SetValue(int Idx, DataT Value)
         {
-            MbRegsData.Data[Idx] = Value;
-            GridView.UpDateModbusCells(MbRegsData.Data,Idx,1);
+            ModbusData.Data[Idx] = Value;
+            GridView.UpDateModbusCells(ModbusData.Data,Idx,1);
         }
 
         protected override void UpdateCellValues()
         {
-            GridView.UpDateModbusCells(MbRegsData.Data);
+            GridView.UpDateModbusCells(ModbusData.Data);
         }
 
         protected override void UpDateGridCells(ModbusData.ValueChangedEventArgs e)
         {
-            GridView.UpDateModbusCells(MbRegsData.Data, e.BaseIdx, e.Size);
+            GridView.UpDateModbusCells(ModbusData.Data, e.BaseIdx, e.Size);
         }
 
         protected override void CellValueChanged(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
         {
-            if (GridView.DisableCellEvents == false) {
-                
-                MbRegsData.Data[GridDataIdx(e)] = Convert.ToUInt16(CurrentCell.Value);
+            if (typeof(DataT) == typeof(ushort)) {
+                ModbusData.Data[GridDataIdx(e)] =  (DataT) (object) Convert.ToUInt16(CurrentCell.Value);
             }
-        }
-    }
-
-    public abstract  class SlaveBoolGridView : SlaveGridView
-    {
-        protected csModbusLib.ModbusBoolData MbBoolData;
-
-        public SlaveBoolGridView(ModbusDataType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
-            : base(MbType, Title, BaseAddr, NumItems, ItemColumns)
-        {
-        }
-
-        public void SetValue(int Idx, bool Value)
-        {
-            MbBoolData.Data[Idx] = Value;
-            GridView.UpDateModbusCells(MbBoolData.Data, Idx, 1);
-        }
-
-        protected override void UpdateCellValues()
-        {
-            GridView.UpDateModbusCells(MbBoolData.Data);
-        }
-
-        protected override void UpDateGridCells(ModbusData.ValueChangedEventArgs e)
-        {
-            GridView.UpDateModbusCells(MbBoolData.Data, e.BaseIdx, e.Size);
         }
 
         protected override void CellContentClick(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
         {
-            int DataIdx = GridDataIdx(e);
-            bool CheckValue = !MbBoolData.Data[DataIdx];
-            MbBoolData.Data[DataIdx] = CheckValue;
-            CurrentCell.Value = CheckValue;
+            if (typeof(DataT) == typeof(bool)) {
+                int DataIdx = GridDataIdx(e);
+                bool CheckValue =  (bool)(object) ModbusData.Data[DataIdx];
+                CheckValue = !CheckValue;
+                ModbusData.Data[DataIdx] = (DataT) (object)CheckValue;
+                CurrentCell.Value = CheckValue;
+            }
         }
+
     }
 
-    public  class SlaveHoldingRegsGridView : SlaveRegsGridView
+    public  class SlaveHoldingRegsGridView : SlaveGridViewDataT<ushort>
     {
         public SlaveHoldingRegsGridView() : this(0, 1)
         {
@@ -138,13 +115,13 @@ namespace csModbusView
 
         public override void AddDataToServer(StdDataServer DataSerer)
         {
-            MbRegsData = new csModbusLib.ModbusRegsData(BaseAddr, NumItems);
-            InitData(MbRegsData);
-            DataSerer.AddHoldingRegisters(MbRegsData);
+            ModbusData = new ModbusDataT<ushort>(BaseAddr, NumItems);
+            InitData(ModbusData);
+            DataSerer.AddHoldingRegisters(ModbusData);
         }
     }
 
-    public  class SlaveInputRegsGridView : SlaveRegsGridView
+    public  class SlaveInputRegsGridView : SlaveGridViewDataT<ushort>
     {
         public SlaveInputRegsGridView() : this(0, 1)
         {
@@ -162,13 +139,13 @@ namespace csModbusView
 
         public override void AddDataToServer(StdDataServer DataSerer)
         {
-            MbRegsData = new csModbusLib.ModbusRegsData(BaseAddr, NumItems);
-            InitData(MbRegsData);
-            DataSerer.AddInputRegisters(MbRegsData);
+            ModbusData = new ModbusDataT<ushort>(BaseAddr, NumItems);
+            InitData(ModbusData);
+            DataSerer.AddInputRegisters(ModbusData);
         }
     }
 
-    public  class SlaveCoilsGridView : SlaveBoolGridView
+    public  class SlaveCoilsGridView : SlaveGridViewDataT<bool>
     {
         public SlaveCoilsGridView() : this(0, 8)
         {
@@ -186,13 +163,13 @@ namespace csModbusView
 
         public override void AddDataToServer(StdDataServer DataSerer)
         {
-            MbBoolData = new csModbusLib.ModbusBoolData(BaseAddr, NumItems);
-            InitData(MbBoolData);
-            DataSerer.AddCoils(MbBoolData);
+            ModbusData = new ModbusDataT<bool>(BaseAddr, NumItems);
+            InitData(ModbusData);
+            DataSerer.AddCoils(ModbusData);
         }
     }
 
-    public  class SlaveDiscretInputsGridView : SlaveBoolGridView
+    public  class SlaveDiscretInputsGridView : SlaveGridViewDataT<bool>
     {
         public SlaveDiscretInputsGridView() : this(0, 8)
         {
@@ -210,9 +187,9 @@ namespace csModbusView
 
         public override void AddDataToServer(StdDataServer DataSerer)
         {
-            MbBoolData = new csModbusLib.ModbusBoolData(BaseAddr, NumItems);
-            InitData(MbBoolData);
-            DataSerer.AddDiscreteInputs(MbBoolData);
+            ModbusData = new ModbusDataT<bool>(BaseAddr, NumItems);
+            InitData(ModbusData);
+            DataSerer.AddDiscreteInputs(ModbusData);
         }
     }
 }

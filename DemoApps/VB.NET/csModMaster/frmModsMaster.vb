@@ -42,7 +42,7 @@ Public Class frmModsMaster
         sysRefreshTimer = New System.Timers.Timer()
         sysRefreshTimer.Enabled = False
         sysRefreshTimer.AutoReset = False
-        sysRefreshTimer.Interval = 2
+        sysRefreshTimer.Interval = 20
         AddHandler sysRefreshTimer.Elapsed, AddressOf OnSystemTimedEvent
 
         cmStart.Enabled = False

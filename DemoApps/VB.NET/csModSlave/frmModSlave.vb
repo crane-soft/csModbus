@@ -7,7 +7,7 @@ Public Class frmModSlave
     Private MyDataServer As StdDataServer
 
     ' Demo Automation
-    Private AutoCount As Integer
+
     Private AutomationBlink As Boolean
     Private AutomationShift As Int16
     Private WithEvents AutomationTimer As New System.Windows.Forms.Timer()
@@ -85,9 +85,9 @@ Public Class frmModSlave
     End Sub
 
     Private Sub TestTimer_Tick(sender As Object, e As EventArgs) Handles AutomationTimer.Tick
-        AutoCount += 1
-        ucHoldingRegs1.SetValue(0, AutoCount)
-        If AutoCount And 1 Then
+
+        ucHoldingRegs1.SetValue(0, ucHoldingRegs1.Data(0) + 1)
+        If ucHoldingRegs1.Data(0) And 1 Then
             AutomationBlink = Not AutomationBlink
             ucDiscretInputs.SetValue(19, AutomationBlink)
         End If
