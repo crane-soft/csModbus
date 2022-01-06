@@ -1,0 +1,8 @@
+/ClassLib/csModbusLib/obj
+/ClassLib/csModbusView/obj
+/DemoApps/VB.NET/csModMaster/obj
+/DemoApps/VB.NET/csModSlave/obj
+/Bin/*.pdb
+/Bin/*.vshost.exe
+
+/Bin/*.config

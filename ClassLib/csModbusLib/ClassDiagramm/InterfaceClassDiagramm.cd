@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="csModbusLib.MbInterface">
+    <Position X="5.5" Y="1" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>BAIAAAAMAAAAAABAAAAAAIAAQAAIAABAABAAAAAAAAA=</HashCode>
+      <FileName>lib\Interface\MbInterface.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MbEthernet">
+    <Position X="9.25" Y="5" Width="2" />
+    <NestedTypes>
+      <Enum Name="csModbusLib.MbEthernet.ModbusEthernetType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>lib\Interface\MbEthernet.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAEIAAAAAAAAAQAgAAAAACAAAAAAAAAAAAAAIAgAAAA=</HashCode>
+      <FileName>lib\Interface\MbEthernet.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MbTCPMaster">
+    <Position X="6.25" Y="12" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAIAAEAAAAAAEAAAAAAIAAQAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>lib\Interface\MbTCP.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MbTCPSlave">
+    <Position X="11.5" Y="12.25" Width="1.5" />
+    <NestedTypes>
+      <Class Name="csModbusLib.MbTCPSlave.TcpContext" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>lib\Interface\MbTCP.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAEEAAAgAAAAAAAAEIAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>lib\Interface\MbTCP.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MbUDPMaster">
+    <Position X="8.5" Y="12" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAIAIAAEAAAAAAAAAAAAAIAAQAAAAAAAABAAAAAAAAA=</HashCode>
+      <FileName>lib\Interface\MbUDP.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MbETHMaster">
+    <Position X="7.5" Y="8.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAIAAAAAAAAAAQAAAAAAIAAAAIAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>lib\Interface\MbEthernet.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MbSerial">
+    <Position X="2" Y="6.5" Width="2" />
+    <NestedTypes>
+      <Enum Name="csModbusLib.MbSerial.ModbusSerialType" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>lib\Interface\MbSerial.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <InheritanceLine Type="csModbusLib.MbInterface" ManuallyRouted="true">
+      <Path>
+        <Point X="6.375" Y="4.006" />
+        <Point X="6.375" Y="4.594" />
+        <Point X="3" Y="4.594" />
+        <Point X="3" Y="6.5" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAIAEAAEAIAAAAAAAAAAAIAAAAAIAAAAgBACgAAAACA=</HashCode>
+      <FileName>lib\Interface\MbSerial.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MbRTU">
+    <Position X="0.75" Y="12" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAEAAAAAAAAAAAAAAAAAAAQBAAAAAAAAACAAAAACA=</HashCode>
+      <FileName>lib\Interface\MbRTU.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MbASCII">
+    <Position X="3.25" Y="12" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAIAEAAAAAAAQAAAAAAAAAAAUAAIAAAAAAAAAIAAAiA=</HashCode>
+      <FileName>lib\Interface\MbASCII.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MbETHSlave">
+    <Position X="10.75" Y="8.75" Width="1.5" />
+    <NestedTypes>
+      <Class Name="csModbusLib.MbETHSlave.EthContext" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>lib\Interface\MbEthernet.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <InheritanceLine Type="csModbusLib.MbEthernet" ManuallyRouted="true">
+      <Path>
+        <Point X="10.25" Y="7.687" />
+        <Point X="10.25" Y="8.385" />
+        <Point X="11.5" Y="8.385" />
+        <Point X="11.5" Y="8.75" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAQAAEAAAAAAAQIAIAAAAAABAAAAABAA=</HashCode>
+      <FileName>lib\Interface\MbEthernet.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MbUDPSlave">
+    <Position X="13.75" Y="12.25" Width="1.5" />
+    <NestedTypes>
+      <Class Name="csModbusLib.MbUDPSlave.UdpContext" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>lib\Interface\MbUDP.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>ACAAAAEEAAAAAAAAAAAAAIAACAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>lib\Interface\MbUDP.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MbUDPSyncSlave">
+    <Position X="16" Y="12.25" Width="1.5" />
+    <NestedTypes>
+      <Class Name="csModbusLib.MbUDPSyncSlave.UdpContext" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>lib\Interface\MbUDP.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Class>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>ACAAAAAEAAAAAAAAAAAAAIAAAAAIAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>lib\Interface\MbUDP.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Tahoma" Size="8.25" />
+</ClassDiagram>
