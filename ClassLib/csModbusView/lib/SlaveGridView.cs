@@ -24,7 +24,6 @@ namespace csModbusView
         }
 
         public delegate void ValueChangedCallback(object sender, ModbusData.ValueChangedEventArgs e);
-
         public void RegsValueChanged(object sender, ModbusData.ValueChangedEventArgs e)
         {
             if (GridView.InvokeRequired) {

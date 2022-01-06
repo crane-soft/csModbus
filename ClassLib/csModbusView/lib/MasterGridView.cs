@@ -38,7 +38,6 @@ namespace csModbusView
         }
 
         public delegate void Update_Cells_Callback();
-
         protected void Invoke_UpdateCells()
         {
             if (GridView.InvokeRequired) {

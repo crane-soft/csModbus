@@ -29,7 +29,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbTCPSlave">
-    <Position X="11.5" Y="12.25" Width="1.5" />
+    <Position X="11.5" Y="12" Width="1.5" />
     <NestedTypes>
       <Class Name="csModbusLib.MbTCPSlave.TcpContext" Collapsed="true">
         <TypeIdentifier>
@@ -51,6 +51,14 @@
   </Class>
   <Class Name="csModbusLib.MbETHMaster">
     <Position X="7.5" Y="8.75" Width="1.5" />
+    <InheritanceLine Type="csModbusLib.MbEthernet" ManuallyRouted="true">
+      <Path>
+        <Point X="10.25" Y="7.687" />
+        <Point X="10.25" Y="8.095" />
+        <Point X="8.25" Y="8.095" />
+        <Point X="8.25" Y="8.75" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
       <HashCode>AAAAIAAAAAAAAAAQAAAAAAIAAAAIAAAAAAAAAAAAAAA=</HashCode>
       <FileName>lib\Interface\MbEthernet.cs</FileName>
@@ -93,7 +101,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbETHSlave">
-    <Position X="10.75" Y="8.75" Width="1.5" />
+    <Position X="10.75" Y="8.5" Width="1.5" />
     <NestedTypes>
       <Class Name="csModbusLib.MbETHSlave.EthContext" Collapsed="true">
         <TypeIdentifier>
@@ -104,9 +112,9 @@
     <InheritanceLine Type="csModbusLib.MbEthernet" ManuallyRouted="true">
       <Path>
         <Point X="10.25" Y="7.687" />
-        <Point X="10.25" Y="8.385" />
-        <Point X="11.5" Y="8.385" />
-        <Point X="11.5" Y="8.75" />
+        <Point X="10.25" Y="8.157" />
+        <Point X="11.5" Y="8.157" />
+        <Point X="11.5" Y="8.5" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
@@ -115,7 +123,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbUDPSlave">
-    <Position X="13.75" Y="12.25" Width="1.5" />
+    <Position X="13.75" Y="12" Width="1.5" />
     <NestedTypes>
       <Class Name="csModbusLib.MbUDPSlave.UdpContext" Collapsed="true">
         <TypeIdentifier>
@@ -129,7 +137,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbUDPSyncSlave">
-    <Position X="16" Y="12.25" Width="1.5" />
+    <Position X="16" Y="12" Width="1.5" />
     <NestedTypes>
       <Class Name="csModbusLib.MbUDPSyncSlave.UdpContext" Collapsed="true">
         <TypeIdentifier>

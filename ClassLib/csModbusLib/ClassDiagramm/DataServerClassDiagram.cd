@@ -1,23 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="ModbusLib.MbSlaveDataServer">
+  <Class Name="csModbusLib.MbSlaveDataServer">
     <Position X="0.5" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>UAIAAAAAIAABABAABABCACAAAACQAAAAAAAAACAAAAE=</HashCode>
       <FileName>lib\SlaveDataServer\MbSlaveDataServer.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ModbusLib.ModbusData">
-    <Position X="4.75" Y="0.5" Width="2.25" />
+  <Class Name="csModbusLib.ModbusData">
+    <Position X="5" Y="0.5" Width="2.25" />
     <NestedTypes>
-      <Class Name="ModbusLib.ModbusData.ValueChangedEventArgs" Collapsed="true">
+      <Class Name="csModbusLib.ModbusData.ValueChangedEventArgs" Collapsed="true">
         <TypeIdentifier>
-          <NewMemberFileName>lib\MbSlaveDataServer.cs</NewMemberFileName>
+          <NewMemberFileName>lib\SlaveDataServer\MbSlaveData.cs</NewMemberFileName>
         </TypeIdentifier>
       </Class>
-      <Delegate Name="ModbusLib.ModbusData.ValueChangedHandler" Collapsed="true">
+      <Delegate Name="csModbusLib.ModbusData.ValueChangedHandler" Collapsed="true">
         <TypeIdentifier>
-          <NewMemberFileName>lib\MbSlaveDataServer.cs</NewMemberFileName>
+          <NewMemberFileName>lib\SlaveDataServer\MbSlaveData.cs</NewMemberFileName>
         </TypeIdentifier>
       </Delegate>
     </NestedTypes>
@@ -26,29 +26,14 @@
       <FileName>lib\SlaveDataServer\MbSlaveData.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ModbusLib.ModbusBoolData">
-    <Position X="3.5" Y="5.5" Width="1.5" />
+  <Class Name="csModbusLib.ModbusDataT&lt;DataT&gt;">
+    <Position X="5.25" Y="5.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAIAAAAAEBAAgAABAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAIAAAAAAAAAAAAEBAAgAABAAAAAAAAAAAAA=</HashCode>
       <FileName>lib\SlaveDataServer\MbSlaveData.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ModbusLib.ModbusRegsData">
-    <Position X="6.25" Y="7.25" Width="1.5" />
-    <InheritanceLine Type="ModbusLib.ModbusData" ManuallyRouted="true">
-      <Path>
-        <Point X="5.875" Y="4.27" />
-        <Point X="5.875" Y="5.125" />
-        <Point X="7" Y="5.125" />
-        <Point X="7" Y="7.25" />
-      </Path>
-    </InheritanceLine>
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAIAAAAAAAAAEBAAgAABAAAAAAAAAAAAA=</HashCode>
-      <FileName>lib\SlaveDataServer\MbSlaveData.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ModbusLib.StdDataServer">
+  <Class Name="csModbusLib.StdDataServer">
     <Position X="0.5" Y="5.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>UAAAMAAQIAAAIBAAKBBCABAAAACAAEAAAAAAAigAAAA=</HashCode>

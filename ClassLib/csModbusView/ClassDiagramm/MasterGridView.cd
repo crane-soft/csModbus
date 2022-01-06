@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="csModbusView.MasterGridView">
-    <Position X="7.75" Y="0.5" Width="1.5" />
+    <Position X="7.25" Y="0.5" Width="1.5" />
     <NestedTypes>
       <Delegate Name="csModbusView.MasterGridView.Update_Cells_Callback" Collapsed="true">
         <TypeIdentifier>
@@ -10,58 +10,36 @@
       </Delegate>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAAAAABAAAAAAABAAAAAIAAAEBQAAAAAAAAABgAAAA=</HashCode>
-      <FileName>MasterGridView.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="csModbusView.MasterRegsGridView">
-    <Position X="5" Y="4.25" Width="1.5" />
-    <InheritanceLine Type="csModbusView.MasterGridView" FixedToPoint="true">
-      <Path>
-        <Point X="8.5" Y="3.645" />
-        <Point X="8.5" Y="3.875" />
-        <Point X="5.75" Y="3.875" />
-        <Point X="5.75" Y="4.25" />
-      </Path>
-    </InheritanceLine>
-    <TypeIdentifier>
-      <HashCode>AAgAAAAAAAAAAAAAACAAAIAAAAAQAAAAAAAAgAAAAAA=</HashCode>
-      <FileName>MasterGridView.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="csModbusView.MasterBoolGridView">
-    <Position X="10.5" Y="4.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>CACAAAAAAAAAAAAAAAAAAIAAAAAQAAAAAAAAAAAAAIA=</HashCode>
-      <FileName>MasterGridView.cs</FileName>
+      <HashCode>AAAAAAABAAAAAAABAAAAAIAAAEBQAAAAAAAAABgAACA=</HashCode>
+      <FileName>lib\MasterGridView.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusView.MasterHoldingRegsGridView">
     <Position X="3.25" Y="7.5" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAgAAAAAA=</HashCode>
-      <FileName>MasterGridView.cs</FileName>
+      <HashCode>AAgAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAgAAAAAA=</HashCode>
+      <FileName>lib\MasterGridView.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusView.MasterInputRegsGridView">
     <Position X="6" Y="7.5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>MasterGridView.cs</FileName>
+      <FileName>lib\MasterGridView.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusView.MasterCoilsGridView">
     <Position X="11.75" Y="7.5" Width="2" />
     <TypeIdentifier>
-      <HashCode>CAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>MasterGridView.cs</FileName>
+      <HashCode>CAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAIA=</HashCode>
+      <FileName>lib\MasterGridView.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusView.MasterDiscretInputsGridView">
     <Position X="9" Y="7.5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>MasterGridView.cs</FileName>
+      <FileName>lib\MasterGridView.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusView.ModbusView">
@@ -78,7 +56,7 @@
     </NestedTypes>
     <TypeIdentifier>
       <HashCode>AIikABAIAAEAAEACwAACAAQAAAAAAoAAEAQAAAAAAJA=</HashCode>
-      <FileName>ModbusView.cs</FileName>
+      <FileName>lib\ModbusView.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Property Name="GridView" />
@@ -100,7 +78,14 @@
     </NestedTypes>
     <TypeIdentifier>
       <HashCode>AIEEAAACAAAAAEACwAAEAIQAAEAABBAAAAQAQAgAAAA=</HashCode>
-      <FileName>MbGridView.cs</FileName>
+      <FileName>lib\MbGridView.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusView.MasterGridViewDataT&lt;DataT&gt;">
+    <Position X="7.25" Y="4.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAACAAAIAAAAAQAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>lib\MasterGridView.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

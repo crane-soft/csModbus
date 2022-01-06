@@ -154,9 +154,9 @@ namespace csModbusLib {
                 Frame.GetRequestValues(MyBaseAddr, (bool[])(object)Data);
             } else {
                 Frame.GetRequestValues(MyBaseAddr, (ushort[])(object)Data);
-
             }
         }
+
         protected override void WriteSingle(MBSFrame Frame)
         {
             if (typeof(DataT) == typeof(bool)) {
@@ -164,7 +164,6 @@ namespace csModbusLib {
             } else {
                 Data[Frame.DataAddress - MyBaseAddr] = (DataT)(object)Frame.GetRequestSingleUInt16();
             }
-
         }
     }
 }
