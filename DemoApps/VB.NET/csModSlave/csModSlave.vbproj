@@ -96,7 +96,6 @@
       <SubType>Form</SubType>
     </Compile>
     <None Include="My Project\app.manifest" />
-    <None Include="SlaveGridView.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -129,7 +128,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="SlaveGridView.cd" />
     <None Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
@@ -148,17 +146,17 @@
     <None Include="Images\start-icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\ClassLib\csModbusView\csModbusView.csproj">
-      <Project>{ecfac56e-d574-4f0d-a89b-6dcc209de7c3}</Project>
-      <Name>csModbusView</Name>
-    </ProjectReference>
+    <None Include="Images\stop-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\..\ClassLib\csModbusLib\csModbus.csproj">
       <Project>{f8211969-5aa8-4dc6-8818-8f735832448b}</Project>
       <Name>csModbus</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Images\stop-icon.png" />
+    <ProjectReference Include="..\..\..\ClassLib\csModbusView\csModbusView.csproj">
+      <Project>{ecfac56e-d574-4f0d-a89b-6dcc209de7c3}</Project>
+      <Name>csModbusView</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>

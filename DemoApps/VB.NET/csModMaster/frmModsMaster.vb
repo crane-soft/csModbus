@@ -22,7 +22,7 @@ Public Class frmModsMaster
 
         ModMaster = New MbMaster()
 
-        ' per Programm erstelltes View
+        ' Views created without designer
 
         CurentAddPos = New Point(0, 0)
         AddModbusView(New MasterHoldingRegsGridView(10, 8))
@@ -31,7 +31,7 @@ Public Class frmModsMaster
         CurentAddPos.X += 130
         AddModbusView(New MasterInputRegsGridView(7, 10))
 
-        'oder die im Designer erstellten
+        ' With created in designer
         ModbusDataList.Add(ucCoils)
         ModbusDataList.Add(ucDiscretInputs)
 
@@ -51,7 +51,6 @@ Public Class frmModsMaster
     End Sub
     Private Sub AddModbusView(MbView As MasterGridView)
         MbView.Location = CurentAddPos
-        'MbView.Width = 130
         ViewPanel.Controls.Add(MbView)
         ModbusDataList.Add(MbView)
         CurentAddPos.Y += MbView.Height
@@ -80,8 +79,8 @@ Public Class frmModsMaster
             End If
 
         Else
-            ' TODO Master darf erst am Ende des aktuellen Poll-Zyklus geschlossen werdn
-            ' Daher einen Close Request erzeugen, der im Timer ausgeführt wird.
+            ' TODO Master should closed at the end of one polling cycle
+            ' therfor better make a close request here which is executet in the timer
 
             ModMaster.Close()
             sysRefreshTimer.Enabled = False
@@ -135,7 +134,7 @@ Public Class frmModsMaster
             RefreshCount += 1
             lbCount.Text = RefreshCount
             ' TODO
-            ' Transaction Ident gibt es nur bei Ethernet (UDP /TCP)
+            ' Transaction Ident only exist with Ethernet (UDP /TCP)
             ' lbCount.Text = ModMaster.GetTransactionIdentifier()
         Else
             ErrorCount += 1

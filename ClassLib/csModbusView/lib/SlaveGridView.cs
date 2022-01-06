@@ -113,11 +113,6 @@ namespace csModbusView
 
         protected override void CellContentClick(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
         {
-
-            // Tricky weil CheckBoxCell CellValueChanged nicht funktioniert (nur wenn ich die Zelle verlasse),
-            // Benutze ich CellContentClick welches sowohl bei MousClick als auch bei Tastatur funktioniert
-            // Die Zelle ist Read Only und ich invertiere selber von Hand, 
-            // so bin ich absoliut sicher dass die Zelle mit den Daten übereinstimmt
             int DataIdx = GridDataIdx(e);
             bool CheckValue = !MbBoolData.Data[DataIdx];
             MbBoolData.Data[DataIdx] = CheckValue;

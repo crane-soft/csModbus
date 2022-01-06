@@ -32,7 +32,7 @@ namespace csModbusLib
         {
             DisConnect();
             return Connect();
-            // TODO im Aufruf error abfangen
+            // TODO error checking
         }
 
     }

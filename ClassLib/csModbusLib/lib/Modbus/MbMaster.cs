@@ -95,8 +95,8 @@ namespace csModbusLib {
         }
         #endregion
 
+        // TODO: different classes for sync and assync
         #region Public Synchron Functions
-
         public ErrorCodes ReadCoils(ushort Address, ushort Length, bool[] DestData, int DestOffs = 0)
         {
             if (SendSingleRequest(ModbusCodes.READ_COILS, Address, Length))
@@ -164,8 +164,7 @@ namespace csModbusLib {
         }
 
         #endregion
-        
-        
+       
         #region Public Async Functions
         // https://www.dotnetperls.com/async
         // http://gigi.nullneuron.net/gigilabs/working-with-asynchronous-methods-in-c/

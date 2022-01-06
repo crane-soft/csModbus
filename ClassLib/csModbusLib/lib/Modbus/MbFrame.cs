@@ -3,7 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 
 /* Modbus Format
-   Reuest Format
+   Request Format
    READ_COILS = 0x01,               SlaveID(1)  FCode(1)    Address(2)  Count(2)
    READ_DISCRETE_INPUTS = 0x02,     SlaveID(1)  FCode(1)    Address(2)  Count(2)
    READ_HOLDING_REGISTERS = 0x03,   SlaveID(1)  FCode(1)    Address(2)  Count(2)

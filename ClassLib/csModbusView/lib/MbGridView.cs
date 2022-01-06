@@ -142,7 +142,7 @@ namespace csModbusView
         {
 
             // For Each Item As DataGridViewCell In Me.SelectedCells
-            // If Item.Tag Is Nothing Then   ' Nur ausgeblendete Zellen Selection abschalten ?
+            // If Item.Tag Is Nothing Then   ' If only empty cells should be selected off ?
             this.ClearSelection();
         }
 
@@ -188,9 +188,8 @@ namespace csModbusView
             {
                 DataGridViewCell mbCell = this.Rows[iRow].Cells[iCol];
                 if (mbCell.IsInEditMode) {
-                    // Kollidiert eventuell mit User Edit
-                    // vorläufige Lösung User Edit abbrechen
-                    //bessere Lösung im EndeDit Event update durchführen.
+                    // update cell by modbus can have a collistion when use edits the cell
+                    // provisionally solution here is ti cancel the User Edit 
                     this.EndEdit();
                     this.ClearSelection();
                 }

@@ -12,7 +12,7 @@ Public Class frmModSlave
     Private AutomationShift As Int16
     Private WithEvents AutomationTimer As New System.Windows.Forms.Timer()
 
-    Private MbDataBinding As BindingSource = New BindingSource()
+    'Private MbDataBinding As BindingSource = New BindingSource()
 
     Sub New()
         InitializeComponent()

@@ -104,11 +104,10 @@ namespace csModbusView
 
         protected override void CellContentClick(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
         {
-
-            // Tricky weil CheckBoxCell CellValueChanged nicht funktioniert (nur wenn ich die Zelle verlasse),
-            // Benutze ich CellContentClick welches sowohl bei MousClick als auch bei Tastatur funktioniert
-            // Die Zelle ist Read Only und ich invertiere selber von Hand, 
-            // so bin ich absoliut sicher dass die Zelle mit den Daten übereinstimmt
+            // Tricky solution here because CheckBoxCell CellValueChanged does sometimes not fires 
+            // I use CellContentClick which works with MousClick as well as wit keyboard
+            // The cell is set to ReadOnly and the check status is changed here
+            // so I'm sure the grisview cell is equal to the mosbus data
             if (!CurrentCell.ReadOnly) {
                 bool NewCellValue = ! (bool) CurrentCell.Value;
                 CurrentCell.Value = NewCellValue;

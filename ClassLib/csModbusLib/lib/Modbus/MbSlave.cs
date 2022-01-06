@@ -10,6 +10,7 @@ namespace csModbusLib
         protected MbSlaveDataServer gDataServer;
         private MBSFrame Frame = new MBSFrame();
 
+        #region Constructors
         public MbSlave ()
         {
         }
@@ -25,7 +26,7 @@ namespace csModbusLib
             gInterface = Interface;
             gDataServer = DataServer;
         }
-
+        #endregion
 
         public MbSlaveDataServer DataServer
         {

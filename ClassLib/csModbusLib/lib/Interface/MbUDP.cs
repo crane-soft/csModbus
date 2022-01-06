@@ -55,13 +55,13 @@ namespace csModbusLib
             int BytestoRead = (BytesReaded + count) - RxData.EndIdx;
             if (BytestoRead > 0) {
 
-                // TODO Timeout klären und testen
+                // TODO whats about timeout here
                 // https://stackoverflow.com/questions/2281441/can-i-set-the-timeout-for-udpclient-in-c
                 mUdpClient.Client.ReceiveTimeout = 200;
                 timeoutTmer.Restart();
                 IPEndPoint ipe = new IPEndPoint(IPAddress.Any, 0);
 
-                // TODO mach es asynchron
+                // TODO make it async?
                 while (IsConnected) {
                     if (mUdpClient.Available >= BytestoRead) {
                         byte[] rxbuff = mUdpClient.Receive(ref ipe);
@@ -155,8 +155,8 @@ namespace csModbusLib
                     RequestReceived(Context);
                 }
             } catch {
-                // hier wenn connection closed ??
-                // TODO Fehler abfangen
+                // here if connection closed ??
+                // TODO catch errors
             }
 
            /* if (mUdpClient.Client.Connected == false) {

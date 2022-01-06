@@ -75,7 +75,7 @@ namespace csModbusLib {
             public MbRawData Frame_Buffer;
             public abstract void SendFrame(byte[] data, int Length);
         }
-        private EthContext CurrentRxContext;  // Zeiger auf einen gerade neu empfangenen Frame
+        private EthContext CurrentRxContext;  // reference to the just received frame
         private SemaphoreSlim smReqest;
         private bool RequestAvail;
      

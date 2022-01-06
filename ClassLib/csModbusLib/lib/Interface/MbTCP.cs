@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 
-// Wir machen's asychron auch mit dem Ziel mehrere Clients gleichzeitig zu bedienen
+// We do it async  also with the aim of serving several clients at the same time 
 // https://stackoverflow.com/questions/6023264/high-performance-tcp-server-in-c-sharp
 //
 namespace csModbusLib
@@ -102,8 +102,7 @@ namespace csModbusLib
                 if (bytes2read > Frame_Buffer.Data.Length)
                     bytes2read = Frame_Buffer.Data.Length;
 
-                // OnClientRead wurde in einem separatem Thread gestartet, 
-                // daher darf ich hier in Ruhe zu Ende lesen
+                // OnClientRead was started in a separate thread, so I can finish reading here
                 while (bytes2read > 0) {
                     int readed = Stream.Read(Frame_Buffer.Data, MBAP_Header_Size, bytes2read);
                     if (readed == 0) {
