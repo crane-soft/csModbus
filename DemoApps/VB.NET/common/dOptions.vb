@@ -2,11 +2,17 @@
 
 Public Class dlgOptions
     Private gDeviceType As csModbusLib.DeviceType
+    Private gConnectionIfc As String
 
     Public Sub New(DeviceType As csModbusLib.DeviceType)
+        Me.New(DeviceType, Nothing)
+    End Sub
+    Public Sub New(DeviceType As csModbusLib.DeviceType, ConnectionIfc As String)
 
+        ' This call is required by the designer.
         InitializeComponent()
         gDeviceType = DeviceType
+        gConnectionIfc = ConnectionIfc
         If DeviceType = csModbusLib.DeviceType.MASTER Then
             lbHostname.Visible = True
             tbHostname.Visible = True
@@ -19,7 +25,13 @@ Public Class dlgOptions
     End Sub
 
     Private Sub dlgOptions_Load(sender As Object, e As EventArgs) Handles Me.Load
-        cbMode.Text = My.Settings.Connection
+
+        If gConnectionIfc IsNot Nothing Then
+            cbMode.Text = gConnectionIfc
+        Else
+            cbMode.Text = My.Settings.Connection
+        End If
+
         tbSlaveID.Text = My.Settings.SlaveID
         tbTCPport.Text = My.Settings.TCPport
         tbComPort.Text = My.Settings.ComPort

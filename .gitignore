@@ -6,3 +6,4 @@
 /Bin/*.vshost.exe
 
 /Bin/*.config
+/Bin/*.manifest

@@ -1,20 +1,18 @@
-﻿Imports csModbusLib
+﻿Imports System.ComponentModel
+Imports csModbusLib
 Imports csModbusView
 Public Class frmModsMaster
 
     Private ModMaster As MbMaster
     Private modbusConnection As MbInterface
 
-    Private Const BaseAddress As UShort = 10
-
     Private sysRefreshTimer As System.Timers.Timer
-
     Private RefreshCount As Integer = 0
     Private ErrorCount As Integer = 0
     Private Running As Boolean = False
-    Private RefreshRunning As Boolean
     Private ModbusDataList As New Collection()
     Private CurentAddPos As Point
+
     Public Sub New()
 
 
@@ -23,7 +21,6 @@ Public Class frmModsMaster
         ModMaster = New MbMaster()
 
         ' Views created without designer
-
         CurentAddPos = New Point(0, 0)
         AddModbusView(New MasterHoldingRegsGridView(10, 8))
         AddModbusView(New MasterHoldingRegsGridView(20, 5))
@@ -31,7 +28,7 @@ Public Class frmModsMaster
         CurentAddPos.X += 130
         AddModbusView(New MasterInputRegsGridView(7, 10))
 
-        ' With created in designer
+        ' Views created in designer
         ModbusDataList.Add(ucCoils)
         ModbusDataList.Add(ucDiscretInputs)
 
@@ -207,4 +204,13 @@ Public Class frmModsMaster
 
     End Sub
 
+    Private Sub ExitToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ExitToolStripMenuItem.Click
+        Me.Close()
+    End Sub
+
+    Private Sub frmModsMaster_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
+        If ModMaster.IsConnected() Then
+            ModMaster.Close()
+        End If
+    End Sub
 End Class

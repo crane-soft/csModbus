@@ -8,26 +8,31 @@ namespace csModbusLib {
         protected int MyBaseAddr;
         protected int MySize;
 
-        public class ValueChangedEventArgs : EventArgs 
+        public class ModbusValueEventArgs : EventArgs 
         {
             public int BaseIdx { get; set; }
             public int Size { get; set; }
-            public ValueChangedEventArgs (int aBaseIdx, int aSize)
+            public ModbusValueEventArgs (int aBaseIdx, int aSize)
             {
                 BaseIdx = aBaseIdx;
                 Size = aSize;
             }
         }
 
-        public delegate void ValueChangedHandler(object sender, ValueChangedEventArgs e);
+        public delegate void ValueChangedHandler(object sender, ModbusValueEventArgs e);
+        public delegate void ValueReadHandler(object sender, ModbusValueEventArgs e);
+
         public event ValueChangedHandler ValueChangedEvent;
+        public event ValueReadHandler ValueReadEvent;
 
         private void RaiseValueChangedEvent(int Addr, int Size)
         {
-            if (ValueChangedEvent != null) {
-                ValueChangedEvent(this, new ValueChangedEventArgs(Addr - MyBaseAddr, Size));
-            }
+            ValueChangedEvent?.Invoke(this, new ModbusValueEventArgs(Addr - MyBaseAddr, Size));
+        }
 
+        private void RaiseValueReadEvent(int Addr, int Size)
+        {
+            ValueReadEvent?.Invoke(this, new ModbusValueEventArgs(Addr - MyBaseAddr, Size));
         }
 
         public ModbusData()
@@ -61,6 +66,8 @@ namespace csModbusLib {
         {
             if (Frame.MatchAddress(MyBaseAddr, MySize)) {
                 ReadMultiple(Frame);
+                RaiseValueReadEvent(Frame.DataAddress, Frame.DataCount);
+
             } else {
                 if (NextData != null) {
                     NextData.ScannAll4Reading(Frame);

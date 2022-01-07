@@ -27,12 +27,6 @@ Partial Class frmModsMaster
         Me.ExitToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.OptionsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.SettingsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.CommandsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ConnectToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ReadWriteToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ViewToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.LogFileToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.BusMonitorToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.cmStart = New System.Windows.Forms.Button()
         Me.lbCount = New System.Windows.Forms.Label()
         Me.Label1 = New System.Windows.Forms.Label()
@@ -41,10 +35,10 @@ Partial Class frmModsMaster
         Me.lbConnectionOptions = New System.Windows.Forms.ToolStripStatusLabel()
         Me.lbLastError = New System.Windows.Forms.Label()
         Me.ViewPanel = New System.Windows.Forms.Panel()
+        Me.MasterHoldingRegsGridView1 = New csModbusView.MasterHoldingRegsGridView()
         Me.ucCoils = New csModbusView.MasterCoilsGridView()
         Me.ucDiscretInputs = New csModbusView.MasterDiscretInputsGridView()
         Me.cmTest = New System.Windows.Forms.Button()
-        Me.MasterHoldingRegsGridView1 = New csModbusView.MasterHoldingRegsGridView()
         Me.MenuStrip1.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
         Me.ViewPanel.SuspendLayout()
@@ -52,7 +46,7 @@ Partial Class frmModsMaster
         '
         'MenuStrip1
         '
-        Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem, Me.OptionsToolStripMenuItem, Me.CommandsToolStripMenuItem, Me.ViewToolStripMenuItem})
+        Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem, Me.OptionsToolStripMenuItem})
         Me.MenuStrip1.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip1.Name = "MenuStrip1"
         Me.MenuStrip1.Size = New System.Drawing.Size(767, 24)
@@ -69,7 +63,7 @@ Partial Class frmModsMaster
         'ExitToolStripMenuItem
         '
         Me.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
-        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(93, 22)
+        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.ExitToolStripMenuItem.Text = "Exit"
         '
         'OptionsToolStripMenuItem
@@ -82,46 +76,8 @@ Partial Class frmModsMaster
         'SettingsToolStripMenuItem
         '
         Me.SettingsToolStripMenuItem.Name = "SettingsToolStripMenuItem"
-        Me.SettingsToolStripMenuItem.Size = New System.Drawing.Size(116, 22)
+        Me.SettingsToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.SettingsToolStripMenuItem.Text = "Settings"
-        '
-        'CommandsToolStripMenuItem
-        '
-        Me.CommandsToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ConnectToolStripMenuItem, Me.ReadWriteToolStripMenuItem})
-        Me.CommandsToolStripMenuItem.Name = "CommandsToolStripMenuItem"
-        Me.CommandsToolStripMenuItem.Size = New System.Drawing.Size(81, 20)
-        Me.CommandsToolStripMenuItem.Text = "Commands"
-        '
-        'ConnectToolStripMenuItem
-        '
-        Me.ConnectToolStripMenuItem.Name = "ConnectToolStripMenuItem"
-        Me.ConnectToolStripMenuItem.Size = New System.Drawing.Size(136, 22)
-        Me.ConnectToolStripMenuItem.Text = "Connect"
-        '
-        'ReadWriteToolStripMenuItem
-        '
-        Me.ReadWriteToolStripMenuItem.Name = "ReadWriteToolStripMenuItem"
-        Me.ReadWriteToolStripMenuItem.Size = New System.Drawing.Size(136, 22)
-        Me.ReadWriteToolStripMenuItem.Text = "Read /Write"
-        '
-        'ViewToolStripMenuItem
-        '
-        Me.ViewToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.LogFileToolStripMenuItem, Me.BusMonitorToolStripMenuItem})
-        Me.ViewToolStripMenuItem.Name = "ViewToolStripMenuItem"
-        Me.ViewToolStripMenuItem.Size = New System.Drawing.Size(44, 20)
-        Me.ViewToolStripMenuItem.Text = "View"
-        '
-        'LogFileToolStripMenuItem
-        '
-        Me.LogFileToolStripMenuItem.Name = "LogFileToolStripMenuItem"
-        Me.LogFileToolStripMenuItem.Size = New System.Drawing.Size(139, 22)
-        Me.LogFileToolStripMenuItem.Text = "Log File"
-        '
-        'BusMonitorToolStripMenuItem
-        '
-        Me.BusMonitorToolStripMenuItem.Name = "BusMonitorToolStripMenuItem"
-        Me.BusMonitorToolStripMenuItem.Size = New System.Drawing.Size(139, 22)
-        Me.BusMonitorToolStripMenuItem.Text = "Bus Monitor"
         '
         'cmStart
         '
@@ -201,6 +157,18 @@ Partial Class frmModsMaster
         Me.ViewPanel.Size = New System.Drawing.Size(608, 394)
         Me.ViewPanel.TabIndex = 9
         '
+        'MasterHoldingRegsGridView1
+        '
+        Me.MasterHoldingRegsGridView1.BaseAddr = CType(1000US, UShort)
+        Me.MasterHoldingRegsGridView1.ItemColumns = 2
+        Me.MasterHoldingRegsGridView1.ItemNames = Nothing
+        Me.MasterHoldingRegsGridView1.Location = New System.Drawing.Point(315, 193)
+        Me.MasterHoldingRegsGridView1.Name = "MasterHoldingRegsGridView1"
+        Me.MasterHoldingRegsGridView1.NumItems = CType(5US, UShort)
+        Me.MasterHoldingRegsGridView1.Size = New System.Drawing.Size(181, 72)
+        Me.MasterHoldingRegsGridView1.TabIndex = 2
+        Me.MasterHoldingRegsGridView1.Title = "Holding Register"
+        '
         'ucCoils
         '
         Me.ucCoils.BaseAddr = CType(10US, UShort)
@@ -235,18 +203,6 @@ Partial Class frmModsMaster
         Me.cmTest.Text = "Test"
         Me.cmTest.UseVisualStyleBackColor = True
         '
-        'MasterHoldingRegsGridView1
-        '
-        Me.MasterHoldingRegsGridView1.BaseAddr = CType(1000US, UShort)
-        Me.MasterHoldingRegsGridView1.ItemColumns = 2
-        Me.MasterHoldingRegsGridView1.ItemNames = Nothing
-        Me.MasterHoldingRegsGridView1.Location = New System.Drawing.Point(315, 193)
-        Me.MasterHoldingRegsGridView1.Name = "MasterHoldingRegsGridView1"
-        Me.MasterHoldingRegsGridView1.NumItems = CType(5US, UShort)
-        Me.MasterHoldingRegsGridView1.Size = New System.Drawing.Size(223, 72)
-        Me.MasterHoldingRegsGridView1.TabIndex = 2
-        Me.MasterHoldingRegsGridView1.Title = "Holding Register"
-        '
         'frmModsMaster
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -278,12 +234,6 @@ Partial Class frmModsMaster
     Friend WithEvents ExitToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents OptionsToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents SettingsToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents CommandsToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ConnectToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ReadWriteToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ViewToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents LogFileToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents BusMonitorToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents cmStart As System.Windows.Forms.Button
     Friend WithEvents lbCount As System.Windows.Forms.Label
     Friend WithEvents Label1 As System.Windows.Forms.Label

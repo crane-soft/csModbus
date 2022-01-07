@@ -9,6 +9,11 @@ namespace csModbusView
     {
         private ModbusData MbData;
 
+        public delegate void ValueChangedHandler(object sender, ModbusData.ModbusValueEventArgs e);
+        public delegate void ValueReadHandler(object sender, ModbusData.ModbusValueEventArgs e);
+        public event ValueChangedHandler ValueChangedEvent;
+        public event ValueReadHandler ValueReadEvent;
+
         public SlaveGridView(ModbusDataType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) : base(MbType, Title, false)
         {
             this.SetDataSize(BaseAddr, NumItems, ItemColumns);
@@ -20,19 +25,32 @@ namespace csModbusView
             GridView.DisableCellEvents = true;
             UpdateCellValues();
             GridView.DisableCellEvents = false;
-            MbData.ValueChangedEvent += this.RegsValueChanged;
+            MbData.ValueChangedEvent += this.MbData_ValueChangedEvent;
+            MbData.ValueReadEvent += MbData_ValueReadEvent;
         }
 
-        public delegate void ValueChangedCallback(object sender, ModbusData.ValueChangedEventArgs e);
-        public void RegsValueChanged(object sender, ModbusData.ValueChangedEventArgs e)
+        private void MbData_ValueReadEvent(object sender, ModbusData.ModbusValueEventArgs e)
         {
             if (GridView.InvokeRequired) {
-                var d = new ValueChangedCallback(RegsValueChanged);
+                var d = new ValueChangedCallback(MbData_ValueReadEvent);
+                GridView.Invoke(d, new object[] { sender, e });
+            } else {
+                this.ValueReadEvent?.Invoke(this, e);
+
+            }
+        }
+
+        public delegate void ValueChangedCallback(object sender, ModbusData.ModbusValueEventArgs e);
+        public void MbData_ValueChangedEvent(object sender, ModbusData.ModbusValueEventArgs e)
+        {
+            if (GridView.InvokeRequired) {
+                var d = new ValueChangedCallback(MbData_ValueChangedEvent);
                 GridView.Invoke(d, new object[] { sender, e });
             } else {
                 GridView.DisableCellEvents = true;
                 UpDateGridCells(e);
                 GridView.DisableCellEvents = false;
+                this.ValueChangedEvent?.Invoke (this, e);
             }
         }
 
@@ -42,7 +60,7 @@ namespace csModbusView
         }
 
         public abstract void AddDataToServer(StdDataServer DataSerer);
-        protected abstract void UpDateGridCells(ModbusData.ValueChangedEventArgs e);
+        protected abstract void UpDateGridCells(ModbusData.ModbusValueEventArgs e);
         protected abstract void UpdateCellValues();
     }
 
@@ -71,7 +89,7 @@ namespace csModbusView
             GridView.UpDateModbusCells(ModbusData.Data);
         }
 
-        protected override void UpDateGridCells(ModbusData.ValueChangedEventArgs e)
+        protected override void UpDateGridCells(ModbusData.ModbusValueEventArgs e)
         {
             GridView.UpDateModbusCells(ModbusData.Data, e.BaseIdx, e.Size);
         }

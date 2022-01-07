@@ -30,9 +30,9 @@ Partial Class frmModSlave
         Me.ModbusTCPToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.SettingsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ViewToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.lbConnectionOptions = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.lbListenStatus = New System.Windows.Forms.ToolStripStatusLabel()
         Me.lbAutoStatus = New System.Windows.Forms.ToolStripStatusLabel()
         Me.mainToolBar = New System.Windows.Forms.ToolStrip()
         Me.ToolButtonStart = New System.Windows.Forms.ToolStripButton()
@@ -53,7 +53,7 @@ Partial Class frmModSlave
         '
         'mainMenu
         '
-        Me.mainMenu.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem, Me.OptionsToolStripMenuItem, Me.ViewToolStripMenuItem})
+        Me.mainMenu.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem, Me.OptionsToolStripMenuItem})
         Me.mainMenu.Location = New System.Drawing.Point(0, 0)
         Me.mainMenu.Name = "mainMenu"
         Me.mainMenu.Size = New System.Drawing.Size(472, 24)
@@ -75,7 +75,7 @@ Partial Class frmModSlave
         '
         'OptionsToolStripMenuItem
         '
-        Me.OptionsToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ModbusRTUToolStripMenuItem, Me.ModbusTCPToolStripMenuItem, Me.ToolStripSeparator1, Me.SettingsToolStripMenuItem})
+        Me.OptionsToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ModbusTCPToolStripMenuItem, Me.ModbusRTUToolStripMenuItem, Me.ToolStripSeparator1, Me.SettingsToolStripMenuItem})
         Me.OptionsToolStripMenuItem.Name = "OptionsToolStripMenuItem"
         Me.OptionsToolStripMenuItem.Size = New System.Drawing.Size(61, 20)
         Me.OptionsToolStripMenuItem.Text = "Options"
@@ -83,35 +83,29 @@ Partial Class frmModSlave
         'ModbusRTUToolStripMenuItem
         '
         Me.ModbusRTUToolStripMenuItem.Name = "ModbusRTUToolStripMenuItem"
-        Me.ModbusRTUToolStripMenuItem.Size = New System.Drawing.Size(141, 22)
+        Me.ModbusRTUToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.ModbusRTUToolStripMenuItem.Text = "Modbus RTU"
         '
         'ModbusTCPToolStripMenuItem
         '
         Me.ModbusTCPToolStripMenuItem.Name = "ModbusTCPToolStripMenuItem"
-        Me.ModbusTCPToolStripMenuItem.Size = New System.Drawing.Size(141, 22)
+        Me.ModbusTCPToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.ModbusTCPToolStripMenuItem.Text = "Modbus TCP"
         '
         'ToolStripSeparator1
         '
         Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        Me.ToolStripSeparator1.Size = New System.Drawing.Size(138, 6)
+        Me.ToolStripSeparator1.Size = New System.Drawing.Size(149, 6)
         '
         'SettingsToolStripMenuItem
         '
         Me.SettingsToolStripMenuItem.Name = "SettingsToolStripMenuItem"
-        Me.SettingsToolStripMenuItem.Size = New System.Drawing.Size(141, 22)
+        Me.SettingsToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
         Me.SettingsToolStripMenuItem.Text = "Settings"
-        '
-        'ViewToolStripMenuItem
-        '
-        Me.ViewToolStripMenuItem.Name = "ViewToolStripMenuItem"
-        Me.ViewToolStripMenuItem.Size = New System.Drawing.Size(44, 20)
-        Me.ViewToolStripMenuItem.Text = "View"
         '
         'StatusStrip1
         '
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.lbConnectionOptions, Me.lbAutoStatus})
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.lbConnectionOptions, Me.lbListenStatus, Me.lbAutoStatus})
         Me.StatusStrip1.Location = New System.Drawing.Point(0, 417)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(472, 22)
@@ -124,12 +118,20 @@ Partial Class frmModSlave
         Me.lbConnectionOptions.Size = New System.Drawing.Size(69, 17)
         Me.lbConnectionOptions.Text = "Connection"
         '
+        'lbListenStatus
+        '
+        Me.lbListenStatus.AutoSize = False
+        Me.lbListenStatus.Name = "lbListenStatus"
+        Me.lbListenStatus.Size = New System.Drawing.Size(40, 17)
+        Me.lbListenStatus.Text = "_"
+        Me.lbListenStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
         'lbAutoStatus
         '
         Me.lbAutoStatus.Margin = New System.Windows.Forms.Padding(15, 3, 0, 2)
         Me.lbAutoStatus.Name = "lbAutoStatus"
         Me.lbAutoStatus.Size = New System.Drawing.Size(118, 17)
-        Me.lbAutoStatus.Text = "Aotomation Stopped"
+        Me.lbAutoStatus.Text = "Automation Stopped"
         '
         'mainToolBar
         '
@@ -214,7 +216,7 @@ Partial Class frmModSlave
         Me.ucInputRegs.Location = New System.Drawing.Point(129, 4)
         Me.ucInputRegs.Name = "ucInputRegs"
         Me.ucInputRegs.NumItems = CType(10US, UShort)
-        Me.ucInputRegs.Size = New System.Drawing.Size(223, 90)
+        Me.ucInputRegs.Size = New System.Drawing.Size(221, 90)
         Me.ucInputRegs.TabIndex = 3
         Me.ucInputRegs.Title = "Input Register"
         '
@@ -284,7 +286,6 @@ Partial Class frmModSlave
     Friend WithEvents ModbusTCPToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents SettingsToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ViewToolStripMenuItem As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents StatusStrip1 As System.Windows.Forms.StatusStrip
     Friend WithEvents mainToolBar As System.Windows.Forms.ToolStrip
     Friend WithEvents ToolButtonConnection As System.Windows.Forms.ToolStripButton
@@ -299,4 +300,5 @@ Partial Class frmModSlave
     Friend WithEvents ucDiscretInputs As csModbusView.SlaveDiscretInputsGridView
     Friend WithEvents cmStartAuto As Button
     Friend WithEvents lbAutoStatus As ToolStripStatusLabel
+    Friend WithEvents lbListenStatus As ToolStripStatusLabel
 End Class

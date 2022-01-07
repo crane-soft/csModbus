@@ -30,19 +30,20 @@ namespace csModbusLib
 
     public enum ConnectionType
     {
-        SERIAL_RTU = 0,
-        SERIAL_ASCII = 1,
-        TCP_IP = 2,
-        UDP_IP = 3
+        NO_CONNECTION = 0,
+        SERIAL_RTU = 1,
+        SERIAL_ASCII = 2,
+        TCP_IP = 3,
+        UDP_IP = 4
     }
 
     public enum DeviceType
     {
-        MASTER = 0,
-        SLAVE = 1
+        NO_TYPE = 0,
+        MASTER = 1,
+        SLAVE = 2
     }
-
-
+    
     /// <summary>
     /// Modbus calling codes
     /// </summary>

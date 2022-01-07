@@ -85,7 +85,6 @@ namespace csModbusLib {
                 MbData.IniADUoffs();
                 ReceiveBytes(MbData, 2); // Receive Address + Function-Byte
                 return true;
-
             }
             return false;
         }
