@@ -8,3 +8,9 @@
 /Bin/*.config
 /Bin/*.manifest
 /Bin/*.xml
+/DemoApps/Samples/MasterSimple/bin
+/DemoApps/Samples/MasterSimple/obj
+/DemoApps/Samples/SlaveEvents/bin
+/DemoApps/Samples/SlaveEvents/obj
+/DemoApps/Samples/SlaveSimple/obj
+/DemoApps/Samples/SlaveSimple/bin

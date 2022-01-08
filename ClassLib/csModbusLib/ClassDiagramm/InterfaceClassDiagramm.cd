@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="csModbusLib.MbInterface">
-    <Position X="5.5" Y="1" Width="1.75" />
+    <Position X="5.5" Y="0.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>BAIAAAAMAAAAAABAAAAAAIAAQAAIAABAABAAAAAAAAA=</HashCode>
       <FileName>lib\Interface\MbInterface.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbEthernet">
-    <Position X="9.25" Y="5" Width="2" />
+    <Position X="9.25" Y="4.5" Width="2" />
     <NestedTypes>
       <Enum Name="csModbusLib.MbEthernet.ModbusEthernetType" Collapsed="true">
         <TypeIdentifier>
@@ -22,14 +22,14 @@
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbTCPMaster">
-    <Position X="6.25" Y="12" Width="1.5" />
+    <Position X="5.5" Y="11.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAIAIAAEAAAAAAEAAAAAAIAAQAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>lib\Interface\MbTCP.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbTCPSlave">
-    <Position X="11.5" Y="12" Width="1.5" />
+    <Position X="9.75" Y="11.5" Width="1.5" />
     <NestedTypes>
       <Class Name="csModbusLib.MbTCPSlave.TcpContext" Collapsed="true">
         <TypeIdentifier>
@@ -43,20 +43,20 @@
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbUDPMaster">
-    <Position X="8.5" Y="12" Width="1.5" />
+    <Position X="7.5" Y="11.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAIAIAAEAAAAAAAAAAAAAIAAQAAAAAAAABAAAAAAAAA=</HashCode>
       <FileName>lib\Interface\MbUDP.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbETHMaster">
-    <Position X="7.5" Y="8.75" Width="1.5" />
+    <Position X="6.75" Y="8.5" Width="1.5" />
     <InheritanceLine Type="csModbusLib.MbEthernet" ManuallyRouted="true">
       <Path>
-        <Point X="10.25" Y="7.687" />
-        <Point X="10.25" Y="8.095" />
-        <Point X="8.25" Y="8.095" />
-        <Point X="8.25" Y="8.75" />
+        <Point X="10.25" Y="7.187" />
+        <Point X="10.25" Y="7.689" />
+        <Point X="7.5" Y="7.689" />
+        <Point X="7.5" Y="8.5" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
@@ -65,7 +65,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbSerial">
-    <Position X="2" Y="6.5" Width="2" />
+    <Position X="1.75" Y="6" Width="2" />
     <NestedTypes>
       <Enum Name="csModbusLib.MbSerial.ModbusSerialType" Collapsed="true">
         <TypeIdentifier>
@@ -75,10 +75,10 @@
     </NestedTypes>
     <InheritanceLine Type="csModbusLib.MbInterface" ManuallyRouted="true">
       <Path>
-        <Point X="6.375" Y="4.006" />
-        <Point X="6.375" Y="4.594" />
-        <Point X="3" Y="4.594" />
-        <Point X="3" Y="6.5" />
+        <Point X="6.375" Y="3.506" />
+        <Point X="6.375" Y="4.094" />
+        <Point X="2.75" Y="4.094" />
+        <Point X="2.75" Y="6" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
@@ -87,21 +87,21 @@
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbRTU">
-    <Position X="0.75" Y="12" Width="1.75" />
+    <Position X="0.5" Y="11.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AAAAEAAAAAAAAAAAAAAAAAAAQBAAAAAAAAACAAAAACA=</HashCode>
       <FileName>lib\Interface\MbRTU.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbASCII">
-    <Position X="3.25" Y="12" Width="2" />
+    <Position X="2.75" Y="11.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAIAEAAAAAAAQAAAAAAAAAAAUAAIAAAAAAAAAIAAAiA=</HashCode>
       <FileName>lib\Interface\MbASCII.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbETHSlave">
-    <Position X="10.75" Y="8.5" Width="1.5" />
+    <Position X="11.75" Y="8" Width="1.5" />
     <NestedTypes>
       <Class Name="csModbusLib.MbETHSlave.EthContext" Collapsed="true">
         <TypeIdentifier>
@@ -111,10 +111,10 @@
     </NestedTypes>
     <InheritanceLine Type="csModbusLib.MbEthernet" ManuallyRouted="true">
       <Path>
-        <Point X="10.25" Y="7.687" />
-        <Point X="10.25" Y="8.157" />
-        <Point X="11.5" Y="8.157" />
-        <Point X="11.5" Y="8.5" />
+        <Point X="10.25" Y="7.187" />
+        <Point X="10.25" Y="7.657" />
+        <Point X="12.5" Y="7.657" />
+        <Point X="12.5" Y="8" />
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
@@ -123,7 +123,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbUDPSlave">
-    <Position X="13.75" Y="12" Width="1.5" />
+    <Position X="11.75" Y="11.5" Width="1.5" />
     <NestedTypes>
       <Class Name="csModbusLib.MbUDPSlave.UdpContext" Collapsed="true">
         <TypeIdentifier>
@@ -137,7 +137,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbUDPSyncSlave">
-    <Position X="16" Y="12" Width="1.5" />
+    <Position X="13.75" Y="11.5" Width="1.5" />
     <NestedTypes>
       <Class Name="csModbusLib.MbUDPSyncSlave.UdpContext" Collapsed="true">
         <TypeIdentifier>

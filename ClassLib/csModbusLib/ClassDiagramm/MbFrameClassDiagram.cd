@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="csModbusLib.MbFrame">
+    <Position X="2" Y="0.5" Width="2" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>ACAACAEIQIAACAAAAAAAIAQAAAAAJAGAQAAARAAIIAE=</HashCode>
+      <FileName>lib\Modbus\MbFrame.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="RawData" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="csModbusLib.MBSFrame">
+    <Position X="0.75" Y="3.75" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAgAUIGAAYAAAAIAAAAAgAAAAAAAAAAAQCAAAAAEA=</HashCode>
+      <FileName>lib\Modbus\MbFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MBMFrame">
+    <Position X="3.75" Y="3.75" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAACAQCAAAAAAAAAgAACAAEAAAAAABACAAAAgI=</HashCode>
+      <FileName>lib\Modbus\MbFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MbRawData">
+    <Position X="5" Y="0.5" Width="2.25" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAQAAAAACBQAAAEAAAAAAAAABBAAAAAACABAAA=</HashCode>
+      <FileName>lib\Modbus\MbFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
