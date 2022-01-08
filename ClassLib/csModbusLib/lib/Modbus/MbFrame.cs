@@ -3,7 +3,7 @@ using System.Collections;
 using System.Diagnostics;
 
 /* Modbus Format
-   Request Format
+   Request Format                   0           1           2           4           6
    READ_COILS = 0x01,               SlaveID(1)  FCode(1)    Address(2)  Count(2)
    READ_DISCRETE_INPUTS = 0x02,     SlaveID(1)  FCode(1)    Address(2)  Count(2)
    READ_HOLDING_REGISTERS = 0x03,   SlaveID(1)  FCode(1)    Address(2)  Count(2)
@@ -107,6 +107,8 @@ namespace csModbusLib
         protected const int REQST_SINGLE_DATA_IDX = MbRawData.ADU_OFFS + 4;
         protected const int REQST_DATA_CNT_IDX = MbRawData.ADU_OFFS + 4;   // Request for Single Write Functions
         protected const int REQST_DATA_LEN_IDX = MbRawData.ADU_OFFS + 6;
+        protected const int REQST_WRADDR_IDX = MbRawData.ADU_OFFS + 6;
+
         protected const int REQST_DATA_IDX = MbRawData.ADU_OFFS + 7;      // 
         protected const int RESPNS_DATA_IDX = MbRawData.ADU_OFFS + 3;           // Response for Read Functions
         protected const int RESPNS_LEN_IDX = MbRawData.ADU_OFFS + 2;
@@ -115,6 +117,7 @@ namespace csModbusLib
         public ModbusCodes FunctionCode;
         public UInt16 DataAddress;
         public UInt16 DataCount;
+
         public ExceptionCodes ExceptionCode { get; set; }
         public MbRawData RawData;
 
@@ -178,7 +181,7 @@ namespace csModbusLib
         private bool WrMultipleData;
         private bool WrSingleData;
         private bool ValidAddressFound;
-        private int IdxOffs;
+        public MbRawData WriteData;
         public MBSFrame()
         {
             ValidAddressFound = false;
@@ -188,7 +191,6 @@ namespace csModbusLib
         {
             WrSingleData = false;
             WrMultipleData = false;
-            IdxOffs = 0;
 
             if (FunctionCode <= ModbusCodes.WRITE_SINGLE_REGISTER) {
                 if (FunctionCode >= ModbusCodes.WRITE_SINGLE_COIL) {
@@ -204,7 +206,6 @@ namespace csModbusLib
                     return 5;
                 case ModbusCodes.READ_WRITE_MULTIPLE_REGISTERS:
                     WrMultipleData = true;
-                    IdxOffs = 4;        // Wr Address and Length 4 Byte offset behind Rd Address and Rd Length
                     return 9;
             }
 
@@ -222,26 +223,39 @@ namespace csModbusLib
             int MsgLen = FromMasterRequestMessageLen();
             Interface.ReceiveBytes(RawData, MsgLen);
 
-            DataAddress = RawData.GetUInt16(REQST_ADDR_IDX + IdxOffs);
+            DataAddress = RawData.GetUInt16(REQST_ADDR_IDX);
 
             if (WrSingleData == true) {
                 DataCount = 1;
             } else {
-                DataCount = RawData.GetUInt16(REQST_DATA_CNT_IDX + IdxOffs);
+                DataCount = RawData.GetUInt16(REQST_DATA_CNT_IDX);
                 if (WrMultipleData) {
-                    int DataLength = RawData.Data[REQST_DATA_LEN_IDX + IdxOffs];
-                    Interface.ReceiveBytes(RawData, DataLength);
+                    int DataLength;
+                    if (FunctionCode == ModbusCodes.READ_WRITE_MULTIPLE_REGISTERS) {
+                        DataLength = RawData.Data[REQST_DATA_LEN_IDX+4];
+
+                        // Create extra RawData for Write request
+                        WriteData = new MbRawData(REQST_DATA_IDX+ DataLength);
+                        // Copy Head NodeID and Function Code
+                        WriteData.CopyFrom(RawData.Data, 0, REQST_ADDR_IDX);
+                        // Copy  the write data
+                        WriteData.CopyFrom(RawData.Data, REQST_WRADDR_IDX, DataLength+5 );
+
+                    } else {
+                        DataLength = RawData.Data[REQST_DATA_LEN_IDX];
+                        Interface.ReceiveBytes(RawData, DataLength);
+                    }
                 }
             }
 
             Interface.EndOfFrame(RawData);
         }
 
-        public void GetReadDataAddress()
+        public void GetRwWriteAddress()
         {
-            DataAddress = RawData.GetUInt16(REQST_ADDR_IDX);
-            DataCount = RawData.GetUInt16(REQST_DATA_CNT_IDX );
-
+            // Write Address for READ_WRITE_MULTIPLE_REGISTERS
+            DataAddress = WriteData.GetUInt16(REQST_ADDR_IDX);
+            DataCount = WriteData.GetUInt16(REQST_DATA_CNT_IDX );
         }
 
         private void ExceptionResponse(ExceptionCodes ErrorCode)
@@ -316,7 +330,13 @@ namespace csModbusLib
 
         public void GetRequestValues(int BaseAddr, UInt16[] DestArray)
         {
-            RawData.CopyUInt16(DestArray, REQST_DATA_IDX, DataAddress - BaseAddr, DataCount);
+            MbRawData SrcData;
+            if (FunctionCode == ModbusCodes.READ_WRITE_MULTIPLE_REGISTERS) {
+                SrcData = WriteData;
+            } else {
+                SrcData = RawData;
+            }
+            SrcData.CopyUInt16(DestArray, REQST_DATA_IDX, DataAddress - BaseAddr, DataCount);
         }
     }
 

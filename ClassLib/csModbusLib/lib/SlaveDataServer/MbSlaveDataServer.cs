@@ -8,15 +8,12 @@ namespace csModbusLib {
         private int gSlaveID;
         protected MBSFrame Frame;
 
-        public MbSlaveDataServer()
-        {
-            gSlaveID = 0;
-            NextDataServer = null;
-        }
+        public MbSlaveDataServer() : this (0) {}
 
         public MbSlaveDataServer(int SlaveID)
         {
             gSlaveID = SlaveID;
+            NextDataServer = null;
         }
 
         public void Add (MbSlaveDataServer NewServer)
@@ -61,9 +58,9 @@ namespace csModbusLib {
                         if (WriteMultipleRegisters()) return;
                         break;
                     case ModbusCodes.READ_WRITE_MULTIPLE_REGISTERS:
-                        if (WriteMultipleRegisters()) {
-                            Frame.GetReadDataAddress();
-                            if (ReadHoldingRegisters()) {
+                        if (ReadHoldingRegisters()) {
+                            Frame.GetRwWriteAddress();
+                            if (WriteMultipleRegisters()) {
                                 return;
                             }
                         }

@@ -20,17 +20,16 @@ Public Class frmModsMaster
 
         ModMaster = New MbMaster()
 
-        ' Views created without designer
-        CurentAddPos = New Point(0, 0)
-        AddModbusView(New MasterHoldingRegsGridView(10, 8))
-        AddModbusView(New MasterHoldingRegsGridView(20, 5))
-        CurentAddPos.Y = 0
-        CurentAddPos.X += 130
-        AddModbusView(New MasterInputRegsGridView(7, 10))
-
         ' Views created in designer
-        ModbusDataList.Add(ucCoils)
-        ModbusDataList.Add(ucDiscretInputs)
+        ModbusDataList.Add(HoldingRegs1)
+        ModbusDataList.Add(HoldingRegs2)
+
+        ' Views created here
+        CurentAddPos = New Point(HoldingRegs1.Width + 20, 0)
+
+        AddModbusView(New MasterCoilsGridView(10, 20))
+        AddModbusView(New MasterDiscretInputsGridView(20, 20))
+
 
         For Each mbView As MasterGridView In ModbusDataList
             mbView.InitGridView(Me.ModMaster)
@@ -188,18 +187,15 @@ Public Class frmModsMaster
 
         If MasterConnect() Then
 
-            Dim rddata(8) As UInt16
-            Dim tdata(10) As UInt16
-            tdata(0) = 73
-            tdata(1) = 28
-            tdata(2) = 29
-            tdata(3) = 45
-            tdata(4) = 46
-
+            Dim rdData As MasterHoldingRegsGridView = HoldingRegs1
+            Dim wrData As MasterHoldingRegsGridView = HoldingRegs2
             Dim ErrCode As csModbusLib.ErrorCodes
-            ErrCode = ModMaster.ReadWriteMultipleRegisters(10, 8, rddata, 20, 5, tdata)
+            ErrCode = ModMaster.ReadWriteMultipleRegisters(rdData.BaseAddr, rdData.NumItems, rdData.Data,
+                                                           wrData.BaseAddr, wrData.NumItems, wrData.Data)
             DisplayErrorCode(ErrCode)
-
+            If ErrCode = csModbusLib.ErrorCodes.NO_ERROR Then
+                rdData.UpdateCellValues()
+            End If
         End If
 
     End Sub

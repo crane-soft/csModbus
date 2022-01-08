@@ -1,72 +1,76 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="ModbusLib.MbBase">
+  <Class Name="csModbusLib.MbBase">
     <Position X="1.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAACABAgAABAAgAEAAAAAAAAAAEAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAACABAgAABAAgAAAAAAAAAAAAEAAA=</HashCode>
       <FileName>lib\Modbus\MbBase.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="gInterface" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="ModbusLib.MbMaster">
-    <Position X="0.5" Y="7.75" Width="2.25" />
+  <Class Name="csModbusLib.MbSlave">
+    <Position X="7.5" Y="6.25" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>UAAAgAEAaYQAIBAABAACIIAAAAiGQIBAACBACCCCAgs=</HashCode>
-      <FileName>lib\Modbus\MbMaster.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ModbusLib.MbRawData">
-    <Position X="10.25" Y="0.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAQAAAAACBQAAAEAAAAAAAAABBAAAAAACABAAA=</HashCode>
-      <FileName>lib\Modbus\MbFrame.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ModbusLib.MbFrame">
-    <Position X="7" Y="0.5" Width="2" />
-    <TypeIdentifier>
-      <HashCode>ACAACAEIQIAACAAAAAAAIAQAAAAAJAGAQAAARAAIIAE=</HashCode>
-      <FileName>lib\Modbus\MbFrame.cs</FileName>
-    </TypeIdentifier>
-    <ShowAsAssociation>
-      <Field Name="RawData" />
-    </ShowAsAssociation>
-  </Class>
-  <Class Name="ModbusLib.MbSlave">
-    <Position X="3.5" Y="7.75" Width="2" />
-    <TypeIdentifier>
-      <HashCode>AQAAAAAAAAAAAAAgAAAAACAEACAAIAAAAAAAAQAAAAk=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAgAAAAACAEACAAIAAAAAAAAAAAAAk=</HashCode>
       <FileName>lib\Modbus\MbSlave.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
       <Field Name="gDataServer" />
+      <Field Name="Frame" />
     </ShowAsAssociation>
   </Class>
-  <Class Name="ModbusLib.MbSlaveDataServer">
-    <Position X="6.25" Y="9.25" Width="2" />
+  <Class Name="csModbusLib.MbSlaveDataServer">
+    <Position X="10.75" Y="7.75" Width="2.5" />
     <TypeIdentifier>
       <HashCode>UAIAAAAAIAABABAABABCACAAAACQAAAAAAAAACAAAAE=</HashCode>
       <FileName>lib\SlaveDataServer\MbSlaveDataServer.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ModbusLib.MbInterface">
-    <Position X="4.5" Y="0.5" Width="1.5" />
+  <Class Name="csModbusLib.MbInterface">
+    <Position X="5" Y="1.75" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>BAIAAAAMAAAAAABAACAAAIAAAAAIAABAABAAAAAAAAA=</HashCode>
+      <HashCode>BAIAAAAMAAAAAABAAAAAAIAAQAAIAABAABAAAAAAAAA=</HashCode>
       <FileName>lib\Interface\MbInterface.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ModbusLib.MBSFrame">
-    <Position X="9" Y="5.75" Width="2.5" />
+  <Class Name="csModbusLib.MbMasterBase">
+    <Position X="0.75" Y="6.25" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>UAAAgAUIGAAYAAAAIAAAAAgAAAAAAAAAAAQCAAAAAEA=</HashCode>
+      <HashCode>AAAAgAEAKAAAAABABAAAAIAAAAgEAABAACBACACCAgM=</HashCode>
+      <FileName>lib\Modbus\MbMaster.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="Frame" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="csModbusLib.MbMaster">
+    <Position X="0.5" Y="11.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>UAAAAAAAIAAAIBAAAAACAAAAAACAAAAAAAAAACAAAAg=</HashCode>
+      <FileName>lib\Modbus\MbMaster.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MbMasterAsync">
+    <Position X="3.5" Y="11.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>UAAAAAAAIAAAIBAAAAACAAAAAACAAAAAAAAAACAAAAg=</HashCode>
+      <FileName>lib\Modbus\MbMaster.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MBSFrame">
+    <Position X="10.75" Y="4.5" Width="2.5" />
+    <Compartments>
+      <Compartment Name="Fields" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAgAUIGAAYAAAAIAAAAAgAAAAAAAAAAAQCAAAAAEA=</HashCode>
       <FileName>lib\Modbus\MbFrame.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ModbusLib.MBMFrame">
-    <Position X="6.25" Y="5.75" Width="2.25" />
+  <Class Name="csModbusLib.MBMFrame">
+    <Position X="4" Y="6.25" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAACAQCAAAAAAAAAgAACAAEAAAAAABACAAAAgI=</HashCode>
       <FileName>lib\Modbus\MbFrame.cs</FileName>

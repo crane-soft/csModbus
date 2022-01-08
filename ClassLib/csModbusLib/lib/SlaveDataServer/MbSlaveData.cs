@@ -19,6 +19,12 @@ namespace csModbusLib {
             }
         }
 
+        public int BaseAddr {
+            get {
+                return MyBaseAddr;
+            }
+        }
+
         public delegate void ValueChangedHandler(object sender, ModbusValueEventArgs e);
         public delegate void ValueReadHandler(object sender, ModbusValueEventArgs e);
 

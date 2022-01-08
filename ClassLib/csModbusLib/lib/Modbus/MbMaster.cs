@@ -126,8 +126,9 @@ namespace csModbusLib
                 }
 
                 return false;
-            } catch (Exception) {
+            } catch (Exception ex) {
                 // TODO eval error
+                Console.WriteLine(ex.Message);
                 return false;
 
             }

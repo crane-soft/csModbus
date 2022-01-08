@@ -55,51 +55,53 @@ namespace csModbusView
         }
 
         protected abstract ErrorCodes Modbus_ReadData();
-        protected abstract void UpdateCellValues();
-
+        public abstract void UpdateCellValues();
     }
 
     public abstract class MasterGridViewDataT<DataT> : MasterGridView
     {
-        protected DataT[] MbRegsData;
+        protected DataT[] ModbusData;
 
         public MasterGridViewDataT(ModbusDataType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns)
             : base(MbType, Title, BaseAddr, NumItems, ItemColumns)
         {
         }
+        public DataT[] Data {
+            get {
+                return ModbusData;
+            }
+        }
+        public void SetValue(int Idx, DataT Value)
+        {
+            Data[Idx] = Value;
+            GridView.UpDateModbusCells(Data, Idx, 1);
+        }
 
         public override void InitGridView(MbMaster Master)
         {
             base.InitGridView(Master);
-            MbRegsData = new DataT[NumItems];
+            ModbusData = new DataT[NumItems];
         }
 
-        protected override void UpdateCellValues()
+        public override void UpdateCellValues()
         {
-            GridView.UpDateModbusCells(MbRegsData);
+            GridView.UpDateModbusCells(ModbusData);
         }
     }
 
     public class MasterHoldingRegsGridView : MasterGridViewDataT<ushort>
     {
-        public MasterHoldingRegsGridView() 
-            : this(0, 1)
-        {
-        }
+        public MasterHoldingRegsGridView() : this(0, 1) {}
 
         public MasterHoldingRegsGridView(ushort BaseAddr, ushort NumItems) 
-            : this("Holding Register", BaseAddr, NumItems, 1)
-        {
-        }
+            : this("Holding Register", BaseAddr, NumItems, 1) {}
 
         public MasterHoldingRegsGridView(string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
-            : base(ModbusDataType.HoldingRegister, Title, BaseAddr, NumItems, ItemColumns)
-        {
-        }
+            : base(ModbusDataType.HoldingRegister, Title, BaseAddr, NumItems, ItemColumns) {}
 
         protected override ErrorCodes Modbus_ReadData()
         {
-            return MyMaster.ReadHoldingRegisters(BaseAddr, NumItems, MbRegsData, 0);
+            return MyMaster.ReadHoldingRegisters(BaseAddr, NumItems, ModbusData, 0);
         }
 
         protected override void CellValueChanged(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
@@ -118,46 +120,33 @@ namespace csModbusView
 
     public class MasterInputRegsGridView : MasterGridViewDataT<ushort>
     {
-        public MasterInputRegsGridView() : this(0, 1)
-        {
-        }
+        public MasterInputRegsGridView() : this(0, 1) {}
 
         public MasterInputRegsGridView(ushort BaseAddr, ushort NumItems) 
-            : this("Input Register", BaseAddr, NumItems, 1)
-        {
-        }
+            : this("Input Register", BaseAddr, NumItems, 1) {}
 
         public MasterInputRegsGridView(string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
-            : base(ModbusDataType.InputRegister, Title, BaseAddr, NumItems, ItemColumns)
-        {
-        }
+            : base(ModbusDataType.InputRegister, Title, BaseAddr, NumItems, ItemColumns) {}
 
         protected override ErrorCodes Modbus_ReadData()
         {
-            return MyMaster.ReadInputRegisters(BaseAddr, NumItems, MbRegsData, 0);
+            return MyMaster.ReadInputRegisters(BaseAddr, NumItems, ModbusData, 0);
         }
     }
 
     public class MasterCoilsGridView : MasterGridViewDataT<bool>
     {
-        public MasterCoilsGridView() 
-            : this(0, 8)
-        {
-        }
+        public MasterCoilsGridView() : this(0, 8) {}
 
         public MasterCoilsGridView(ushort BaseAddr, ushort NumItems) 
-            : this("Coils", BaseAddr, NumItems, 8)
-        {
-        }
+            : this("Coils", BaseAddr, NumItems, 8) {}
 
         public MasterCoilsGridView(string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
-            : base(ModbusDataType.Coils, Title, BaseAddr, NumItems, ItemColumns)
-        {
-        }
+            : base(ModbusDataType.Coils, Title, BaseAddr, NumItems, ItemColumns) {}
 
         protected override ErrorCodes Modbus_ReadData()
         {
-            return MyMaster.ReadCoils(BaseAddr, NumItems, MbRegsData, 0);
+            return MyMaster.ReadCoils(BaseAddr, NumItems, ModbusData, 0);
         }
 
         protected override void CellContentClick(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
@@ -178,23 +167,17 @@ namespace csModbusView
 
     public class MasterDiscretInputsGridView : MasterGridViewDataT<bool>
     {
-        public MasterDiscretInputsGridView() : this(0, 8)
-        {
-        }
+        public MasterDiscretInputsGridView() : this(0, 8) {}
 
         public MasterDiscretInputsGridView(ushort BaseAddr, ushort NumItems) 
-            : this("DiscretInputs", BaseAddr, NumItems, 8)
-        {
-        }
+            : this("DiscretInputs", BaseAddr, NumItems, 8) {}
 
         public MasterDiscretInputsGridView(string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
-            : base(ModbusDataType.DiscreteInputs, Title, BaseAddr, NumItems, ItemColumns)
-        {
-        }
+            : base(ModbusDataType.DiscreteInputs, Title, BaseAddr, NumItems, ItemColumns) {}
 
         protected override ErrorCodes Modbus_ReadData()
         {
-            return MyMaster.ReadDiscreteInputs(BaseAddr, NumItems, MbRegsData, 0);
+            return MyMaster.ReadDiscreteInputs(BaseAddr, NumItems, ModbusData, 0);
         }
     }
 }

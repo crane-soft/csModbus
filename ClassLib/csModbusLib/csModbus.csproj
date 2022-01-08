@@ -66,6 +66,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagramm\MbFrameClassDiagram.cd" />
     <None Include="ClassDiagramm\DataServerClassDiagram.cd" />
     <None Include="ClassDiagramm\InterfaceClassDiagramm.cd" />
     <None Include="ClassDiagramm\ModbusClassDiagram.cd" />

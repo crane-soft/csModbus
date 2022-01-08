@@ -67,17 +67,17 @@ namespace csModbusView
     public abstract  class SlaveGridViewDataT<DataT> : SlaveGridView
     {
         protected ModbusDataT<DataT> ModbusData;
-        public DataT[] Data {
-            get {
-                return ModbusData.Data;
-            }
-        }
 
         public SlaveGridViewDataT(ModbusDataType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
             : base(MbType, Title, BaseAddr, NumItems, ItemColumns)
         {
         }
 
+        public DataT[] Data {
+            get {
+                return ModbusData.Data;
+            }
+        }
         public void SetValue(int Idx, DataT Value)
         {
             ModbusData.Data[Idx] = Value;

@@ -35,10 +35,9 @@ Partial Class frmModsMaster
         Me.lbConnectionOptions = New System.Windows.Forms.ToolStripStatusLabel()
         Me.lbLastError = New System.Windows.Forms.Label()
         Me.ViewPanel = New System.Windows.Forms.Panel()
-        Me.MasterHoldingRegsGridView1 = New csModbusView.MasterHoldingRegsGridView()
-        Me.ucCoils = New csModbusView.MasterCoilsGridView()
-        Me.ucDiscretInputs = New csModbusView.MasterDiscretInputsGridView()
         Me.cmTest = New System.Windows.Forms.Button()
+        Me.HoldingRegs1 = New csModbusView.MasterHoldingRegsGridView()
+        Me.HoldingRegs2 = New csModbusView.MasterHoldingRegsGridView()
         Me.MenuStrip1.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
         Me.ViewPanel.SuspendLayout()
@@ -49,7 +48,7 @@ Partial Class frmModsMaster
         Me.MenuStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem, Me.OptionsToolStripMenuItem})
         Me.MenuStrip1.Location = New System.Drawing.Point(0, 0)
         Me.MenuStrip1.Name = "MenuStrip1"
-        Me.MenuStrip1.Size = New System.Drawing.Size(767, 24)
+        Me.MenuStrip1.Size = New System.Drawing.Size(636, 24)
         Me.MenuStrip1.TabIndex = 0
         Me.MenuStrip1.Text = "MenuStrip1"
         '
@@ -63,7 +62,7 @@ Partial Class frmModsMaster
         'ExitToolStripMenuItem
         '
         Me.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
-        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(93, 22)
         Me.ExitToolStripMenuItem.Text = "Exit"
         '
         'OptionsToolStripMenuItem
@@ -76,13 +75,13 @@ Partial Class frmModsMaster
         'SettingsToolStripMenuItem
         '
         Me.SettingsToolStripMenuItem.Name = "SettingsToolStripMenuItem"
-        Me.SettingsToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.SettingsToolStripMenuItem.Size = New System.Drawing.Size(116, 22)
         Me.SettingsToolStripMenuItem.Text = "Settings"
         '
         'cmStart
         '
         Me.cmStart.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.cmStart.Location = New System.Drawing.Point(644, 36)
+        Me.cmStart.Location = New System.Drawing.Point(513, 36)
         Me.cmStart.Name = "cmStart"
         Me.cmStart.Size = New System.Drawing.Size(111, 33)
         Me.cmStart.TabIndex = 1
@@ -93,7 +92,7 @@ Partial Class frmModsMaster
         '
         Me.lbCount.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lbCount.AutoSize = True
-        Me.lbCount.Location = New System.Drawing.Point(641, 351)
+        Me.lbCount.Location = New System.Drawing.Point(510, 320)
         Me.lbCount.Name = "lbCount"
         Me.lbCount.Size = New System.Drawing.Size(49, 13)
         Me.lbCount.TabIndex = 3
@@ -103,7 +102,7 @@ Partial Class frmModsMaster
         '
         Me.Label1.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(641, 370)
+        Me.Label1.Location = New System.Drawing.Point(510, 339)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(34, 13)
         Me.Label1.TabIndex = 4
@@ -113,7 +112,7 @@ Partial Class frmModsMaster
         '
         Me.lbErrorCnt.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lbErrorCnt.AutoSize = True
-        Me.lbErrorCnt.Location = New System.Drawing.Point(681, 370)
+        Me.lbErrorCnt.Location = New System.Drawing.Point(550, 339)
         Me.lbErrorCnt.Name = "lbErrorCnt"
         Me.lbErrorCnt.Size = New System.Drawing.Size(10, 13)
         Me.lbErrorCnt.TabIndex = 5
@@ -122,9 +121,9 @@ Partial Class frmModsMaster
         'StatusStrip1
         '
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.lbConnectionOptions})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 433)
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 402)
         Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(767, 22)
+        Me.StatusStrip1.Size = New System.Drawing.Size(636, 22)
         Me.StatusStrip1.TabIndex = 6
         Me.StatusStrip1.Text = "StatusStrip1"
         '
@@ -138,7 +137,7 @@ Partial Class frmModsMaster
         '
         Me.lbLastError.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lbLastError.AutoSize = True
-        Me.lbLastError.Location = New System.Drawing.Point(641, 393)
+        Me.lbLastError.Location = New System.Drawing.Point(510, 362)
         Me.lbLastError.Name = "lbLastError"
         Me.lbLastError.Size = New System.Drawing.Size(10, 13)
         Me.lbLastError.TabIndex = 7
@@ -149,66 +148,53 @@ Partial Class frmModsMaster
         Me.ViewPanel.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
             Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ViewPanel.Controls.Add(Me.MasterHoldingRegsGridView1)
-        Me.ViewPanel.Controls.Add(Me.ucCoils)
-        Me.ViewPanel.Controls.Add(Me.ucDiscretInputs)
+        Me.ViewPanel.Controls.Add(Me.HoldingRegs2)
+        Me.ViewPanel.Controls.Add(Me.HoldingRegs1)
+        Me.ViewPanel.Controls.Add(Me.cmTest)
         Me.ViewPanel.Location = New System.Drawing.Point(12, 37)
         Me.ViewPanel.Name = "ViewPanel"
-        Me.ViewPanel.Size = New System.Drawing.Size(608, 394)
+        Me.ViewPanel.Size = New System.Drawing.Size(477, 363)
         Me.ViewPanel.TabIndex = 9
-        '
-        'MasterHoldingRegsGridView1
-        '
-        Me.MasterHoldingRegsGridView1.BaseAddr = CType(1000US, UShort)
-        Me.MasterHoldingRegsGridView1.ItemColumns = 2
-        Me.MasterHoldingRegsGridView1.ItemNames = Nothing
-        Me.MasterHoldingRegsGridView1.Location = New System.Drawing.Point(315, 193)
-        Me.MasterHoldingRegsGridView1.Name = "MasterHoldingRegsGridView1"
-        Me.MasterHoldingRegsGridView1.NumItems = CType(5US, UShort)
-        Me.MasterHoldingRegsGridView1.Size = New System.Drawing.Size(181, 72)
-        Me.MasterHoldingRegsGridView1.TabIndex = 2
-        Me.MasterHoldingRegsGridView1.Title = "Holding Register"
-        '
-        'ucCoils
-        '
-        Me.ucCoils.BaseAddr = CType(10US, UShort)
-        Me.ucCoils.ItemColumns = 8
-        Me.ucCoils.ItemNames = Nothing
-        Me.ucCoils.Location = New System.Drawing.Point(315, 3)
-        Me.ucCoils.Name = "ucCoils"
-        Me.ucCoils.NumItems = CType(20US, UShort)
-        Me.ucCoils.Size = New System.Drawing.Size(223, 72)
-        Me.ucCoils.TabIndex = 1
-        Me.ucCoils.Title = "Coils"
-        '
-        'ucDiscretInputs
-        '
-        Me.ucDiscretInputs.BaseAddr = CType(20US, UShort)
-        Me.ucDiscretInputs.ItemColumns = 8
-        Me.ucDiscretInputs.ItemNames = Nothing
-        Me.ucDiscretInputs.Location = New System.Drawing.Point(315, 81)
-        Me.ucDiscretInputs.Name = "ucDiscretInputs"
-        Me.ucDiscretInputs.NumItems = CType(20US, UShort)
-        Me.ucDiscretInputs.Size = New System.Drawing.Size(223, 72)
-        Me.ucDiscretInputs.TabIndex = 0
-        Me.ucDiscretInputs.Title = "Discrete Inputs"
         '
         'cmTest
         '
-        Me.cmTest.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.cmTest.Location = New System.Drawing.Point(644, 302)
+        Me.cmTest.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.cmTest.Location = New System.Drawing.Point(13, 320)
         Me.cmTest.Name = "cmTest"
-        Me.cmTest.Size = New System.Drawing.Size(111, 33)
+        Me.cmTest.Size = New System.Drawing.Size(178, 29)
         Me.cmTest.TabIndex = 10
-        Me.cmTest.Text = "Test"
+        Me.cmTest.Text = "RD Regs 1 / WR Regs 2"
         Me.cmTest.UseVisualStyleBackColor = True
+        '
+        'HoldingRegs1
+        '
+        Me.HoldingRegs1.BaseAddr = CType(10US, UShort)
+        Me.HoldingRegs1.ItemColumns = 1
+        Me.HoldingRegs1.ItemNames = Nothing
+        Me.HoldingRegs1.Location = New System.Drawing.Point(3, 3)
+        Me.HoldingRegs1.Name = "HoldingRegs1"
+        Me.HoldingRegs1.NumItems = CType(8US, UShort)
+        Me.HoldingRegs1.Size = New System.Drawing.Size(124, 162)
+        Me.HoldingRegs1.TabIndex = 11
+        Me.HoldingRegs1.Title = "Holding Regs 1"
+        '
+        'HoldingRegs2
+        '
+        Me.HoldingRegs2.BaseAddr = CType(20US, UShort)
+        Me.HoldingRegs2.ItemColumns = 1
+        Me.HoldingRegs2.ItemNames = Nothing
+        Me.HoldingRegs2.Location = New System.Drawing.Point(3, 171)
+        Me.HoldingRegs2.Name = "HoldingRegs2"
+        Me.HoldingRegs2.NumItems = CType(5US, UShort)
+        Me.HoldingRegs2.Size = New System.Drawing.Size(124, 108)
+        Me.HoldingRegs2.TabIndex = 12
+        Me.HoldingRegs2.Title = "Holding Regs 2"
         '
         'frmModsMaster
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(767, 455)
-        Me.Controls.Add(Me.cmTest)
+        Me.ClientSize = New System.Drawing.Size(636, 424)
         Me.Controls.Add(Me.ViewPanel)
         Me.Controls.Add(Me.lbLastError)
         Me.Controls.Add(Me.StatusStrip1)
@@ -243,7 +229,6 @@ Partial Class frmModsMaster
     Friend WithEvents lbLastError As System.Windows.Forms.Label
     Friend WithEvents ViewPanel As System.Windows.Forms.Panel
     Friend WithEvents cmTest As System.Windows.Forms.Button
-    Friend WithEvents ucDiscretInputs As csModbusView.MasterDiscretInputsGridView
-    Friend WithEvents ucCoils As csModbusView.MasterCoilsGridView
-    Friend WithEvents MasterHoldingRegsGridView1 As csModbusView.MasterHoldingRegsGridView
+    Friend WithEvents HoldingRegs2 As csModbusView.MasterHoldingRegsGridView
+    Friend WithEvents HoldingRegs1 As csModbusView.MasterHoldingRegsGridView
 End Class

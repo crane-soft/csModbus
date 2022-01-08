@@ -10,9 +10,11 @@ namespace csModbusLib {
         private ModbusDataT<ushort> gInputRegisters;
         private ModbusDataT<ushort> gHoldingRegisters;
 
-        public StdDataServer()
+        public StdDataServer() : this (0) {}
+
+        public StdDataServer(int SlaveID) : base (SlaveID)
         {
-            gDiscreteInputs =  null;
+            gDiscreteInputs = null;
             gCoils = null;
             gInputRegisters = null;
             gHoldingRegisters = null;
