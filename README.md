@@ -76,7 +76,8 @@ namespace SlaveSimple
         }
     }
 }
-...
+```
+
 ## Library usage for master applications
 ```csharp
 using System;
@@ -124,4 +125,5 @@ namespace MasterSimple
         }
     }
 }
-...
+```
+
