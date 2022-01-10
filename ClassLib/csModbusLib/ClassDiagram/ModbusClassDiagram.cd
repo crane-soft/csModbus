@@ -22,7 +22,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="csModbusLib.MbSlaveDataServer">
-    <Position X="10.75" Y="7.75" Width="2.5" />
+    <Position X="7.5" Y="9.25" Width="2.5" />
     <TypeIdentifier>
       <HashCode>UAIAAAAAIAABABAABABCACAAAACQAAAAAAAAACAAAAE=</HashCode>
       <FileName>lib\SlaveDataServer\MbSlaveDataServer.cs</FileName>
@@ -65,7 +65,7 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAgAUIGAAYAAAAIAAAAAgAAAAAAAAAAAQCAAAAAEA=</HashCode>
+      <HashCode>AAAAgEUIAAAYAAAAIAAAAAgAAAAgAAAAAAQCAAAAAEA=</HashCode>
       <FileName>lib\Modbus\MbFrame.cs</FileName>
     </TypeIdentifier>
   </Class>

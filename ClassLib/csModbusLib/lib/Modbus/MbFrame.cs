@@ -181,7 +181,7 @@ namespace csModbusLib
         private bool WrMultipleData;
         private bool WrSingleData;
         private bool ValidAddressFound;
-        public MbRawData WriteData;
+        private MbRawData WriteData;
         public MBSFrame()
         {
             ValidAddressFound = false;
@@ -306,7 +306,6 @@ namespace csModbusLib
         {
             return RawData.Data[REQST_SINGLE_DATA_IDX] != 0;
         }
-
 
         public void PutResponseValues(int BaseAddr, bool[] SrcBits)
         {
