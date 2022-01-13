@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace csModbusLib {
 
     public class ModbusData 
@@ -18,47 +20,41 @@ namespace csModbusLib {
             }
         }
 
-        public int BaseAddr {
-            get {
-                return MyBaseAddr;
-            }
-        }
-
         public delegate void ValueChangedHandler(object sender, ModbusValueEventArgs e);
         public delegate void ValueReadHandler(object sender, ModbusValueEventArgs e);
 
         public event ValueChangedHandler ValueChangedEvent;
         public event ValueReadHandler ValueReadEvent;
 
-        private void RaiseValueChangedEvent(int Addr, int Size)
-        {
+        private void RaiseValueChangedEvent(int Addr, int Size) {
             ValueChangedEvent?.Invoke(this, new ModbusValueEventArgs(Addr - MyBaseAddr, Size));
         }
 
-        private void RaiseValueReadEvent(int Addr, int Size)
-        {
+        private void RaiseValueReadEvent(int Addr, int Size)  {
             ValueReadEvent?.Invoke(this, new ModbusValueEventArgs(Addr - MyBaseAddr, Size));
         }
 
-        public ModbusData()
-        {
+        public ModbusData() {
             Init(0, 0);
         }
 
-        public ModbusData(int aAddress, int aSize)
-        {
+        public ModbusData(int aAddress, int aSize) {
             Init(aAddress, aSize);
         }
-  
-        protected void Init(int aAddress, int aSize)
-        {
+
+        protected void Init(int aAddress, int aSize) {
             MyBaseAddr = aAddress;
             MySize = aSize;
             NextData = null;
         }
 
+        public int BaseAddr {
+            get {
+                return MyBaseAddr;
+            }
+        }
 
-        public virtual void AddModbusData(ModbusData newData)
+        public void AddModbusData(ModbusData newData)
         {
             if (NextData == null) {
                 NextData = newData;
@@ -67,67 +63,68 @@ namespace csModbusLib {
             }
         }
 
-        public void ScannAll4Reading(MBSFrame Frame)
+        public bool ScannAll4Reading(MBSFrame Frame) {
+            return ScannAll(x => x.ReadMultipleEvent(Frame), Frame);
+        }
+
+        public bool ScannAll4Writing(MBSFrame Frame) {
+            return ScannAll(x => x.WriteMultipleEvent(Frame), Frame);
+        }
+
+        public bool ScannAll4SingleWrite(MBSFrame Frame) {
+            return ScannAll(x => x.WriteSingleEvent(Frame), Frame);
+        }
+
+        private bool ScannAll(Action<ModbusData> func, MBSFrame Frame)
         {
             if (Frame.MatchAddress(MyBaseAddr, MySize)) {
-                ReadMultiple(Frame);
+                func(this);
                 RaiseValueReadEvent(Frame.DataAddress, Frame.DataCount);
-
+                return true;
             } else {
                 if (NextData != null) {
-                    NextData.ScannAll4Reading(Frame);
+                    return NextData.ScannAll(func, Frame);
                 }
+                return false;
             }
         }
 
-        public void ScannAll4Writing(MBSFrame Frame)
+        private void ReadMultipleEvent(MBSFrame Frame)
         {
-            if (Frame.MatchAddress(MyBaseAddr, MySize)) {
-                WriteMultiple(Frame);
-                RaiseValueChangedEvent(Frame.DataAddress, Frame.DataCount);
-            } else {
-                if (NextData != null) {
-                    NextData.ScannAll4Writing(Frame);
-                }
-            }
+            RaiseValueReadEvent(Frame.DataAddress, Frame.DataCount);
+            ReadMultiple(Frame);
         }
 
-        public void ScannAll4SingleWrite(MBSFrame Frame)
+        private void WriteMultipleEvent(MBSFrame Frame)
         {
-            if (Frame.MatchAddress(MyBaseAddr, MySize)) {
-                WriteSingle(Frame);
-                RaiseValueChangedEvent(Frame.DataAddress, Frame.DataCount);
-            } else {
-                if (NextData != null) {
-                    NextData.ScannAll4SingleWrite(Frame);
-                }
-            }
+            RaiseValueChangedEvent(Frame.DataAddress, Frame.DataCount);
+            WriteMultiple(Frame);
+        }
+
+        private void WriteSingleEvent(MBSFrame Frame)
+        {
+            RaiseValueChangedEvent(Frame.DataAddress, Frame.DataCount);
+            WriteSingle(Frame);
         }
 
         protected virtual void ReadMultiple(MBSFrame Frame) { }
         protected virtual void WriteMultiple(MBSFrame Frame) { }
         protected virtual void WriteSingle(MBSFrame Frame) { }
-
     }
 
-    public class ModbusDataT<DataT> : ModbusData
+    public class ModbusDataT<DataT> : ModbusData 
     {
         public DataT[] Data;
 
-        public ModbusDataT()
-        {
+        public ModbusDataT()  {
             Data = null;
         }
 
-        public ModbusDataT(int Address, int Length)
-            : base(Address, Length)
-        {
+        public ModbusDataT(int Address, int Length) : base(Address, Length)  {
             Data = new DataT[Length];
         }
 
-        public ModbusDataT(int Address, DataT[] bData)
-            : base(Address, bData.Length)
-        {
+        public ModbusDataT(int Address, DataT[] bData) : base(Address, bData.Length) {
             Data = bData;
         }
 
@@ -151,7 +148,7 @@ namespace csModbusLib {
             }
         }
 
-        protected override void ReadMultiple(MBSFrame Frame)
+        protected override void ReadMultiple (MBSFrame Frame) 
         {
             if (typeof(DataT) == typeof(bool)) {
                 Frame.PutResponseValues(MyBaseAddr, (bool[])(object)Data);
@@ -177,6 +174,20 @@ namespace csModbusLib {
                 Data[Frame.DataAddress - MyBaseAddr] = (DataT)(object)Frame.GetRequestSingleUInt16();
             }
         }
+    }
+
+    public class ModbusRegsData : ModbusDataT<ushort>
+    {
+        public ModbusRegsData() :base () {}
+        public ModbusRegsData(int Address, int Length) : base(Address, Length) {}
+        public ModbusRegsData(int Address, ushort[] Data) : base(Address, Data.Length) {}
+    }
+
+    public class ModbusCoilsData : ModbusDataT<bool>
+    {
+        public ModbusCoilsData() : base() { }
+        public ModbusCoilsData(int Address, int Length) : base(Address, Length) { }
+        public ModbusCoilsData(int Address, bool[] Data) : base(Address, Data.Length) { }
     }
 }
 

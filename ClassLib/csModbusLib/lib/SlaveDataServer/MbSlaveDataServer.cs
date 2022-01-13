@@ -16,8 +16,7 @@ namespace csModbusLib {
             NextDataServer = null;
         }
 
-        public void Add (MbSlaveDataServer NewServer)
-        {
+        public void Add (MbSlaveDataServer NewServer) {
             NextDataServer = NewServer;
         }
 
@@ -27,7 +26,7 @@ namespace csModbusLib {
             set { gSlaveID = value; }
         }
 
-        public virtual void DataServices(MBSFrame aFrame)
+        public void DataServices(MBSFrame aFrame)
         {
             Frame = aFrame;
             if (Frame.SlaveId == gSlaveID) {
@@ -45,8 +44,7 @@ namespace csModbusLib {
                         if (ReadInputRegisters()) return;
                         break;
                     case ModbusCodes.WRITE_SINGLE_COIL:
-                        if (WriteSingleCoil())
-                            return;
+                        if (WriteSingleCoil()) return;
                         break;
                     case ModbusCodes.WRITE_SINGLE_REGISTER:
                         if (WriteSingleRegister()) return;
@@ -65,9 +63,12 @@ namespace csModbusLib {
                             }
                         }
                         break;
+                    default:
+                        Frame.ExceptionCode = ExceptionCodes.ILLEGAL_FUNCTION;
+                        return;
 
                 }
-                Frame.ExceptionCode = ExceptionCodes.ILLEGAL_FUNCTION;
+                Frame.ExceptionCode = ExceptionCodes.ILLEGAL_DATA_ADDRESS;
             }
         }
 
