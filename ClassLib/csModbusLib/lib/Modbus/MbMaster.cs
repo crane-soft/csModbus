@@ -50,9 +50,7 @@ namespace csModbusLib
 
         public ushort GetTransactionIdentifier()
         {
-            if (Frame != null)
-                return Frame.GetTransactionIdentifier();
-            return 0;
+            return Frame.GetTransactionIdentifier();
         }
 
         #endregion
@@ -95,6 +93,13 @@ namespace csModbusLib
         #endregion
 
         #region Functions
+        public ExceptionCodes GetModusException()
+        {
+            if (Frame != null) {
+                return Frame.ExceptionCode;
+            }
+            return ExceptionCodes.NO_EXCEPTION;
+        }
 
         protected bool SendSingleRequest(ModbusCodes Fcode, ushort Address, ushort DataOrLen)
         {
@@ -158,7 +163,7 @@ namespace csModbusLib
             try {
                 ReceiveSlaveResponseWithTimeout();
             } catch (ModbusException ex) {
-                if (ex.ErrorCode != ErrorCodes.CONNECTION_CLOSED)
+                if ((ex.ErrorCode != ErrorCodes.CONNECTION_CLOSED) && (ex.ErrorCode != ErrorCodes.MODBUS_EXCEPTION))
                     gInterface.ReConnect();
                 LastError = ex.ErrorCode;
                 return false;

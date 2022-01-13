@@ -136,6 +136,12 @@ Public Class frmModsMaster
             ErrorCount += 1
             lbErrorCnt.Text = ErrorCount.ToString
             lbLastError.Text = ErrCode.ToString
+            If ErrCode = ErrorCodes.MODBUS_EXCEPTION Then
+                Dim ModbusException As ExceptionCodes = ModMaster.GetModusException()
+                LbLastModbusException.Text = ModbusException.ToString()
+            Else
+                LbLastModbusException.Text = ""
+            End If
         End If
 
         If Running Then

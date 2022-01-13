@@ -66,10 +66,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagramm\MbFrameClassDiagram.cd" />
-    <None Include="ClassDiagramm\DataServerClassDiagram.cd" />
-    <None Include="ClassDiagramm\InterfaceClassDiagramm.cd" />
-    <None Include="ClassDiagramm\ModbusClassDiagram.cd" />
+    <None Include="ClassDiagram\MbFrameClassDiagram.cd" />
+    <None Include="ClassDiagram\DataServerClassDiagram.cd" />
+    <None Include="ClassDiagram\InterfaceClassDiagramm.cd" />
+    <None Include="ClassDiagram\ModbusClassDiagram.cd" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

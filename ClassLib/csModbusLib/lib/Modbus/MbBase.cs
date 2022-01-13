@@ -13,7 +13,8 @@ namespace csModbusLib
         WRONG_CRC,
         WRONG_IDENTIFIER,
         ILLEGAL_FUNCTION_CODE,
-        CONNECTION_CLOSED
+        CONNECTION_CLOSED,
+        MODBUS_EXCEPTION,
     }
 
     public class ModbusException : Exception

@@ -11,9 +11,11 @@ namespace csModbusLib
         private MBSFrame Frame = new MBSFrame();
 
         #region Constructors
-        public MbSlave ()
-        {
-        }
+        public MbSlave () 
+		{
+            gInterface = null;
+            gDataServer = null;
+		}
 
         public MbSlave (MbInterface Interface)
         {

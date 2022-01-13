@@ -8,10 +8,8 @@ namespace SlaveEvents
     {
         const int TCPport = 502;
         const int SlaveID = 1;
-        const int NumModbusRegs = 8;
         const int ModbusRegsAddr = 10;
-
-        static ushort[] SlaveRegs = new ushort[NumModbusRegs];
+        static ushort[] SlaveRegs = new ushort[8];
         static int ReadCnt = 0;
 
         static void Main(string[] args)
@@ -20,7 +18,7 @@ namespace SlaveEvents
 
             // establish a modbus slave dataserver 
             StdDataServer MyDataServer = new StdDataServer(SlaveID);
-            ModbusDataT<ushort> HoldingRegisters = new ModbusDataT<ushort>(ModbusRegsAddr, SlaveRegs);
+            ModbusRegsData HoldingRegisters = new ModbusRegsData (ModbusRegsAddr, SlaveRegs);
             MyDataServer.AddHoldingRegisters(HoldingRegisters);
 
             HoldingRegisters.ValueChangedEvent += HoldingRegisters_ValueChangedEvent;

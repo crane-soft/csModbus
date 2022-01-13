@@ -14,3 +14,4 @@
 /DemoApps/Samples/SlaveEvents/obj
 /DemoApps/Samples/SlaveSimple/obj
 /DemoApps/Samples/SlaveSimple/bin
+/DemoApps/Samples/.vs/ModbusSamples/v14/*.suo

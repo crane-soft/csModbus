@@ -27,12 +27,12 @@
       </Delegate>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>gAAAACCIAAAQAAACACgDgAEBAAgAAAQAAAACAAAAAAA=</HashCode>
+      <HashCode>gAAAACCogAEQAAgCACgDgAEBAAgAAAQAAAACAAAAAAA=</HashCode>
       <FileName>lib\SlaveDataServer\MbSlaveData.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.ModbusDataT&lt;DataT&gt;">
-    <Position X="5.25" Y="5.5" Width="2.25" />
+    <Position X="5.25" Y="6.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAIAAAAAAAAAAAAEBAAgAABAAAAAAAAAAAAA=</HashCode>
       <FileName>lib\SlaveDataServer\MbSlaveData.cs</FileName>
@@ -41,7 +41,7 @@
   <Class Name="csModbusLib.StdDataServer">
     <Position X="0.5" Y="5.5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>UAAAMAAQIAAAIBAAKBBCABAAAACAAEAAAAAAAigAAAA=</HashCode>
+      <HashCode>UAAAMAAQIAAAABAACChDABAAAACAAEAAAAAAAigAAAA=</HashCode>
       <FileName>lib\SlaveDataServer\MbSlaveStdServer.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>

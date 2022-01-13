@@ -33,11 +33,12 @@ Partial Class frmModsMaster
         Me.lbErrorCnt = New System.Windows.Forms.Label()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
         Me.lbConnectionOptions = New System.Windows.Forms.ToolStripStatusLabel()
-        Me.lbLastError = New System.Windows.Forms.Label()
+        Me.lbLastError = New System.Windows.Forms.ToolStripStatusLabel()
+        Me.LbLastModbusException = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ViewPanel = New System.Windows.Forms.Panel()
-        Me.cmTest = New System.Windows.Forms.Button()
-        Me.HoldingRegs1 = New csModbusView.MasterHoldingRegsGridView()
         Me.HoldingRegs2 = New csModbusView.MasterHoldingRegsGridView()
+        Me.HoldingRegs1 = New csModbusView.MasterHoldingRegsGridView()
+        Me.cmTest = New System.Windows.Forms.Button()
         Me.MenuStrip1.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
         Me.ViewPanel.SuspendLayout()
@@ -120,7 +121,7 @@ Partial Class frmModsMaster
         '
         'StatusStrip1
         '
-        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.lbConnectionOptions})
+        Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.lbConnectionOptions, Me.lbLastError, Me.LbLastModbusException})
         Me.StatusStrip1.Location = New System.Drawing.Point(0, 402)
         Me.StatusStrip1.Name = "StatusStrip1"
         Me.StatusStrip1.Size = New System.Drawing.Size(636, 22)
@@ -135,13 +136,17 @@ Partial Class frmModsMaster
         '
         'lbLastError
         '
-        Me.lbLastError.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.lbLastError.AutoSize = True
-        Me.lbLastError.Location = New System.Drawing.Point(510, 362)
+        Me.lbLastError.Margin = New System.Windows.Forms.Padding(20, 3, 0, 2)
         Me.lbLastError.Name = "lbLastError"
-        Me.lbLastError.Size = New System.Drawing.Size(10, 13)
-        Me.lbLastError.TabIndex = 7
-        Me.lbLastError.Text = "-"
+        Me.lbLastError.Size = New System.Drawing.Size(51, 17)
+        Me.lbLastError.Text = "No Error"
+        '
+        'LbLastModbusException
+        '
+        Me.LbLastModbusException.Margin = New System.Windows.Forms.Padding(10, 3, 0, 2)
+        Me.LbLastModbusException.Name = "LbLastModbusException"
+        Me.LbLastModbusException.Size = New System.Drawing.Size(12, 17)
+        Me.LbLastModbusException.Text = "-"
         '
         'ViewPanel
         '
@@ -156,15 +161,17 @@ Partial Class frmModsMaster
         Me.ViewPanel.Size = New System.Drawing.Size(477, 363)
         Me.ViewPanel.TabIndex = 9
         '
-        'cmTest
+        'HoldingRegs2
         '
-        Me.cmTest.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.cmTest.Location = New System.Drawing.Point(13, 320)
-        Me.cmTest.Name = "cmTest"
-        Me.cmTest.Size = New System.Drawing.Size(178, 29)
-        Me.cmTest.TabIndex = 10
-        Me.cmTest.Text = "RD Regs 1 / WR Regs 2"
-        Me.cmTest.UseVisualStyleBackColor = True
+        Me.HoldingRegs2.BaseAddr = CType(20US, UShort)
+        Me.HoldingRegs2.ItemColumns = 1
+        Me.HoldingRegs2.ItemNames = Nothing
+        Me.HoldingRegs2.Location = New System.Drawing.Point(3, 171)
+        Me.HoldingRegs2.Name = "HoldingRegs2"
+        Me.HoldingRegs2.NumItems = CType(5US, UShort)
+        Me.HoldingRegs2.Size = New System.Drawing.Size(124, 108)
+        Me.HoldingRegs2.TabIndex = 12
+        Me.HoldingRegs2.Title = "Holding Regs 2"
         '
         'HoldingRegs1
         '
@@ -178,17 +185,15 @@ Partial Class frmModsMaster
         Me.HoldingRegs1.TabIndex = 11
         Me.HoldingRegs1.Title = "Holding Regs 1"
         '
-        'HoldingRegs2
+        'cmTest
         '
-        Me.HoldingRegs2.BaseAddr = CType(20US, UShort)
-        Me.HoldingRegs2.ItemColumns = 1
-        Me.HoldingRegs2.ItemNames = Nothing
-        Me.HoldingRegs2.Location = New System.Drawing.Point(3, 171)
-        Me.HoldingRegs2.Name = "HoldingRegs2"
-        Me.HoldingRegs2.NumItems = CType(5US, UShort)
-        Me.HoldingRegs2.Size = New System.Drawing.Size(124, 108)
-        Me.HoldingRegs2.TabIndex = 12
-        Me.HoldingRegs2.Title = "Holding Regs 2"
+        Me.cmTest.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.cmTest.Location = New System.Drawing.Point(13, 320)
+        Me.cmTest.Name = "cmTest"
+        Me.cmTest.Size = New System.Drawing.Size(178, 29)
+        Me.cmTest.TabIndex = 10
+        Me.cmTest.Text = "RD Regs 1 / WR Regs 2"
+        Me.cmTest.UseVisualStyleBackColor = True
         '
         'frmModsMaster
         '
@@ -196,7 +201,6 @@ Partial Class frmModsMaster
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(636, 424)
         Me.Controls.Add(Me.ViewPanel)
-        Me.Controls.Add(Me.lbLastError)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.lbErrorCnt)
         Me.Controls.Add(Me.Label1)
@@ -226,9 +230,10 @@ Partial Class frmModsMaster
     Friend WithEvents lbErrorCnt As System.Windows.Forms.Label
     Friend WithEvents StatusStrip1 As System.Windows.Forms.StatusStrip
     Friend WithEvents lbConnectionOptions As System.Windows.Forms.ToolStripStatusLabel
-    Friend WithEvents lbLastError As System.Windows.Forms.Label
     Friend WithEvents ViewPanel As System.Windows.Forms.Panel
     Friend WithEvents cmTest As System.Windows.Forms.Button
     Friend WithEvents HoldingRegs2 As csModbusView.MasterHoldingRegsGridView
     Friend WithEvents HoldingRegs1 As csModbusView.MasterHoldingRegsGridView
+    Friend WithEvents lbLastError As ToolStripStatusLabel
+    Friend WithEvents LbLastModbusException As ToolStripStatusLabel
 End Class

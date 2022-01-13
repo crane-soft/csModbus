@@ -396,7 +396,15 @@ namespace csModbusLib
         public void ReceiveSlaveResponse(MbInterface Interface)
         {
             SlaveId = RawData.Data[REQST_UINIT_ID_IDX];
-            FunctionCode = (ModbusCodes)RawData.Data[REQST_FCODE_IDX];
+            byte RetCode = RawData.Data[REQST_FCODE_IDX];
+            if ((RetCode & 0x80) != 0) {
+                // Slave reports exception error
+                Interface.ReceiveBytes(RawData, 1);
+                ExceptionCode = (ExceptionCodes)RawData.Data[RESPNS_ERR_IDX];
+                throw new ModbusException(ErrorCodes.MODBUS_EXCEPTION);
+            }
+
+            FunctionCode = (ModbusCodes)RetCode;
 
             int Bytes2Read;
             if ((FunctionCode <= ModbusCodes.READ_INPUT_REGISTERS) || (FunctionCode == ModbusCodes.READ_WRITE_MULTIPLE_REGISTERS)) {

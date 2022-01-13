@@ -11,15 +11,19 @@ namespace SlaveSimple
             Console.WriteLine("Modbus-TCP slave demo");
             const int TCPport = 502;
             const int SlaveID = 1;
-            const int NumModbusRegs = 8;
+
             const int ModbusRegsAddr = 10;
+            const int ModbusInputAddr = 20;
 
             // establish a modbus slave dataserver 
             StdDataServer MyDataServer = new StdDataServer(SlaveID);
 
             // add some data
-            ushort[] SlaveRegs = new ushort[NumModbusRegs];
+            ushort[] SlaveRegs = new ushort[8];
+            ushort[] SlaveInputs = new ushort[5];
+
             MyDataServer.AddHoldingRegisters(ModbusRegsAddr, SlaveRegs);
+            MyDataServer.AddInputRegisters(ModbusInputAddr, SlaveInputs);
 
             // create a Modbus slave server 
             MbSlaveServer modSlave = new MbSlaveServer();
