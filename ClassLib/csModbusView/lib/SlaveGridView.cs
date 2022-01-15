@@ -34,7 +34,7 @@ namespace csModbusView
             if (this.ValueReadEvent != null) {
                 if (GridView.InvokeRequired) {
                     var d = new ValueChangedCallback(MbData_ValueReadEvent);
-                    GridView.Invoke(d, new object[] { sender, e });
+                    GridView.BeginInvoke(d, new object[] { sender, e });
                 } else {
                     this.ValueReadEvent.Invoke(this, e);
                 }
@@ -47,7 +47,7 @@ namespace csModbusView
             if (this.ValueChangedEvent != null) {
                 if (GridView.InvokeRequired) {
                     var d = new ValueChangedCallback(MbData_ValueChangedEvent);
-                    GridView.Invoke(d, new object[] { sender, e });
+                    GridView.BeginInvoke(d, new object[] { sender, e });
                 } else {
                     GridView.DisableCellEvents = true;
                     UpDateGridCells(e);

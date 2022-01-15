@@ -26,8 +26,8 @@ Partial Class frmModSlave
         Me.FileToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ExitToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.OptionsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
-        Me.ModbusRTUToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ModbusTCPToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
+        Me.ModbusRTUToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator()
         Me.SettingsToolStripMenuItem = New System.Windows.Forms.ToolStripMenuItem()
         Me.StatusStrip1 = New System.Windows.Forms.StatusStrip()
@@ -80,27 +80,27 @@ Partial Class frmModSlave
         Me.OptionsToolStripMenuItem.Size = New System.Drawing.Size(61, 20)
         Me.OptionsToolStripMenuItem.Text = "Options"
         '
-        'ModbusRTUToolStripMenuItem
-        '
-        Me.ModbusRTUToolStripMenuItem.Name = "ModbusRTUToolStripMenuItem"
-        Me.ModbusRTUToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
-        Me.ModbusRTUToolStripMenuItem.Text = "Modbus RTU"
-        '
         'ModbusTCPToolStripMenuItem
         '
         Me.ModbusTCPToolStripMenuItem.Name = "ModbusTCPToolStripMenuItem"
-        Me.ModbusTCPToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.ModbusTCPToolStripMenuItem.Size = New System.Drawing.Size(141, 22)
         Me.ModbusTCPToolStripMenuItem.Text = "Modbus TCP"
+        '
+        'ModbusRTUToolStripMenuItem
+        '
+        Me.ModbusRTUToolStripMenuItem.Name = "ModbusRTUToolStripMenuItem"
+        Me.ModbusRTUToolStripMenuItem.Size = New System.Drawing.Size(141, 22)
+        Me.ModbusRTUToolStripMenuItem.Text = "Modbus RTU"
         '
         'ToolStripSeparator1
         '
         Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        Me.ToolStripSeparator1.Size = New System.Drawing.Size(149, 6)
+        Me.ToolStripSeparator1.Size = New System.Drawing.Size(138, 6)
         '
         'SettingsToolStripMenuItem
         '
         Me.SettingsToolStripMenuItem.Name = "SettingsToolStripMenuItem"
-        Me.SettingsToolStripMenuItem.Size = New System.Drawing.Size(152, 22)
+        Me.SettingsToolStripMenuItem.Size = New System.Drawing.Size(141, 22)
         Me.SettingsToolStripMenuItem.Text = "Settings"
         '
         'StatusStrip1

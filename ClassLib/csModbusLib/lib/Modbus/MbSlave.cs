@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace csModbusLib
@@ -41,31 +42,28 @@ namespace csModbusLib
         {
             running = true;
             gInterface.Connect();
+            Debug.Print("Listener started");
             while (running) {
                 try {
-                    if (ReceiveMasterRequestMessage()) {
-                        DataServices();
-                        SendResponseMessage();
-                        Thread.Sleep(1);
-                    }
+                    ReceiveMasterRequestMessage();
+                    DataServices();
+                    SendResponseMessage();
+                    Thread.Sleep(1);
+
                 } catch (ModbusException ex) {
-                    Console.WriteLine("ModbusException  {0}", ex.ErrorCode);
-                    gInterface.ReConnect();
+                    if (running) {
+                        Debug.Print("ModbusException  {0}", ex.ErrorCode);
+                        gInterface.ReConnect();
+                    }
                 }
-                //Console.WriteLine("");
             }
+            Debug.Print("Listener stopped");
         }
 
-        protected bool ReceiveMasterRequestMessage ()
+        protected void ReceiveMasterRequestMessage()
         {
-            while (running) {
-                if (gInterface.ReceiveHeader(Frame.RawData)) {
-                    Frame.ReceiveMasterRequest(gInterface);
-                    return true;
-                }
-                Thread.Sleep(1);
-            }
-            return false;
+            gInterface.ReceiveHeader(Frame.RawData);
+            Frame.ReceiveMasterRequest(gInterface);
         }
 
         private void SendResponseMessage ()
@@ -87,6 +85,7 @@ namespace csModbusLib
     public class MbSlaveServer : MbSlave
     {
         private Thread ListenThread;
+
         public MbSlaveServer () {}
         public MbSlaveServer (MbInterface Interface) : base(Interface) { }
         public MbSlaveServer (MbInterface Interface, MbSlaveDataServer DataServer) : base(Interface, DataServer) { }
@@ -96,13 +95,10 @@ namespace csModbusLib
             if (gInterface != null) {
                 if (running) {
                     StopListen();
-                    Thread.Sleep(100);
                 }
 
-                if (ListenThread == null) {
-                    ListenThread = new Thread(this.HandleRequestMessages);
-                    ListenThread.Start();
-                }
+                ListenThread = new Thread(this.HandleRequestMessages);
+                ListenThread.Start();
             }
         }
 
@@ -125,8 +121,14 @@ namespace csModbusLib
             if (gInterface != null) {
                 gInterface.DisConnect();
             }
+        
+
             if (ListenThread != null) {
-                ListenThread.Join();
+                while (ListenThread.IsAlive) {
+                    Thread.Yield();
+                    Thread.Sleep(1);
+                }
+
                 ListenThread = null;
             }
         }

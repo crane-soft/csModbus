@@ -79,7 +79,6 @@ namespace csModbusLib {
         {
             if (Frame.MatchAddress(MyBaseAddr, MySize)) {
                 func(this);
-                RaiseValueReadEvent(Frame.DataAddress, Frame.DataCount);
                 return true;
             } else {
                 if (NextData != null) {

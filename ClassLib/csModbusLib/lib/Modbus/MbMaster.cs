@@ -129,13 +129,11 @@ namespace csModbusLib
                 if (running) {
                     gInterface.ReConnect();
                 }
-
                 return false;
             } catch (Exception ex) {
-                // TODO eval error
-                Console.WriteLine(ex.Message);
+                LastError = csModbusLib.ErrorCodes.CONNECTION_ERROR;
+                Debug.Print(ex.Message);
                 return false;
-
             }
             return true;
         }
@@ -161,7 +159,8 @@ namespace csModbusLib
         protected bool ReceiveSlaveResponse()
         {
             try {
-                ReceiveSlaveResponseWithTimeout();
+                gInterface.ReceiveHeader(Frame.RawData);
+                Frame.ReceiveSlaveResponse(gInterface);
             } catch (ModbusException ex) {
                 if ((ex.ErrorCode != ErrorCodes.CONNECTION_CLOSED) && (ex.ErrorCode != ErrorCodes.MODBUS_EXCEPTION))
                     gInterface.ReConnect();
@@ -171,22 +170,6 @@ namespace csModbusLib
             return true;
         }
 
-        private void ReceiveSlaveResponseWithTimeout()
-        {
-            timeoutTmer.Restart();
-
-            while (running) {
-                if (timeoutTmer.ElapsedMilliseconds > 500) {
-                    throw new ModbusException(csModbusLib.ErrorCodes.RX_TIMEOUT);
-                }
-                if (gInterface.ReceiveHeader(Frame.RawData)) {
-                    Frame.ReceiveSlaveResponse(gInterface);
-                    return;
-                }
-                Thread.Sleep(1);
-            }
-            throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_CLOSED);
-        }
         #endregion
     }
 

@@ -21,7 +21,6 @@ Public Class frmModSlave
 
         InitModbusData()
         InitConnection()
-
     End Sub
 
     Private Sub InitModbusData()
@@ -41,6 +40,8 @@ Public Class frmModSlave
         Next
 
     End Sub
+
+
     Private Sub MBGridView_ValueChanged(sender As Object, e As ModbusData.ModbusValueEventArgs)
         lbListenStatus.AutoSize = False
         ListenCount += 1
@@ -73,6 +74,7 @@ Public Class frmModSlave
         ToolButtonStop.Enabled = False
         lbListenStatus.Text = "_"
         lbListenStatus.AutoSize = False
+
     End Sub
 
     Private Sub csModSlave_FormClosing(sender As Object, e As FormClosingEventArgs) Handles Me.FormClosing
@@ -113,7 +115,7 @@ Public Class frmModSlave
         MyDataServer.SlaveID = My.Settings.SlaveID
     End Sub
 
-    Private Sub TestTimer_Tick(sender As Object, e As EventArgs) Handles AutomationTimer.Tick
+    Private Sub AutomationTimer_Tick(sender As Object, e As EventArgs) Handles AutomationTimer.Tick
 
         ucHoldingRegs1.SetValue(0, ucHoldingRegs1.Data(0) + 1)
         If ucHoldingRegs1.Data(0) And 1 Then
@@ -128,7 +130,6 @@ Public Class frmModSlave
         For i As Integer = 0 To 7
             ucDiscretInputs.SetValue(8 + i, AutomationShift And 1 << i)
         Next
-
     End Sub
 
     Private Sub cmStartAuto_Click(sender As Object, e As EventArgs) Handles cmStartAuto.Click
@@ -160,4 +161,5 @@ Public Class frmModSlave
     Private Sub ModbusRTUToolStripMenuItem_Click(sender As Object, e As EventArgs) Handles ModbusRTUToolStripMenuItem.Click
         ShowOptionsDialog("RTU")
     End Sub
+
 End Class

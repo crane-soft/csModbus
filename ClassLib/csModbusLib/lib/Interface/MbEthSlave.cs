@@ -5,55 +5,32 @@ using System.Threading;
 using System.Diagnostics;
 
 namespace csModbusLib {
-    public abstract class MbETHSlave : MbEthernet
-    {
+    public abstract class MbETHSlave : MbEthernet {
 
-        // It is allowed, that more tan on master connetcs to on slave
-        protected abstract class EthContext
-        {
+        // MbETHSlave should be multi master capable
+        protected abstract class EthContext {
             public MbRawData Frame_Buffer;
             public abstract void SendFrame(byte[] data, int Length);
         }
-        private EthContext CurrentRxContext;  // reference to the just received frame
-        private SemaphoreSlim smReqest;
-        private bool RequestAvail;
-
-        public MbETHSlave(int port)
-        {
+        protected EthContext CurrentRxContext;  // reference to the just received frame
+     
+        public MbETHSlave (int port) {
             SetPort(port);
-            smReqest = new SemaphoreSlim(1, 1);
-            RequestAvail = false;
-        }
-
-        public override bool ReceiveHeader(MbRawData MbData)
-        {
-            if (RequestAvail) {
-                MbData.CopyFrom(CurrentRxContext.Frame_Buffer);
-                return true;
-            }
-            return false;
-
-        }
-
-        protected void RequestReceived(EthContext newContext)
-        {
-            smReqest.Wait();
-            CurrentRxContext = newContext;
-            RequestAvail = true;
         }
 
         public override void SendFrame(MbRawData TransmitData, int Length)
         {
             TransmitData.PutUInt16(4, (UInt16)Length);
-            CurrentRxContext.SendFrame(TransmitData.Data, Length + MBAP_Header_Size);
-            FreeMessage();
+            try {
+                CurrentRxContext.SendFrame(TransmitData.Data, Length + MBAP_Header_Size);
+                FreeMessage();
+            } catch (System.Exception ex) {
+                Debug.Print(ex.Message);
+                throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_ERROR);
+            }
         }
 
-        private void FreeMessage()
-        {
-            RequestAvail = false;
-            smReqest.Release();
-        }
+        protected virtual void FreeMessage() { }
     }
 
     public class MbUDPSlave : MbETHSlave
@@ -76,8 +53,13 @@ namespace csModbusLib {
             public bool Receive()
             {
                 if (udpc.Available > 0) {
+                    try {
+                        Frame_Buffer.Data = udpc.Receive(ref EndPoint);
+                    } catch (System.Exception ex) {
+                        Debug.Print(ex.Message);
+                        throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_ERROR);
+                    }
 
-                    Frame_Buffer.Data = udpc.Receive(ref EndPoint);
                     if (Frame_Buffer.Data != null) {
                         // TODO check length
                         Frame_Buffer.EndIdx = Frame_Buffer.Data.Length;
@@ -115,6 +97,7 @@ namespace csModbusLib {
             if (IsConnected) {
                 IsConnected = false;
                 if (mUdpClient != null) {
+                    mUdpClient.Client.Shutdown(SocketShutdown.Both);
                     mUdpClient.Close();
                     Debug.WriteLine("Connection Closed");
                 }
@@ -123,12 +106,16 @@ namespace csModbusLib {
 
         public override bool ReceiveHeader(MbRawData MbData)
         {
-            if (mUdpContext.Receive()) {
-                RequestReceived(mUdpContext);
-                base.ReceiveHeader(MbData);
-                return true;
+            while (IsConnected) {
+                if (mUdpContext.Receive()) {
+                    CurrentRxContext = mUdpContext;
+                    MbData.CopyFrom(mUdpContext.Frame_Buffer);
+                    return true;
+                }
+                Thread.Sleep(1);
             }
-            return false;
+            throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_CLOSED);
+            //return true;
         }
     }
 
@@ -136,7 +123,7 @@ namespace csModbusLib {
     {
         private class TcpContext : EthContext
         {
-            public TcpContext(TcpClient aClient)
+            public TcpContext (TcpClient aClient)
             {
                 Frame_Buffer = new MbRawData(MbBase.MAX_FRAME_LEN);
                 Client = aClient;
@@ -145,12 +132,12 @@ namespace csModbusLib {
             public TcpClient Client;
             public NetworkStream Stream;
 
-            public override void SendFrame(byte[] data, int Length)
+            public override void SendFrame (byte[] data, int Length)
             {
                 Stream.Write(data, 0, Length);
             }
 
-            public bool EndReceive(IAsyncResult ar)
+            public bool EndReceive (IAsyncResult ar)
             {
                 if (Client.Connected == false) {
                     return false;
@@ -180,11 +167,16 @@ namespace csModbusLib {
             }
         }
 
-        private TcpListener tcpl; // TCP-Slave (Server)
+        private TcpListener tcpl; 
+        private bool RequestAvail;
+        private SemaphoreSlim smReqest;
 
-        public MbTCPSlave(int port) : base(port) { }
+        public MbTCPSlave (int port) : base(port) {
+            RequestAvail = false;
+            smReqest = new SemaphoreSlim(1, 1);
+        }
 
-        public override bool Connect()
+        public override bool Connect ()
         {
             try {
                 tcpl = new TcpListener(new IPEndPoint(IPAddress.Any, remote_port));
@@ -198,15 +190,30 @@ namespace csModbusLib {
             return IsConnected;
         }
 
-        public override void DisConnect()
+        public override void DisConnect ()
         {
             if (IsConnected) {
                 IsConnected = false;
                 tcpl.Stop();
+                if (smReqest.CurrentCount == 0)
+                    smReqest.Release();
+
             }
         }
 
-        private void OnClientAccepted(IAsyncResult ar)
+        public override bool ReceiveHeader(MbRawData MbData)
+        {
+            while (RequestAvail == false) {
+                if (IsConnected == false)
+                    throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_CLOSED);
+
+                Thread.Sleep(1);
+            }
+            MbData.CopyFrom(CurrentRxContext.Frame_Buffer);
+            return true;
+        }
+
+        private void OnClientAccepted (IAsyncResult ar)
         {
             if (IsConnected == false)
                 return;
@@ -225,7 +232,7 @@ namespace csModbusLib {
             tcpl.BeginAcceptTcpClient(OnClientAccepted, tcpl);
         }
 
-        private void OnClientRead(IAsyncResult ar)
+        private void OnClientRead (IAsyncResult ar)
         {
             if (IsConnected == false)
                 return;
@@ -248,10 +255,22 @@ namespace csModbusLib {
             context.Stream.BeginRead(context.Frame_Buffer.Data, 0, MBAP_Header_Size, OnClientRead, context);
             return;
 
-            disconnected:
+        disconnected:
             context.Client.Close();
             context.Stream.Dispose();
             context = null;
+        }
+        protected void RequestReceived(EthContext newContext)
+        {
+            smReqest.Wait();
+            CurrentRxContext = newContext;
+            RequestAvail = true;
+        }
+
+        protected override void FreeMessage()
+        {
+            RequestAvail = false;
+            smReqest.Release();
         }
     }
 }

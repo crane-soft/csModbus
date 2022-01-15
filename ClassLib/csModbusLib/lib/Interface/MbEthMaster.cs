@@ -9,9 +9,6 @@ namespace csModbusLib
     public abstract class MbETHMaster : MbEthernet
     {
         protected string remote_host;
-        protected NetworkStream nwStream;
-
-        protected abstract Boolean RecvDataAvailable();
 
         public MbETHMaster(string host_name, int port)
         {
@@ -21,15 +18,11 @@ namespace csModbusLib
 
         public override bool ReceiveHeader(MbRawData MbData)
         {
-            if (RecvDataAvailable()) {
-                MbData.EndIdx = 0;
-                ReceiveBytes(MbData, 8);
-                CheckTransactionIdentifier(MbData);
-                return true;
-            }
-            return false;
+            MbData.EndIdx = 0;
+            ReceiveBytes(MbData, 8);
+            CheckTransactionIdentifier(MbData);
+            return true;
         }
-
     }
 
     public class MbUDPMaster : MbETHMaster
@@ -72,41 +65,32 @@ namespace csModbusLib
             BytesReaded = 0;
         }
 
-        protected override Boolean RecvDataAvailable()
-        {
-            return mUdpClient.Available != 0;
-        }
-
         public override void ReceiveBytes(MbRawData RxData, int count)
         {
             int BytestoRead = (BytesReaded + count) - RxData.EndIdx;
             if (BytestoRead > 0) {
-
-                // TODO whats about timeout here
-                // https://stackoverflow.com/questions/2281441/can-i-set-the-timeout-for-udpclient-in-c
+                System.Net.IPEndPoint ipe = new IPEndPoint(IPAddress.Any, 0);
                 mUdpClient.Client.ReceiveTimeout = 200;
-                timeoutTmer.Restart();
-                IPEndPoint ipe = new IPEndPoint(IPAddress.Any, 0);
 
-                // TODO make it async?
-                while (IsConnected) {
-                    if (mUdpClient.Available >= BytestoRead) {
-                        byte[] rxbuff = mUdpClient.Receive(ref ipe);
-                        RxData.CopyFrom(rxbuff, 0, rxbuff.Length);
-                        break;
-                    }
-
-                    if (timeoutTmer.ElapsedMilliseconds > 200)
+                try {
+                    byte[] rxbuff = mUdpClient.Receive(ref ipe);
+                    RxData.CopyFrom(rxbuff, 0, rxbuff.Length);
+                    BytesReaded += count;
+                } catch (SocketException ex) {
+                    if (ex.SocketErrorCode == System.Net.Sockets.SocketError.TimedOut) {
                         throw new ModbusException(csModbusLib.ErrorCodes.RX_TIMEOUT);
+                    } else {
+                        throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_ERROR);
+                    }
                 }
             }
-            BytesReaded += count;
         }
     }
 
     public class MbTCPMaster : MbETHMaster
     {
-        private TcpClient tcpc;   // TCP-Master (Client)
+        private TcpClient tcpc;   
+        private NetworkStream nwStream;
 
         public MbTCPMaster(string host_name, int port)
             : base(host_name, port)
@@ -146,11 +130,6 @@ namespace csModbusLib
             nwStream.Write(TransmitData.Data, 0, Length + MBAP_Header_Size);
         }
 
-        protected override Boolean RecvDataAvailable()
-        {
-            return nwStream.DataAvailable;
-        }
-
         public override void ReceiveBytes(MbRawData RxData, int count)
         {
             nwStream.ReadTimeout = 100;
@@ -162,5 +141,4 @@ namespace csModbusLib
             }
         }
     }
-
 }

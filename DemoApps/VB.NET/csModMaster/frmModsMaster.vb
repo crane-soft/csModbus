@@ -15,7 +15,6 @@ Public Class frmModsMaster
 
     Public Sub New()
 
-
         InitializeComponent()
 
         ModMaster = New MbMaster()
@@ -59,7 +58,8 @@ Public Class frmModsMaster
         If ModMaster.IsConnected() Then
             Return True
         End If
-
+        lbLastError.Text = "Connecting.."
+        Me.Update()
         Return ModMaster.Connect(modbusConnection, 1)
     End Function
     Private Sub cmStart_Click(sender As Object, e As EventArgs) Handles cmStart.Click
@@ -72,17 +72,18 @@ Public Class frmModsMaster
                 SettingsToolStripMenuItem.Enabled = False
                 Running = True
                 cmTest.Enabled = False
+                lbLastError.Text = "Connected"
+            Else
+                lbLastError.Text = "Connection Error"
             End If
 
         Else
             ' TODO Master should closed at the end of one polling cycle
             ' therfor better make a close request here which is executet in the timer
 
-            ModMaster.Close()
-            sysRefreshTimer.Enabled = False
+            MasterClose()
             cmStart.Text = "Start"
             cmStart.BackColor = Color.Green
-            Running = False
             lbCount.Text = 0
             RefreshCount = 0
             SettingsToolStripMenuItem.Enabled = True
@@ -93,6 +94,11 @@ Public Class frmModsMaster
             cmTest.Enabled = True
         End If
         cmStart.Enabled = True
+    End Sub
+    Private Sub MasterClose()
+        sysRefreshTimer.Enabled = False
+        ModMaster.Close()
+        Running = False
     End Sub
 
     Private Sub OnSystemTimedEvent(sender As Object, e As Timers.ElapsedEventArgs)
@@ -212,7 +218,7 @@ Public Class frmModsMaster
 
     Private Sub frmModsMaster_Closing(sender As Object, e As CancelEventArgs) Handles Me.Closing
         If ModMaster.IsConnected() Then
-            ModMaster.Close()
+            MasterClose()
         End If
     End Sub
 End Class
