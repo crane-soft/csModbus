@@ -15,3 +15,4 @@
 /DemoApps/Samples/SlaveSimple/obj
 /DemoApps/Samples/SlaveSimple/bin
 /DemoApps/Samples/.vs/ModbusSamples/v14/*.suo
+/DemoApps/VB.NET/csModSlave/*.bak

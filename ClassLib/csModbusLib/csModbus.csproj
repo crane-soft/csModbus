@@ -45,6 +45,8 @@
     <Compile Include="lib\Interface\MbEthernet.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="lib\Interface\MbEthMaster.cs" />
+    <Compile Include="lib\Interface\MbEthSlave.cs" />
     <Compile Include="lib\Interface\MbInterface.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -57,8 +59,6 @@
     <Compile Include="lib\Interface\MbSerial.cs" />
     <Compile Include="lib\Modbus\MbSlave.cs" />
     <Compile Include="lib\SlaveDataServer\MbSlaveData.cs" />
-    <Compile Include="lib\Interface\MbTCP.cs" />
-    <Compile Include="lib\Interface\MbUDP.cs" />
     <Compile Include="lib\SlaveDataServer\MbSlaveDataServer.cs">
       <SubType>Code</SubType>
     </Compile>

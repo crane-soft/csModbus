@@ -91,20 +91,20 @@ namespace csModbusLib {
 
         private void ReadMultipleEvent(MBSFrame Frame)
         {
-            RaiseValueReadEvent(Frame.DataAddress, Frame.DataCount);
             ReadMultiple(Frame);
+            RaiseValueReadEvent(Frame.DataAddress, Frame.DataCount);
         }
 
         private void WriteMultipleEvent(MBSFrame Frame)
         {
-            RaiseValueChangedEvent(Frame.DataAddress, Frame.DataCount);
             WriteMultiple(Frame);
+            RaiseValueChangedEvent(Frame.DataAddress, Frame.DataCount);
         }
 
         private void WriteSingleEvent(MBSFrame Frame)
         {
-            RaiseValueChangedEvent(Frame.DataAddress, Frame.DataCount);
             WriteSingle(Frame);
+            RaiseValueChangedEvent(Frame.DataAddress, Frame.DataCount);
         }
 
         protected virtual void ReadMultiple(MBSFrame Frame) { }

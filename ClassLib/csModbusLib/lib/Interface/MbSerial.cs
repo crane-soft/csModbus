@@ -109,7 +109,6 @@ namespace csModbusLib {
             }
         }
 
-
         public override void EndOfFrame(MbRawData RxData)
         {
             if (Check_EndOfFrame(RxData) == false) {

@@ -31,26 +31,29 @@ namespace csModbusView
 
         private void MbData_ValueReadEvent(object sender, ModbusData.ModbusValueEventArgs e)
         {
-            if (GridView.InvokeRequired) {
-                var d = new ValueChangedCallback(MbData_ValueReadEvent);
-                GridView.Invoke(d, new object[] { sender, e });
-            } else {
-                this.ValueReadEvent?.Invoke(this, e);
-
+            if (this.ValueReadEvent != null) {
+                if (GridView.InvokeRequired) {
+                    var d = new ValueChangedCallback(MbData_ValueReadEvent);
+                    GridView.Invoke(d, new object[] { sender, e });
+                } else {
+                    this.ValueReadEvent.Invoke(this, e);
+                }
             }
         }
 
         public delegate void ValueChangedCallback(object sender, ModbusData.ModbusValueEventArgs e);
         public void MbData_ValueChangedEvent(object sender, ModbusData.ModbusValueEventArgs e)
         {
-            if (GridView.InvokeRequired) {
-                var d = new ValueChangedCallback(MbData_ValueChangedEvent);
-                GridView.Invoke(d, new object[] { sender, e });
-            } else {
-                GridView.DisableCellEvents = true;
-                UpDateGridCells(e);
-                GridView.DisableCellEvents = false;
-                this.ValueChangedEvent?.Invoke (this, e);
+            if (this.ValueChangedEvent != null) {
+                if (GridView.InvokeRequired) {
+                    var d = new ValueChangedCallback(MbData_ValueChangedEvent);
+                    GridView.Invoke(d, new object[] { sender, e });
+                } else {
+                    GridView.DisableCellEvents = true;
+                    UpDateGridCells(e);
+                    GridView.DisableCellEvents = false;
+                    this.ValueChangedEvent.Invoke(this, e);
+                }
             }
         }
 

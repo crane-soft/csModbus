@@ -103,8 +103,7 @@ Public Class frmModSlave
                 modbusConnection = New MbTCPSlave(My.Settings.TCPport)
                 lbConnectionOptions.Text = String.Format("TCP:{0}", My.Settings.TCPport)
             Case "UDP"
-                'modbusConnection = New MbUDPSlave(My.Settings.TCPport)
-                modbusConnection = New MbUDPSyncSlave(My.Settings.TCPport)
+                modbusConnection = New MbUDPSlave(My.Settings.TCPport)
                 lbConnectionOptions.Text = String.Format("UDP:{0}", My.Settings.TCPport)
             Case Else
                 MsgBox(My.Settings.Connection + vbCrLf + "not supported")
