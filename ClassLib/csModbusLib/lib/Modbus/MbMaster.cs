@@ -7,20 +7,16 @@ namespace csModbusLib
 {
     public class MbMasterBase : MbBase
     {
-
         private MBMFrame Frame = new MBMFrame();
         private byte Current_SlaveID;
         private Stopwatch timeoutTmer = new Stopwatch();
         protected ErrorCodes LastError;
         #region Constructors
 
-        public MbMasterBase()
-        {
-        }
+        public MbMasterBase()  { }
 
-        public MbMasterBase(MbInterface Interface)
-        {
-            gInterface = Interface;
+        public MbMasterBase(MbInterface Interface)  {
+            InitInterface(Interface);
         }
 
         #endregion
@@ -78,7 +74,7 @@ namespace csModbusLib
 
         public Boolean Connect(MbInterface Interface, byte newSlaveID)
         {
-            gInterface = Interface;
+            InitInterface(Interface);
             Slave_ID = newSlaveID;
             return Connect();
         }
@@ -159,7 +155,7 @@ namespace csModbusLib
         protected bool ReceiveSlaveResponse()
         {
             try {
-                gInterface.ReceiveHeader(Frame.RawData);
+                gInterface.ReceiveHeader(DeviceType.MASTER, Frame.RawData);
                 Frame.ReceiveSlaveResponse(gInterface);
             } catch (ModbusException ex) {
                 if ((ex.ErrorCode != ErrorCodes.CONNECTION_CLOSED) && (ex.ErrorCode != ErrorCodes.MODBUS_EXCEPTION))

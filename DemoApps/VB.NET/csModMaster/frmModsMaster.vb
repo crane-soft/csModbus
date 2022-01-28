@@ -12,6 +12,7 @@ Public Class frmModsMaster
     Private Running As Boolean = False
     Private ModbusDataList As New Collection()
     Private CurentAddPos As Point
+    Private InterfaceType As csModbusLib.ConnectionType = ConnectionType.NO_CONNECTION
 
     Public Sub New()
 
@@ -82,23 +83,24 @@ Public Class frmModsMaster
             ' therfor better make a close request here which is executet in the timer
 
             MasterClose()
-            cmStart.Text = "Start"
-            cmStart.BackColor = Color.Green
-            lbCount.Text = 0
-            RefreshCount = 0
-            SettingsToolStripMenuItem.Enabled = True
-
-            ErrorCount = 0
-            lbErrorCnt.Text = 0
-            lbLastError.Text = ""
-            cmTest.Enabled = True
         End If
         cmStart.Enabled = True
     End Sub
+
     Private Sub MasterClose()
         sysRefreshTimer.Enabled = False
         ModMaster.Close()
         Running = False
+        cmStart.Text = "Start"
+        cmStart.BackColor = Color.Green
+        lbCount.Text = 0
+        RefreshCount = 0
+        SettingsToolStripMenuItem.Enabled = True
+
+        ErrorCount = 0
+        lbErrorCnt.Text = 0
+        lbLastError.Text = ""
+        cmTest.Enabled = True
     End Sub
 
     Private Sub OnSystemTimedEvent(sender As Object, e As Timers.ElapsedEventArgs)
@@ -148,6 +150,13 @@ Public Class frmModsMaster
             Else
                 LbLastModbusException.Text = ""
             End If
+
+            If InterfaceType = ConnectionType.TCP_IP Then
+                If (ErrCode = csModbusLib.ErrorCodes.CONNECTION_ERROR) Or (ErrCode = csModbusLib.ErrorCodes.CONNECTION_CLOSED) Then
+                    MasterClose()
+                End If
+
+            End If
         End If
 
         If Running Then
@@ -166,15 +175,19 @@ Public Class frmModsMaster
 
         Select Case My.Settings.Connection
             Case "RTU"
+                InterfaceType = csModbusLib.ConnectionType.SERIAL_RTU
                 modbusConnection = New MbRTU(My.Settings.ComPort, My.Settings.Baudrate)
                 lbConnectionOptions.Text = String.Format("RTU {0},{1}", My.Settings.ComPort, My.Settings.Baudrate)
             Case "ASCII"
+                InterfaceType = csModbusLib.ConnectionType.SERIAL_ASCII
                 modbusConnection = New MbASCII(My.Settings.ComPort, My.Settings.Baudrate)
                 lbConnectionOptions.Text = String.Format("ASCII {0},{1}", My.Settings.ComPort, My.Settings.Baudrate)
             Case "TCP"
+                InterfaceType = csModbusLib.ConnectionType.TCP_IP
                 modbusConnection = New MbTCPMaster(My.Settings.Hostname, My.Settings.TCPport)
                 lbConnectionOptions.Text = String.Format("TCP {0} Port {1}", My.Settings.Hostname, My.Settings.TCPport)
             Case "UDP"
+                InterfaceType = csModbusLib.ConnectionType.UDP_IP
                 modbusConnection = New MbUDPMaster(My.Settings.Hostname, My.Settings.TCPport)
                 lbConnectionOptions.Text = String.Format("UDP {0}:{1}", My.Settings.Hostname, My.Settings.TCPport)
 

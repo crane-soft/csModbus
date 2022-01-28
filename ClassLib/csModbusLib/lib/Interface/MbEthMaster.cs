@@ -16,7 +16,7 @@ namespace csModbusLib
             SetPort(port);
         }
 
-        public override bool ReceiveHeader(MbRawData MbData)
+        public override bool ReceiveHeader(DeviceType dtype, MbRawData MbData)
         {
             MbData.EndIdx = 0;
             ReceiveBytes(MbData, 8);

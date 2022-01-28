@@ -8,30 +8,30 @@ namespace csModbusLib
     {
         // Modbus ASCII Frame
         // "Startchar (':') Hex-String 2-Chars LRCC - CR,LF
-        private const char ASCII_START_FRAME = ':';
 
-        public MbASCII()
+        public MbASCII() :base ()
         {
+   
         }
 
         public MbASCII(string port, int baudrate)
-            : base(port, baudrate, 8, Parity.None, StopBits.One, Handshake.None)
+            : base(port, baudrate)
         {
         }
 
-        public MbASCII(string port, int baudrate, int databits, Parity parity, StopBits stopbits, Handshake handshake)
-            : base(port, baudrate, databits, parity, stopbits, handshake)
+        protected override bool StartOfFrameDetected()
         {
-        }
-
-        protected override bool StartOfFrameFound ()
-        {
-            if (sp.BytesToRead >= 1) {
-                if (sp.ReadByte() == ASCII_START_FRAME) {
+            if (sp.BytesToRead > 0) {
+                if (sp.ReadByte() == ':') {
                     return true;
                 }
             }
             return false;
+        }
+
+        protected override int GetTimeOut_ms(int NumBytes)
+        {
+            return base.GetTimeOut_ms(NumBytes * 2);
         }
 
         protected override void ReceiveBytes (byte[] RxData, int offset, int count)
@@ -61,7 +61,6 @@ namespace csModbusLib
                 }
             }
         }
-
      
         protected override bool Check_EndOfFrame(MbRawData RxData)
         {

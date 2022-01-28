@@ -50,23 +50,15 @@ namespace csModbusLib {
                 udpc.Send(data, Length, EndPoint);
             }
 
-            public bool Receive()
+            public void Receive()
             {
-                if (udpc.Available > 0) {
-                    try {
-                        Frame_Buffer.Data = udpc.Receive(ref EndPoint);
-                    } catch (System.Exception ex) {
-                        Debug.Print(ex.Message);
-                        throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_ERROR);
-                    }
-
-                    if (Frame_Buffer.Data != null) {
-                        // TODO check length
-                        Frame_Buffer.EndIdx = Frame_Buffer.Data.Length;
-                        return true;
-                    }
+                try {
+                    Frame_Buffer.Data = udpc.Receive(ref EndPoint);
+                    Frame_Buffer.EndIdx = Frame_Buffer.Data.Length;
+                } catch (System.Exception ex) {
+                    Debug.Print(ex.Message);
+                    throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_ERROR);
                 }
-                return false;
             }
         }
 
@@ -104,18 +96,12 @@ namespace csModbusLib {
             }
         }
 
-        public override bool ReceiveHeader(MbRawData MbData)
+        public override bool ReceiveHeader(DeviceType dtype, MbRawData MbData)
         {
-            while (IsConnected) {
-                if (mUdpContext.Receive()) {
-                    CurrentRxContext = mUdpContext;
-                    MbData.CopyFrom(mUdpContext.Frame_Buffer);
-                    return true;
-                }
-                Thread.Sleep(1);
-            }
-            throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_CLOSED);
-            //return true;
+            mUdpContext.Receive();
+            CurrentRxContext = mUdpContext;
+            MbData.CopyFrom(mUdpContext.Frame_Buffer);
+            return true;
         }
     }
 
@@ -168,12 +154,12 @@ namespace csModbusLib {
         }
 
         private TcpListener tcpl; 
-        private bool RequestAvail;
-        private SemaphoreSlim smReqest;
+        private SemaphoreSlim smRxProcess;
+        private SemaphoreSlim smRxDataAvail;
 
         public MbTCPSlave (int port) : base(port) {
-            RequestAvail = false;
-            smReqest = new SemaphoreSlim(1, 1);
+            smRxProcess = new SemaphoreSlim(1, 1);
+            smRxDataAvail = new SemaphoreSlim(0, 1);
         }
 
         public override bool Connect ()
@@ -195,20 +181,19 @@ namespace csModbusLib {
             if (IsConnected) {
                 IsConnected = false;
                 tcpl.Stop();
-                if (smReqest.CurrentCount == 0)
-                    smReqest.Release();
+                if (smRxProcess.CurrentCount == 0)
+                    smRxProcess.Release();
+                if (smRxDataAvail.CurrentCount == 0)
+                    smRxDataAvail.Release();
 
             }
         }
 
-        public override bool ReceiveHeader(MbRawData MbData)
+        public override bool ReceiveHeader(DeviceType dtype, MbRawData MbData)
         {
-            while (RequestAvail == false) {
-                if (IsConnected == false)
-                    throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_CLOSED);
-
-                Thread.Sleep(1);
-            }
+            smRxDataAvail.Wait();
+            if (IsConnected == false)
+                throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_CLOSED);
             MbData.CopyFrom(CurrentRxContext.Frame_Buffer);
             return true;
         }
@@ -262,15 +247,14 @@ namespace csModbusLib {
         }
         protected void RequestReceived(EthContext newContext)
         {
-            smReqest.Wait();
+            smRxProcess.Wait();
             CurrentRxContext = newContext;
-            RequestAvail = true;
+            smRxDataAvail.Release();
         }
 
         protected override void FreeMessage()
         {
-            RequestAvail = false;
-            smReqest.Release();
+            smRxProcess.Release();
         }
     }
 }

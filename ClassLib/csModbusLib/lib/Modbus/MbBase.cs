@@ -108,17 +108,13 @@ namespace csModbusLib
         protected ConnectionType connection_type;
         protected DeviceType device_type;
 
-
         public MbBase()
         {
             gInterface = null;
         }
 
-
-        public MbInterface Interface
-        {
-            get { return gInterface; }
-            set { gInterface = value; }
+        protected void InitInterface(MbInterface Interface)
+        {   gInterface = Interface;
         }
     }
 

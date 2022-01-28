@@ -4,10 +4,8 @@ using System.Threading;
 
 namespace csModbusLib
 {
-
     public class MbSlave : MbBase
     {
-
         protected MbSlaveDataServer gDataServer;
         private MBSFrame Frame = new MBSFrame();
 
@@ -20,13 +18,13 @@ namespace csModbusLib
 
         public MbSlave (MbInterface Interface)
         {
-            gInterface = Interface;
+            InitInterface(Interface);
             gDataServer = null;
         }
 
         public MbSlave (MbInterface Interface, MbSlaveDataServer DataServer)
         {
-            gInterface = Interface;
+            InitInterface(Interface);
             gDataServer = DataServer;
         }
         #endregion
@@ -36,7 +34,6 @@ namespace csModbusLib
             get { return gDataServer; }
             set { gDataServer = value; }
         }
-
 
         public void HandleRequestMessages ()
         {
@@ -48,7 +45,6 @@ namespace csModbusLib
                     ReceiveMasterRequestMessage();
                     DataServices();
                     SendResponseMessage();
-                    Thread.Sleep(1);
 
                 } catch (ModbusException ex) {
                     if (running) {
@@ -62,7 +58,7 @@ namespace csModbusLib
 
         protected void ReceiveMasterRequestMessage()
         {
-            gInterface.ReceiveHeader(Frame.RawData);
+            gInterface.ReceiveHeader(DeviceType.SLAVE, Frame.RawData);
             Frame.ReceiveMasterRequest(gInterface);
         }
 
@@ -110,7 +106,7 @@ namespace csModbusLib
 
         public void StartListen (MbInterface Interface, MbSlaveDataServer DataServer)
         {
-            gInterface = Interface;
+            InitInterface(Interface);
             gDataServer = DataServer;
             StartListen();
         }
@@ -122,7 +118,6 @@ namespace csModbusLib
                 gInterface.DisConnect();
             }
         
-
             if (ListenThread != null) {
                 while (ListenThread.IsAlive) {
                     Thread.Yield();

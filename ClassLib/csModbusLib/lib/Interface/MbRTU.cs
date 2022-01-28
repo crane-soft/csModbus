@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO.Ports;
 
 namespace csModbusLib {
     #region CRC16 Class
@@ -63,33 +62,25 @@ namespace csModbusLib {
     public class MbRTU : MbSerial {
 
         private CRC16 crc16;
-        public MbRTU()
+        public MbRTU() :base ()
         {
-            Init();
+             Init();
         }
 
         public MbRTU(string port, int baudrate)
-            : base(port, baudrate, 8, Parity.None, StopBits.One, Handshake.None)
+            : base(port, baudrate)
         {
             Init();
         }
-
-        public MbRTU(string port, int baudrate, int databits, Parity parity, StopBits stopbits, Handshake handshake)
-            : base(port, baudrate, databits, parity, stopbits, handshake)
-        {
-            Init();
-        }
-
+  
         private void Init()
         {
             crc16 = new CRC16();
         }
 
-
-        protected override bool StartOfFrameFound ()
+        protected override bool StartOfFrameDetected()
         {
             return (sp.BytesToRead >= 2);
-
         }
 
         protected override bool Check_EndOfFrame(MbRawData RxData)
