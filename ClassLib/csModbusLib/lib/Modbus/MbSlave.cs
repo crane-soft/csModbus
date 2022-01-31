@@ -6,20 +6,15 @@ namespace csModbusLib
 {
     public class MbSlave : MbBase
     {
-        protected MbSlaveDataServer gDataServer;
+        protected MbSlaveDataServer gDataServer = null;
         private MBSFrame Frame = new MBSFrame();
 
         #region Constructors
-        public MbSlave () 
-		{
-            gInterface = null;
-            gDataServer = null;
-		}
+        public MbSlave () {	}
 
         public MbSlave (MbInterface Interface)
         {
             InitInterface(Interface);
-            gDataServer = null;
         }
 
         public MbSlave (MbInterface Interface, MbSlaveDataServer DataServer)
@@ -58,7 +53,7 @@ namespace csModbusLib
 
         protected void ReceiveMasterRequestMessage()
         {
-            gInterface.ReceiveHeader(DeviceType.SLAVE, Frame.RawData);
+            gInterface.ReceiveHeader(MbInterface.InfiniteTimeout, Frame.RawData);
             Frame.ReceiveMasterRequest(gInterface);
         }
 
@@ -80,7 +75,7 @@ namespace csModbusLib
 
     public class MbSlaveServer : MbSlave
     {
-        private Thread ListenThread;
+        private Thread ListenThread = null;
 
         public MbSlaveServer () {}
         public MbSlaveServer (MbInterface Interface) : base(Interface) { }

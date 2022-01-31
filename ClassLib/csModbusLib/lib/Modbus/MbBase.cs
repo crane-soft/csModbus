@@ -93,7 +93,6 @@ namespace csModbusLib
         MEMORY_PARITY_ERROR = 8,    // The slave attempted to read extended memory, but detected a parity error in the memory.  
                                     // The master can retry the request, but service may be required on the slave device. 
     }
-  
 
     #endregion
 
@@ -101,21 +100,17 @@ namespace csModbusLib
   
     public abstract class MbBase
     {
-        public const ushort MAX_FRAME_LEN = 256 + 6;        
-
-        protected MbInterface gInterface;
-        protected bool running;
-        protected ConnectionType connection_type;
-        protected DeviceType device_type;
-
-        public MbBase()
-        {
-            gInterface = null;
-        }
+        public const ushort MAX_FRAME_LEN = 256 + 6;
+        
+        public MbBase() { }
 
         protected void InitInterface(MbInterface Interface)
         {   gInterface = Interface;
         }
+
+        protected MbInterface gInterface = null;
+        protected bool running = false;
+        protected ConnectionType connection_type = ConnectionType.NO_CONNECTION;
     }
 
     #endregion

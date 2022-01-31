@@ -6,13 +6,16 @@ namespace csModbusLib
 {
     public abstract class MbInterface
     {
-        protected bool IsConnected;
+        public const int InfiniteTimeout = -1;
+        public const int ResponseTimeout = 200;
+
+        protected bool IsConnected = false;
 
         public MbInterface() { }
 
         public abstract bool Connect ();
         public abstract void DisConnect();
-        public abstract bool ReceiveHeader(DeviceType dtype, MbRawData MbData);
+        public abstract void ReceiveHeader(int timeOut, MbRawData MbData);
 
         public abstract void SendFrame(MbRawData TransmitData, int Length);
 

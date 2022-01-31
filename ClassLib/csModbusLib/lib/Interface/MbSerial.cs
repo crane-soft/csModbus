@@ -10,21 +10,19 @@ namespace csModbusLib {
             RTU = 0,
             ASCII = 1
         }
-        const int DEFAULT_RESPONSE_TIMEOUT = 200;
-        protected Int32 oneByteTime_us;     // 
 
-        protected SerialPort sp;
-        protected abstract bool Check_EndOfFrame(MbRawData RxData);
+        private int oneByteTime_us;     
+
+        protected SerialPort sp = new SerialPort();
         protected abstract bool StartOfFrameDetected();
+        protected abstract bool Check_EndOfFrame(MbRawData RxData);
 
         public MbSerial()
         {
-            Init();
         }
 
         public MbSerial(string PortName, int BaudRate)
         {
-            Init();
             SetComParms(PortName, BaudRate);
         }
 
@@ -42,17 +40,10 @@ namespace csModbusLib {
             sp.StopBits = StopBits;
             sp.Handshake = Handshake;
             sp.RtsEnable = false;
-
-        }
-
-        private void Init()
-        {
-            sp = new SerialPort();
             oneByteTime_us = GetCharTime();
-
         }
 
-        private Int32 GetCharTime()
+        private int GetCharTime()
         {
             int nbits = 1 + sp.DataBits;
             nbits += sp.Parity == Parity.None ? 0 : 1;
@@ -67,7 +58,7 @@ namespace csModbusLib {
                     break;
             }
 
-            return Convert.ToInt32(Math.Ceiling(1E6 / ((double)sp.BaudRate / (double)nbits)));
+            return (1000000 * nbits) / sp.BaudRate;
         }
 
         protected virtual int GetTimeOut_ms (int NumBytes)
@@ -85,7 +76,7 @@ namespace csModbusLib {
                 sp.Open();
                 if (sp.IsOpen) {
                     IsConnected = true;
-                    sp.WriteTimeout = 600;
+                    sp.WriteTimeout = 200;
                 }
             } catch (System.Exception ex) {
                 Debug.Print(ex.Message);
@@ -107,7 +98,7 @@ namespace csModbusLib {
         {
             while (StartOfFrameDetected() == false) {
                 Thread.Sleep(10);
-                if (timeout != SerialPort.InfiniteTimeout) {
+                if (timeout != MbInterface.InfiniteTimeout) {
                     timeout -= 10;
                     if (timeout <= 0)
                         throw new ModbusException(csModbusLib.ErrorCodes.TX_TIMEOUT);
@@ -118,18 +109,11 @@ namespace csModbusLib {
             }
         }
 
-        public override bool ReceiveHeader(DeviceType dtype, MbRawData MbData)
+        public override void ReceiveHeader(int timeOut, MbRawData RxData)
         {
-            MbData.IniADUoffs();
-
-            if (dtype == DeviceType.MASTER) {
-                WaitFrameStart(DEFAULT_RESPONSE_TIMEOUT);
-            } else {
-                WaitFrameStart( SerialPort.InfiniteTimeout);
-            }
-
-            ReceiveBytes(MbData, 2); // Node-ID + Function-Byte
-            return true;
+            RxData.IniADUoffs();
+            WaitFrameStart(timeOut);
+            ReceiveBytes(RxData, 2); // Node-ID + Function-Byte
         }
 
         public override void ReceiveBytes (MbRawData RxData, int count)

@@ -180,16 +180,16 @@ Partial Class dlgOptions
         '
         'tbHostname
         '
-        Me.tbHostname.Location = New System.Drawing.Point(77, 42)
+        Me.tbHostname.Location = New System.Drawing.Point(71, 42)
         Me.tbHostname.Name = "tbHostname"
-        Me.tbHostname.Size = New System.Drawing.Size(72, 20)
+        Me.tbHostname.Size = New System.Drawing.Size(89, 20)
         Me.tbHostname.TabIndex = 7
         Me.tbHostname.Text = "127.0.0.1"
         '
         'lbHostname
         '
         Me.lbHostname.AutoSize = True
-        Me.lbHostname.Location = New System.Drawing.Point(16, 45)
+        Me.lbHostname.Location = New System.Drawing.Point(10, 45)
         Me.lbHostname.Name = "lbHostname"
         Me.lbHostname.Size = New System.Drawing.Size(55, 13)
         Me.lbHostname.TabIndex = 6
@@ -197,16 +197,16 @@ Partial Class dlgOptions
         '
         'tbTCPport
         '
-        Me.tbTCPport.Location = New System.Drawing.Point(77, 20)
+        Me.tbTCPport.Location = New System.Drawing.Point(71, 20)
         Me.tbTCPport.Name = "tbTCPport"
-        Me.tbTCPport.Size = New System.Drawing.Size(72, 20)
+        Me.tbTCPport.Size = New System.Drawing.Size(89, 20)
         Me.tbTCPport.TabIndex = 5
         Me.tbTCPport.Text = "502"
         '
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(45, 23)
+        Me.Label5.Location = New System.Drawing.Point(39, 23)
         Me.Label5.Name = "Label5"
         Me.Label5.Size = New System.Drawing.Size(26, 13)
         Me.Label5.TabIndex = 4

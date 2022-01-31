@@ -16,30 +16,34 @@ namespace csModbusLib
             SetPort(port);
         }
 
-        public override bool ReceiveHeader(DeviceType dtype, MbRawData MbData)
+        public override void ReceiveHeader(int timeOut, MbRawData MbData)
         {
             MbData.EndIdx = 0;
-            ReceiveBytes(MbData, 8);
+            Readbytes(200,MbData, 8);
+            int frameLength = MbData.GetUInt16(4);
+            int bytes2read = (frameLength + 6) - MbData.EndIdx;
+            if (bytes2read > 0) {
+                Readbytes(50, MbData, bytes2read);
+            }
             CheckTransactionIdentifier(MbData);
-            return true;
         }
+
+        protected abstract void Readbytes(int timeOut, MbRawData MbData, int length);
     }
 
     public class MbUDPMaster : MbETHMaster
     {
-        private int BytesReaded;
         public MbUDPMaster(string host_name, int port)
             : base(host_name, port)
         {
-            mUdpClient = new UdpClient(host_name, port);
+            mUdpClient = null;
         }
 
-        public override Boolean Connect()
+        public override bool Connect()
         {
             try {
                 if (mUdpClient == null) {
                     mUdpClient = new UdpClient(remote_host, remote_port);
-                    mUdpClient.Connect(remote_host, remote_port);
                 }
                 IsConnected = true;
 
@@ -62,26 +66,20 @@ namespace csModbusLib
         {
             FillMBAPHeader(TransmitData, Length);
             mUdpClient.Send(TransmitData.Data, Length + MBAP_Header_Size);
-            BytesReaded = 0;
         }
 
-        public override void ReceiveBytes(MbRawData RxData, int count)
+        protected override void Readbytes(int timeOut, MbRawData RxData, int length)
         {
-            int BytestoRead = (BytesReaded + count) - RxData.EndIdx;
-            if (BytestoRead > 0) {
-                System.Net.IPEndPoint ipe = new IPEndPoint(IPAddress.Any, 0);
-                mUdpClient.Client.ReceiveTimeout = 200;
-
-                try {
-                    byte[] rxbuff = mUdpClient.Receive(ref ipe);
-                    RxData.CopyFrom(rxbuff, 0, rxbuff.Length);
-                    BytesReaded += count;
-                } catch (SocketException ex) {
-                    if (ex.SocketErrorCode == System.Net.Sockets.SocketError.TimedOut) {
-                        throw new ModbusException(csModbusLib.ErrorCodes.RX_TIMEOUT);
-                    } else {
-                        throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_ERROR);
-                    }
+            System.Net.IPEndPoint ipe = new IPEndPoint(IPAddress.Any, 0);
+            mUdpClient.Client.ReceiveTimeout = timeOut;
+            try {
+                byte[] rxbuff = mUdpClient.Receive(ref ipe);
+                RxData.CopyFrom(rxbuff, 0, rxbuff.Length);
+            } catch (SocketException ex) {
+                if (ex.SocketErrorCode == System.Net.Sockets.SocketError.TimedOut) {
+                    throw new ModbusException(csModbusLib.ErrorCodes.RX_TIMEOUT);
+                } else {
+                    throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_ERROR);
                 }
             }
         }
@@ -130,12 +128,12 @@ namespace csModbusLib
             nwStream.Write(TransmitData.Data, 0, Length + MBAP_Header_Size);
         }
 
-        public override void ReceiveBytes(MbRawData RxData, int count)
+        protected override void Readbytes(int timeOut, MbRawData RxData, int length)
         {
-            nwStream.ReadTimeout = 100;
+            nwStream.ReadTimeout = timeOut;
             try {
-                nwStream.Read(RxData.Data, RxData.EndIdx, count);
-                RxData.EndIdx += count;
+                int readed = nwStream.Read(RxData.Data, RxData.EndIdx, length);
+                RxData.EndIdx += readed;
             } catch (IOException) {
                 throw new ModbusException(csModbusLib.ErrorCodes.RX_TIMEOUT);
             }

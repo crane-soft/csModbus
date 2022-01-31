@@ -16,3 +16,6 @@
 /DemoApps/Samples/SlaveSimple/bin
 /DemoApps/Samples/.vs/ModbusSamples/v14/*.suo
 /DemoApps/VB.NET/csModSlave/*.bak
+/ClassLib/csModbusLib/lib/Interface/*.bak
+/ClassLib/csModbusLib/lib/Modbus/*.bak
+/Doxygen

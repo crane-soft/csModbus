@@ -8,9 +8,8 @@ namespace csModbusLib
     public class MbMasterBase : MbBase
     {
         private MBMFrame Frame = new MBMFrame();
-        private byte Current_SlaveID;
-        private Stopwatch timeoutTmer = new Stopwatch();
-        protected ErrorCodes LastError;
+        private byte Current_SlaveID = 0;
+        protected ErrorCodes LastError = ErrorCodes.NO_ERROR;
         #region Constructors
 
         public MbMasterBase()  { }
@@ -155,7 +154,7 @@ namespace csModbusLib
         protected bool ReceiveSlaveResponse()
         {
             try {
-                gInterface.ReceiveHeader(DeviceType.MASTER, Frame.RawData);
+                gInterface.ReceiveHeader(MbInterface.ResponseTimeout, Frame.RawData);
                 Frame.ReceiveSlaveResponse(gInterface);
             } catch (ModbusException ex) {
                 if ((ex.ErrorCode != ErrorCodes.CONNECTION_CLOSED) && (ex.ErrorCode != ErrorCodes.MODBUS_EXCEPTION))

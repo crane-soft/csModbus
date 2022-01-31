@@ -42,14 +42,10 @@ namespace csModbusLib
     {
         public const int ADU_OFFS = 6;
 
-        public int EndIdx;
-        public Byte[] Data; 
+        public int EndIdx = 0;
+        public Byte[] Data = null; 
 
-        public MbRawData()
-        {
-            Data = null;
-            EndIdx = 0;
-        }
+        public MbRawData() { }
 
         public MbRawData(int Size)
         {
@@ -68,10 +64,14 @@ namespace csModbusLib
             EndIdx = source.EndIdx;
         }
 
-        public void CopyFrom (byte[] source ,int srcIdx, int count)
+        public void CopyFrom (byte[] source ,int srcIdx, int length)
         {
-            Array.Copy(source, srcIdx, Data, EndIdx, count);
-            EndIdx += count;
+            int maxLength = Data.Length - EndIdx;
+            if (length > maxLength) {
+                length = maxLength;
+            }
+            Array.Copy(source, srcIdx, Data, EndIdx, length);
+            EndIdx += length;
         }
 
         public ushort GetUInt16(int ByteOffs)
@@ -113,14 +113,14 @@ namespace csModbusLib
         protected const int RESPNS_DATA_IDX = MbRawData.ADU_OFFS + 3;           // Response for Read Functions
         protected const int RESPNS_LEN_IDX = MbRawData.ADU_OFFS + 2;
 
-        public int SlaveId;
+        public int SlaveId = 0;
         public ModbusCodes FunctionCode;
         public UInt16 DataAddress;
         public UInt16 DataCount;
 
         public ExceptionCodes ExceptionCode { get; set; }
         public MbRawData RawData;
-
+        
         public MbFrame()
         {
             RawData = new MbRawData(MbBase.MAX_FRAME_LEN);

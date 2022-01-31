@@ -96,13 +96,12 @@ namespace csModbusLib {
             }
         }
 
-        public override bool ReceiveHeader(DeviceType dtype, MbRawData MbData)
+        public override void ReceiveHeader(int timwOut, MbRawData MbData)
         {
             mUdpContext.Receive();
             CurrentRxContext = mUdpContext;
             MbData.CopyFrom(mUdpContext.Frame_Buffer);
-            return true;
-        }
+       }
     }
 
     public class MbTCPSlave : MbETHSlave
@@ -189,13 +188,12 @@ namespace csModbusLib {
             }
         }
 
-        public override bool ReceiveHeader(DeviceType dtype, MbRawData MbData)
+        public override void ReceiveHeader(int timeOut, MbRawData MbData)
         {
             smRxDataAvail.Wait();
             if (IsConnected == false)
                 throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_CLOSED);
             MbData.CopyFrom(CurrentRxContext.Frame_Buffer);
-            return true;
         }
 
         private void OnClientAccepted (IAsyncResult ar)

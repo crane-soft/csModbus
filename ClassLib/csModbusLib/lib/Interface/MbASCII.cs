@@ -9,15 +9,9 @@ namespace csModbusLib
         // Modbus ASCII Frame
         // "Startchar (':') Hex-String 2-Chars LRCC - CR,LF
 
-        public MbASCII() :base ()
-        {
-   
-        }
+        public MbASCII() :base ()  { }
 
-        public MbASCII(string port, int baudrate)
-            : base(port, baudrate)
-        {
-        }
+        public MbASCII(string port, int baudrate) : base(port, baudrate){  }
 
         protected override bool StartOfFrameDetected()
         {

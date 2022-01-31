@@ -11,8 +11,6 @@ namespace csModbusLib {
 
         protected const int MBAP_Header_Size = 6;
         protected int remote_port;
-
-
         protected UdpClient mUdpClient;
         private UInt16 TransactionIdentifier;
 
