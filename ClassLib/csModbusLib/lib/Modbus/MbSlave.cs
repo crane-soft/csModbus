@@ -44,7 +44,8 @@ namespace csModbusLib
                 } catch (ModbusException ex) {
                     if (running) {
                         Debug.Print("ModbusException  {0}", ex.ErrorCode);
-                        gInterface.ReConnect();
+                        gInterface.DisConnect();
+                        break;
                     }
                 }
             }

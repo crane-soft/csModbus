@@ -45,16 +45,20 @@ namespace csModbusLib
         public int EndIdx = 0;
         public Byte[] Data = null; 
 
-        public MbRawData() { }
+        public MbRawData() {
+            Init(MbBase.MAX_FRAME_LEN);
+        }
 
-        public MbRawData(int Size)
-        {
+        public MbRawData(int Size) {
+            Init(Size);
+        }
+
+        private void Init(int Size) {
             Data = new Byte[Size];
             EndIdx = 0;
         }
 
-        public void IniADUoffs()
-        {
+        public void IniADUoffs() {
             EndIdx = ADU_OFFS;
         }
 
@@ -96,6 +100,13 @@ namespace csModbusLib
             for (int i = 0; i < Length; ++i)
                 PutUInt16(DestOffs+ i * 2, SrcArray[i]);
         }
+
+        public int CheckEthFrameLength()
+        {
+            int frameLength = GetUInt16(ADU_OFFS-2);
+            int bytes2read = (frameLength + ADU_OFFS) - EndIdx;
+            return bytes2read;
+        }
     }
 
     public class MbFrame {
@@ -123,7 +134,7 @@ namespace csModbusLib
         
         public MbFrame()
         {
-            RawData = new MbRawData(MbBase.MAX_FRAME_LEN);
+            RawData = new MbRawData ();
             ExceptionCode = ExceptionCodes.NO_EXCEPTION;
         }
 
@@ -219,7 +230,7 @@ namespace csModbusLib
             SlaveId = RawData.Data[REQST_UINIT_ID_IDX];
             FunctionCode = (ModbusCodes)RawData.Data[REQST_FCODE_IDX];
 
-            Debug.WriteLine(String.Format("Rx: Cmd{0}", FunctionCode));
+            //Debug.WriteLine(String.Format("Rx: Cmd{0}", FunctionCode));
             int MsgLen = FromMasterRequestMessageLen();
             Interface.ReceiveBytes(RawData, MsgLen);
 

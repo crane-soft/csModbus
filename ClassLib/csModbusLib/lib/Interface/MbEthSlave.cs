@@ -6,13 +6,6 @@ using System.Diagnostics;
 
 namespace csModbusLib {
     public abstract class MbETHSlave : MbEthernet {
-
-        // MbETHSlave should be multi master capable
-        protected abstract class EthContext {
-            public MbRawData Frame_Buffer;
-            public abstract void SendFrame(byte[] data, int Length);
-        }
-        protected EthContext CurrentRxContext;  // reference to the just received frame
      
         public MbETHSlave (int port) {
             SetPort(port);
@@ -22,58 +15,25 @@ namespace csModbusLib {
         {
             TransmitData.PutUInt16(4, (UInt16)Length);
             try {
-                CurrentRxContext.SendFrame(TransmitData.Data, Length + MBAP_Header_Size);
+                SendFrameData(TransmitData.Data, Length + MBAP_Header_Size);
                 FreeMessage();
             } catch (System.Exception ex) {
                 Debug.Print(ex.Message);
                 throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_ERROR);
             }
         }
-
+        protected abstract void SendFrameData(byte[] data, int Length);
         protected virtual void FreeMessage() { }
     }
 
     public class MbUDPSlave : MbETHSlave
     {
-        private class UdpContext : EthContext
-        {
-            public UdpContext(UdpClient client)
-            {
-                udpc = client;
-                Frame_Buffer = new MbRawData();
-            }
-            public IPEndPoint EndPoint;
-            public UdpClient udpc;
-
-            public override void SendFrame(byte[] data, int Length)
-            {
-                udpc.Send(data, Length, EndPoint);
-            }
-
-            public void Receive()
-            {
-                try {
-                    Frame_Buffer.Data = udpc.Receive(ref EndPoint);
-                    Frame_Buffer.EndIdx = Frame_Buffer.Data.Length;
-                } catch (System.Exception ex) {
-                    Debug.Print(ex.Message);
-                    throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_ERROR);
-                }
-            }
-        }
-
-        private UdpContext mUdpContext;
-
-        public MbUDPSlave(int port)
-            : base(port)
-        {
-        }
+        public MbUDPSlave(int port) : base(port) { }
 
         public override bool Connect()
         {
             try {
                 mUdpClient = new UdpClient(new IPEndPoint(IPAddress.Any, remote_port));
-                mUdpContext = new UdpContext(mUdpClient);
                 IsConnected = true;
                 Debug.Print("Connected");
 
@@ -96,74 +56,34 @@ namespace csModbusLib {
             }
         }
 
-        public override void ReceiveHeader(int timwOut, MbRawData MbData)
+        public override void ReceiveHeader(int timeOut, MbRawData RxData)
         {
-            mUdpContext.Receive();
-            CurrentRxContext = mUdpContext;
-            MbData.CopyFrom(mUdpContext.Frame_Buffer);
-       }
+            UdpReceiveHeaderData(timeOut, RxData);
+        }
+
+        protected override void SendFrameData(byte[] data, int Length)
+        {
+            mUdpClient.Send(data, Length, udpRemoteAddr);
+        }
     }
 
     public class MbTCPSlave : MbETHSlave
     {
-        private class TcpContext : EthContext
-        {
-            public TcpContext (TcpClient aClient)
-            {
-                Frame_Buffer = new MbRawData(MbBase.MAX_FRAME_LEN);
-                Client = aClient;
-                Stream = Client.GetStream();
-            }
-            public TcpClient Client;
-            public NetworkStream Stream;
-
-            public override void SendFrame (byte[] data, int Length)
-            {
-                Stream.Write(data, 0, Length);
-            }
-
-            public bool EndReceive (IAsyncResult ar)
-            {
-                if (Client.Connected == false) {
-                    return false;
-                }
-                int read = Stream.EndRead(ar);
-                if (read == 0) {
-                    return false;
-                }
-
-                int Frame_Length = Frame_Buffer.GetUInt16(4);
-                int bytes2read = Frame_Length;
-                if (bytes2read > Frame_Buffer.Data.Length)
-                    bytes2read = Frame_Buffer.Data.Length;
-
-                // OnClientRead was started in a separate thread, so I can finish reading here
-                while (bytes2read > 0) {
-                    int readed = Stream.Read(Frame_Buffer.Data, MBAP_Header_Size, bytes2read);
-                    if (readed == 0) {
-                        return false;
-                    }
-
-                    bytes2read -= readed;
-                }
-
-                Frame_Buffer.EndIdx = MBAP_Header_Size + Frame_Length;
-                return true;
-            }
-        }
-
-        private TcpListener tcpl; 
+        private TcpContext ConnectionContext;
+        private TcpListener tcpl;
         private SemaphoreSlim smRxProcess;
         private SemaphoreSlim smRxDataAvail;
 
-        public MbTCPSlave (int port) : base(port) {
-            smRxProcess = new SemaphoreSlim(1, 1);
-            smRxDataAvail = new SemaphoreSlim(0, 1);
+        public MbTCPSlave(int port) : base(port)
+        {
         }
 
-        public override bool Connect ()
+        public override bool Connect()
         {
             try {
+                smRxProcess = new SemaphoreSlim(1, 1);
+                smRxDataAvail = new SemaphoreSlim(0, 1);
+
                 tcpl = new TcpListener(new IPEndPoint(IPAddress.Any, remote_port));
                 tcpl.Start();
                 tcpl.BeginAcceptTcpClient(OnClientAccepted, tcpl);
@@ -175,16 +95,16 @@ namespace csModbusLib {
             return IsConnected;
         }
 
-        public override void DisConnect ()
+        public override void DisConnect()
         {
             if (IsConnected) {
                 IsConnected = false;
                 tcpl.Stop();
+
                 if (smRxProcess.CurrentCount == 0)
                     smRxProcess.Release();
                 if (smRxDataAvail.CurrentCount == 0)
                     smRxDataAvail.Release();
-
             }
         }
 
@@ -193,66 +113,131 @@ namespace csModbusLib {
             smRxDataAvail.Wait();
             if (IsConnected == false)
                 throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_CLOSED);
-            MbData.CopyFrom(CurrentRxContext.Frame_Buffer);
+            MbData.CopyFrom(ConnectionContext.FrameBuffer);
+
         }
 
-        private void OnClientAccepted (IAsyncResult ar)
+        protected override void SendFrameData(byte[] data, int Length)
         {
-            if (IsConnected == false)
-                return;
+            ConnectionContext.SendFrame(data, Length);
+        }
 
+        private void OnClientAccepted(IAsyncResult ar)
+        {
             TcpListener listener = ar.AsyncState as TcpListener;
-            if (listener == null)
+            if ((listener == null) || (IsConnected == false)) {
+                // the listener was closed
                 return;
+            }
 
             try {
-                TcpContext context = new TcpContext(tcpl.EndAcceptTcpClient(ar));
-                context.Stream.BeginRead(context.Frame_Buffer.Data, 0, MBAP_Header_Size, OnClientRead, context);
-            } catch (System.Exception) {
-                return;
+                TcpClient Client = tcpl.EndAcceptTcpClient(ar);
+                TcpContext context = new TcpContext(Client);
+                Debug.WriteLine(String.Format("Client accepted {0}",Client.Client.RemoteEndPoint.ToString()));
 
+                context.BeginNewFrame();
+                context.BeginReadFrameData(OnReadFrame);
+            } catch (System.Exception ex) {
+                Debug.WriteLine(ex.Message);
             }
             tcpl.BeginAcceptTcpClient(OnClientAccepted, tcpl);
         }
 
-        private void OnClientRead (IAsyncResult ar)
+        private void OnReadFrame(IAsyncResult ar)
         {
-            if (IsConnected == false)
-                return;
-
             TcpContext context = ar.AsyncState as TcpContext;
-            if (context == null)
+            if ((context == null) || (IsConnected == false)) {
+                // maybe the listener was closed
                 return;
-
-            try {
-                if (context.EndReceive(ar)) {
-                    RequestReceived(context);
-                } else {
-                    goto disconnected;
-
-                }
-            } catch (System.Exception) {
-                goto disconnected;
             }
 
-            context.Stream.BeginRead(context.Frame_Buffer.Data, 0, MBAP_Header_Size, OnClientRead, context);
-            return;
+            context.FrameBuffer.EndIdx = 0;
+            if (context.EndReceive(ar)) {
+                RequestReceived(context);
+                context.BeginNewFrame();
 
-        disconnected:
-            context.Client.Close();
-            context.Stream.Dispose();
-            context = null;
+            }
+
+            context.BeginReadFrameData(OnReadFrame);
         }
-        protected void RequestReceived(EthContext newContext)
+
+        private void RequestReceived(TcpContext newContext)
         {
             smRxProcess.Wait();
-            CurrentRxContext = newContext;
+            ConnectionContext = newContext;
             smRxDataAvail.Release();
         }
 
         protected override void FreeMessage()
         {
             smRxProcess.Release();
+        }
+
+        private class TcpContext
+        {
+            public MbRawData FrameBuffer;
+            public bool closed;
+
+            private bool NewFrame = false;
+            private TcpClient Client;
+            private NetworkStream Stream;
+            private int Bytes2Read;
+            private int ReadIndex;
+
+            public TcpContext(TcpClient aClient)
+            {
+                FrameBuffer = new MbRawData(MbBase.MAX_FRAME_LEN);
+                Client = aClient;
+                Stream = Client.GetStream();
+                closed = false;
+            }
+
+            public void SendFrame(byte[] data, int Length)
+            {
+                Stream.Write(data, 0, Length);
+            }
+
+            public void BeginNewFrame()
+            {
+                Bytes2Read = MBAP_Header_Size;
+                ReadIndex = 0;
+                NewFrame = true;
+            }
+
+            public void BeginReadFrameData(AsyncCallback callback)
+            {
+                if (closed == false)
+                    Stream.BeginRead(FrameBuffer.Data, ReadIndex, Bytes2Read, callback, this);
+            }
+
+            public bool EndReceive(IAsyncResult ar)
+            {
+                int readed = Stream.EndRead(ar);
+                if ((readed == 0) || (Client.Connected == false)) {
+                    // Connection closed
+                    Debug.WriteLine(String.Format("Client disconnected {0}", Client.Client.RemoteEndPoint.ToString()));
+
+                    Client.Close();
+                    Stream = null;
+                    closed = true;
+                    return false;
+                }
+
+                ReadIndex += readed;
+                Bytes2Read -= readed;
+                if (Bytes2Read > 0) { 
+                    return false;
+                }
+
+                FrameBuffer.EndIdx = ReadIndex;
+                if (NewFrame) {
+                    Bytes2Read = FrameBuffer.CheckEthFrameLength();
+                    NewFrame = false;
+                    return false;
+                }            
+
+                return true;
+            }
         }
     }
 }
