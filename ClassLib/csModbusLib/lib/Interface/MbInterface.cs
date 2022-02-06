@@ -26,8 +26,6 @@ namespace csModbusLib
         {
             DisConnect();
             return Connect();
-            // TODO error checking
         }
-
     }
 }

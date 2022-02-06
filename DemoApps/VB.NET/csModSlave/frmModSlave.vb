@@ -61,10 +61,13 @@ Public Class frmModSlave
     End Sub
 
     Private Sub ToolButtonStart_Click(sender As Object, e As EventArgs) Handles ToolButtonStart.Click
-        modSlave.StartListen(modbusConnection, MyDataServer)
-        ToolButtonStart.Enabled = False
-        ToolButtonStop.Enabled = True
-        lbListenStatus.Text = "Listening..."
+        If modSlave.StartListen(modbusConnection, MyDataServer) Then
+            ToolButtonStart.Enabled = False
+            ToolButtonStop.Enabled = True
+            lbListenStatus.Text = "Listening..."
+        Else
+            lbListenStatus.Text = "Connection Error"
+        End If
         lbListenStatus.AutoSize = True
     End Sub
 

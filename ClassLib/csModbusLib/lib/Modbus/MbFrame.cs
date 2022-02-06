@@ -104,8 +104,8 @@ namespace csModbusLib
         public int CheckEthFrameLength()
         {
             int frameLength = GetUInt16(ADU_OFFS-2);
-            int bytes2read = (frameLength + ADU_OFFS) - EndIdx;
-            return bytes2read;
+            int bytesleft = (frameLength + ADU_OFFS) - EndIdx;
+            return bytesleft;
         }
     }
 

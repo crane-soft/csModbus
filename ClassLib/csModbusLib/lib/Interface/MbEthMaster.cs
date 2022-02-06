@@ -108,7 +108,7 @@ namespace csModbusLib
 
         protected override void ReceiveHeaderData(int timeOut, MbRawData RxData)
         {
-            ReadData(200, RxData, 8);
+            ReadData(ResponseTimeout, RxData, 8);
             int bytes2read = RxData.CheckEthFrameLength();
             if (bytes2read > 0) {
                 ReadData(50, RxData, bytes2read);
@@ -121,7 +121,7 @@ namespace csModbusLib
                 nwStream.ReadTimeout = timeOut;
                 int readed = nwStream.Read(RxData.Data, RxData.EndIdx, length);
                 RxData.EndIdx += readed;
-            } catch (IOException ex) {
+            } catch (IOException ) {
                 throw new ModbusException(csModbusLib.ErrorCodes.RX_TIMEOUT);
             }
         }

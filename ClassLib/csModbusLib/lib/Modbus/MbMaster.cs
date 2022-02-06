@@ -121,9 +121,9 @@ namespace csModbusLib
                 gInterface.SendFrame(Frame.RawData, MsgLen);
             } catch (ModbusException ex) {
                 LastError = ex.ErrorCode;
-                if (running) {
-                    gInterface.ReConnect();
-                }
+                //if (running) {
+                //    gInterface.ReConnect();
+                //}
                 return false;
             } catch (Exception ex) {
                 LastError = csModbusLib.ErrorCodes.CONNECTION_ERROR;
@@ -157,8 +157,8 @@ namespace csModbusLib
                 gInterface.ReceiveHeader(MbInterface.ResponseTimeout, Frame.RawData);
                 Frame.ReceiveSlaveResponse(gInterface);
             } catch (ModbusException ex) {
-                if ((ex.ErrorCode != ErrorCodes.CONNECTION_CLOSED) && (ex.ErrorCode != ErrorCodes.MODBUS_EXCEPTION))
-                    gInterface.ReConnect();
+                //if ((ex.ErrorCode != ErrorCodes.CONNECTION_CLOSED) && (ex.ErrorCode != ErrorCodes.MODBUS_EXCEPTION))
+                //    gInterface.ReConnect();
                 LastError = ex.ErrorCode;
                 return false;
             }
@@ -233,7 +233,7 @@ namespace csModbusLib
 
         public ErrorCodes ReadWriteMultipleRegisters(ushort RdAddress, ushort RdLength, ushort[] DestData,
                                                      ushort WrAddress, ushort WrLength, ushort[] SrcData, int DestOffs = 0, int SrcOffs = 0)
-        {  // TODO not yet tested
+        {  
             if (SendMultipleReadWriteRequest(RdAddress, RdLength, WrAddress, WrLength, SrcData, SrcOffs))
                 ReadSlaveRegisterValues(DestData, DestOffs);
             return LastError;

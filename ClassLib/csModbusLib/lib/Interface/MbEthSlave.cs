@@ -113,8 +113,7 @@ namespace csModbusLib {
             smRxDataAvail.Wait();
             if (IsConnected == false)
                 throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_CLOSED);
-            MbData.CopyFrom(ConnectionContext.FrameBuffer);
-
+            ConnectionContext.CopyRxData(MbData);
         }
 
         protected override void SendFrameData(byte[] data, int Length)
@@ -151,7 +150,6 @@ namespace csModbusLib {
                 return;
             }
 
-            context.FrameBuffer.EndIdx = 0;
             if (context.EndReceive(ar)) {
                 RequestReceived(context);
                 context.BeginNewFrame();
@@ -175,9 +173,8 @@ namespace csModbusLib {
 
         private class TcpContext
         {
-            public MbRawData FrameBuffer;
-            public bool closed;
-
+            private MbRawData FrameBuffer;
+            private bool closed;
             private bool NewFrame = false;
             private TcpClient Client;
             private NetworkStream Stream;
@@ -238,6 +235,12 @@ namespace csModbusLib {
 
                 return true;
             }
+
+            public void CopyRxData(MbRawData RxData)
+            {
+                RxData.CopyFrom(FrameBuffer);
+            }
+
         }
     }
 }

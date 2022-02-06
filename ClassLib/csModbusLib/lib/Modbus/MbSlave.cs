@@ -33,7 +33,6 @@ namespace csModbusLib
         public void HandleRequestMessages ()
         {
             running = true;
-            gInterface.Connect();
             Debug.Print("Listener started");
             while (running) {
                 try {
@@ -45,6 +44,7 @@ namespace csModbusLib
                     if (running) {
                         Debug.Print("ModbusException  {0}", ex.ErrorCode);
                         gInterface.DisConnect();
+                        // TODO raise disconnect event 
                         break;
                     }
                 }
@@ -82,29 +82,34 @@ namespace csModbusLib
         public MbSlaveServer (MbInterface Interface) : base(Interface) { }
         public MbSlaveServer (MbInterface Interface, MbSlaveDataServer DataServer) : base(Interface, DataServer) { }
 
-        public void StartListen ()
+        public bool StartListen ()
         {
             if (gInterface != null) {
                 if (running) {
                     StopListen();
                 }
 
-                ListenThread = new Thread(this.HandleRequestMessages);
-                ListenThread.Start();
+                if (gInterface.Connect()) {
+                    ListenThread = new Thread(this.HandleRequestMessages);
+                    ListenThread.Start();
+                    return true;
+
+                }
             }
+            return false;
         }
 
-        public void StartListen (MbSlaveDataServer DataServer)
+        public bool StartListen (MbSlaveDataServer DataServer)
         {
             gDataServer = DataServer;
-            StartListen();
+            return StartListen();
         }
 
-        public void StartListen (MbInterface Interface, MbSlaveDataServer DataServer)
+        public bool StartListen (MbInterface Interface, MbSlaveDataServer DataServer)
         {
             InitInterface(Interface);
             gDataServer = DataServer;
-            StartListen();
+            return StartListen();
         }
 
         public void StopListen ()

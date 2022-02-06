@@ -38,7 +38,7 @@
       </Class>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAAAAAMAAAgAAAEEAAAEIAAAAEIAAAAAABAABAABAA=</HashCode>
+      <HashCode>AAAAAAAMAAAgAAAEAAAAEIAAACEIAAAAAABAABAABAA=</HashCode>
       <FileName>lib\Interface\MbEthSlave.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -57,7 +57,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbSerial">
-    <Position X="1.75" Y="6" Width="2" />
+    <Position X="1.75" Y="5" Width="2" />
     <NestedTypes>
       <Enum Name="csModbusLib.MbSerial.ModbusSerialType" Collapsed="true">
         <TypeIdentifier>

@@ -71,7 +71,6 @@ namespace csModbusLib {
         public override bool Connect()
         {
             IsConnected = false;
-
             try {
                 sp.Open();
                 if (sp.IsOpen) {
