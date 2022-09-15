@@ -44,14 +44,9 @@
             this.lbLastError = new System.Windows.Forms.ToolStripStatusLabel();
             this.LbLastModbusException = new System.Windows.Forms.ToolStripStatusLabel();
             this.ViewPanel = new System.Windows.Forms.Panel();
-            this.HoldingRegs2 = new csModbusView.MasterHoldingRegsGridView();
-            this.HoldingRegs1 = new csModbusView.MasterHoldingRegsGridView();
             this.cmTest = new System.Windows.Forms.Button();
-            this.outPanel = new System.Windows.Forms.Panel();
-            this.button1 = new System.Windows.Forms.Button();
             this.MenuStrip1.SuspendLayout();
             this.StatusStrip1.SuspendLayout();
-            this.ViewPanel.SuspendLayout();
             this.SuspendLayout();
             // 
             // MenuStrip1
@@ -61,7 +56,7 @@
             this.OptionsToolStripMenuItem});
             this.MenuStrip1.Location = new System.Drawing.Point(0, 0);
             this.MenuStrip1.Name = "MenuStrip1";
-            this.MenuStrip1.Size = new System.Drawing.Size(1059, 24);
+            this.MenuStrip1.Size = new System.Drawing.Size(711, 24);
             this.MenuStrip1.TabIndex = 0;
             this.MenuStrip1.Text = "MenuStrip1";
             // 
@@ -96,7 +91,7 @@
             // cmStart
             // 
             this.cmStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmStart.Location = new System.Drawing.Point(936, 36);
+            this.cmStart.Location = new System.Drawing.Point(588, 36);
             this.cmStart.Name = "cmStart";
             this.cmStart.Size = new System.Drawing.Size(111, 33);
             this.cmStart.TabIndex = 1;
@@ -107,7 +102,7 @@
             // 
             this.lbCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.lbCount.AutoSize = true;
-            this.lbCount.Location = new System.Drawing.Point(933, 320);
+            this.lbCount.Location = new System.Drawing.Point(585, 320);
             this.lbCount.Name = "lbCount";
             this.lbCount.Size = new System.Drawing.Size(49, 13);
             this.lbCount.TabIndex = 3;
@@ -117,7 +112,7 @@
             // 
             this.Label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.Label1.AutoSize = true;
-            this.Label1.Location = new System.Drawing.Point(933, 339);
+            this.Label1.Location = new System.Drawing.Point(585, 339);
             this.Label1.Name = "Label1";
             this.Label1.Size = new System.Drawing.Size(34, 13);
             this.Label1.TabIndex = 4;
@@ -127,7 +122,7 @@
             // 
             this.lbErrorCnt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.lbErrorCnt.AutoSize = true;
-            this.lbErrorCnt.Location = new System.Drawing.Point(973, 339);
+            this.lbErrorCnt.Location = new System.Drawing.Point(625, 339);
             this.lbErrorCnt.Name = "lbErrorCnt";
             this.lbErrorCnt.Size = new System.Drawing.Size(10, 13);
             this.lbErrorCnt.TabIndex = 5;
@@ -141,7 +136,7 @@
             this.LbLastModbusException});
             this.StatusStrip1.Location = new System.Drawing.Point(0, 402);
             this.StatusStrip1.Name = "StatusStrip1";
-            this.StatusStrip1.Size = new System.Drawing.Size(1059, 22);
+            this.StatusStrip1.Size = new System.Drawing.Size(711, 22);
             this.StatusStrip1.TabIndex = 6;
             this.StatusStrip1.Text = "StatusStrip1";
             // 
@@ -169,37 +164,10 @@
             // 
             this.ViewPanel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.ViewPanel.Controls.Add(this.button1);
-            this.ViewPanel.Controls.Add(this.HoldingRegs2);
-            this.ViewPanel.Controls.Add(this.HoldingRegs1);
             this.ViewPanel.Location = new System.Drawing.Point(12, 37);
             this.ViewPanel.Name = "ViewPanel";
-            this.ViewPanel.Size = new System.Drawing.Size(420, 315);
+            this.ViewPanel.Size = new System.Drawing.Size(492, 315);
             this.ViewPanel.TabIndex = 9;
-            // 
-            // HoldingRegs2
-            // 
-            this.HoldingRegs2.BaseAddr = ((ushort)(20));
-            this.HoldingRegs2.ItemColumns = 1;
-            this.HoldingRegs2.ItemNames = null;
-            this.HoldingRegs2.Location = new System.Drawing.Point(3, 171);
-            this.HoldingRegs2.Name = "HoldingRegs2";
-            this.HoldingRegs2.NumItems = ((ushort)(5));
-            this.HoldingRegs2.Size = new System.Drawing.Size(124, 108);
-            this.HoldingRegs2.TabIndex = 12;
-            this.HoldingRegs2.Title = "Holding Regs 2";
-            // 
-            // HoldingRegs1
-            // 
-            this.HoldingRegs1.BaseAddr = ((ushort)(10));
-            this.HoldingRegs1.ItemColumns = 1;
-            this.HoldingRegs1.ItemNames = null;
-            this.HoldingRegs1.Location = new System.Drawing.Point(3, 3);
-            this.HoldingRegs1.Name = "HoldingRegs1";
-            this.HoldingRegs1.NumItems = ((ushort)(8));
-            this.HoldingRegs1.Size = new System.Drawing.Size(124, 162);
-            this.HoldingRegs1.TabIndex = 11;
-            this.HoldingRegs1.Title = "Holding Regs 1";
             // 
             // cmTest
             // 
@@ -211,28 +179,11 @@
             this.cmTest.Text = "RD Regs 1 / WR Regs 2";
             this.cmTest.UseVisualStyleBackColor = true;
             // 
-            // outPanel
-            // 
-            this.outPanel.Location = new System.Drawing.Point(459, 36);
-            this.outPanel.Name = "outPanel";
-            this.outPanel.Size = new System.Drawing.Size(437, 316);
-            this.outPanel.TabIndex = 11;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(310, 274);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(78, 28);
-            this.button1.TabIndex = 13;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            // 
             // frmModsMaster
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1059, 424);
-            this.Controls.Add(this.outPanel);
+            this.ClientSize = new System.Drawing.Size(711, 424);
             this.Controls.Add(this.ViewPanel);
             this.Controls.Add(this.StatusStrip1);
             this.Controls.Add(this.cmTest);
@@ -248,7 +199,6 @@
             this.MenuStrip1.PerformLayout();
             this.StatusStrip1.ResumeLayout(false);
             this.StatusStrip1.PerformLayout();
-            this.ViewPanel.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -268,12 +218,8 @@
         System.Windows.Forms.ToolStripStatusLabel lbConnectionOptions;
         System.Windows.Forms.Panel ViewPanel;
         System.Windows.Forms.Button cmTest;
-        csModbusView.MasterHoldingRegsGridView HoldingRegs2;
-        csModbusView.MasterHoldingRegsGridView HoldingRegs1;
         System.Windows.Forms.ToolStripStatusLabel lbLastError;
         System.Windows.Forms.ToolStripStatusLabel LbLastModbusException;
-        private System.Windows.Forms.Panel outPanel;
-        private System.Windows.Forms.Button button1;
     }
 }
 

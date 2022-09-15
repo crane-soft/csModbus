@@ -71,7 +71,7 @@
     <Compile Include="frmModsMaster.Designer.cs">
       <DependentUpon>frmModsMaster.cs</DependentUpon>
     </Compile>
-    <Compile Include="MbViewSerialize.cs" />
+    <Compile Include="MbViewJson.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="..\common\dlgOptions.resx">

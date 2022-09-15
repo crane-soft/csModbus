@@ -23,8 +23,9 @@ namespace csModMaster
         private int ErrorCount = 0;
         private bool Running = false;
         private List<ModbusView> ModbusViewList = new List<ModbusView>();
-        private Point CurentAddPos;
+        
         private csModbusLib.ConnectionType InterfaceType = ConnectionType.NO_CONNECTION;
+        private MbViewJson mbser;
 
         public frmModsMaster()
         {
@@ -38,21 +39,8 @@ namespace csModMaster
             this.cmStart.Click += cmStart_Click;
             this.cmTest.Click += cmTest_Click_1;
 
-            ModMaster = new MbMaster();
-
-            // Views created in designer
-            ModbusViewList.Add(HoldingRegs1);
-            ModbusViewList.Add(HoldingRegs2);
-
-            // Views created here
-            CurentAddPos = new Point(HoldingRegs1.Width + 20, 0);
-
-            AddModbusView(new MasterCoilsGridView(10, 20));
-            AddModbusView(new MasterDiscretInputsGridView(20, 20));
-
-
-            foreach (MasterGridView mbView in ModbusViewList)
-                mbView.InitGridView(this.ModMaster);
+            mbser = new MbViewJson(@"mbviewerdefault.jsdon");
+            DeserializeModbusViews();
 
             sysRefreshTimer = new System.Timers.Timer();
             sysRefreshTimer.Enabled = false;
@@ -61,22 +49,21 @@ namespace csModMaster
             sysRefreshTimer.Elapsed += OnSystemTimedEvent;
 
             cmStart.Enabled = false;
-            SerializeAllMbViews();
+
         }
 
-        private void AddModbusView(MasterGridView MbView)
+        private void DeserializeModbusViews()
         {
-            MbView.Location = CurentAddPos;
-            ViewPanel.Controls.Add(MbView);
-            ModbusViewList.Add(MbView);
-            CurentAddPos.Y += MbView.Height;
-        }
-
-        private void SerializeAllMbViews()
-        {
-            MbViewSerialize mbser = new MbViewSerialize();
-            mbser.Serialize(ViewPanel.Controls);
-           // mbser.Deserialize(outPanel.Controls);
+            ModMaster = new MbMaster();
+            try {
+                ModbusViewList = mbser.Deserialize();
+                foreach (MasterGridView mbView in ModbusViewList) {
+                    this.ViewPanel.Controls.Add(mbView);
+                    mbView.InitGridView(this.ModMaster);
+                }
+            } catch (Exception ex) {
+                MessageBox.Show(ex.Message, "Deserialize");
+            }
         }
 
         private void csModsMaster_Load(object sender, EventArgs e)
@@ -257,21 +244,7 @@ namespace csModMaster
 
         private void cmTest_Click_1(object sender, EventArgs e)
         {
-            TestFunc();
-        }
-
-        private void TestFunc()
-        {
-            if (MasterConnect())
-            {
-                MasterHoldingRegsGridView rdData = HoldingRegs1;
-                MasterHoldingRegsGridView wrData = HoldingRegs2;
-                csModbusLib.ErrorCodes ErrCode;
-                ErrCode = ModMaster.ReadWriteMultipleRegisters(rdData.BaseAddr, rdData.NumItems, rdData.Data, wrData.BaseAddr, wrData.NumItems, wrData.Data);
-                DisplayErrorCode(ErrCode);
-                if (ErrCode == csModbusLib.ErrorCodes.NO_ERROR)
-                    rdData.UpdateCellValues();
-            }
+  
         }
 
         private void ExitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -283,6 +256,7 @@ namespace csModMaster
         {
             if (ModMaster.IsConnected)
                 MasterClose();
+            //mbser.Serialize(ModbusViewList);
         }
   
     }
