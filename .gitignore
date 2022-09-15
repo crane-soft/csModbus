@@ -19,3 +19,5 @@
 /ClassLib/csModbusLib/lib/Interface/*.bak
 /ClassLib/csModbusLib/lib/Modbus/*.bak
 /Doxygen
+/DemoApps/csharp/csModMaster/bin
+/DemoApps/csharp/csModMaster/obj

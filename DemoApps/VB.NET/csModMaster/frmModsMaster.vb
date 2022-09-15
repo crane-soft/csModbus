@@ -1,6 +1,8 @@
 ﻿Imports System.ComponentModel
+
 Imports csModbusLib
 Imports csModbusView
+
 Public Class frmModsMaster
 
     Private ModMaster As MbMaster
@@ -42,15 +44,21 @@ Public Class frmModsMaster
         AddHandler sysRefreshTimer.Elapsed, AddressOf OnSystemTimedEvent
 
         cmStart.Enabled = False
-
-
+        SerializeAllMbViews()
     End Sub
+
     Private Sub AddModbusView(MbView As MasterGridView)
         MbView.Location = CurentAddPos
         ViewPanel.Controls.Add(MbView)
         ModbusDataList.Add(MbView)
         CurentAddPos.Y += MbView.Height
     End Sub
+
+    Private Sub SerializeAllMbViews()
+        Dim mbser As New MbSerialize()
+        mbser.Serialize(ViewPanel.Controls)
+    End Sub
+
 
     Private Sub csModsMaster_Load(sender As Object, e As EventArgs) Handles Me.Load
         InitConnection()

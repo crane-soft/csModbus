@@ -164,7 +164,7 @@ namespace csModbusView
             mut.ReleaseMutex();
         }
     }
-
+    
     public class MasterDiscretInputsGridView : MasterGridViewDataT<bool>
     {
         public MasterDiscretInputsGridView() : this(0, 8) {}

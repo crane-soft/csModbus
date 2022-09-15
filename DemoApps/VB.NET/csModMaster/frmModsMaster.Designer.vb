@@ -155,10 +155,9 @@ Partial Class frmModsMaster
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.ViewPanel.Controls.Add(Me.HoldingRegs2)
         Me.ViewPanel.Controls.Add(Me.HoldingRegs1)
-        Me.ViewPanel.Controls.Add(Me.cmTest)
         Me.ViewPanel.Location = New System.Drawing.Point(12, 37)
         Me.ViewPanel.Name = "ViewPanel"
-        Me.ViewPanel.Size = New System.Drawing.Size(477, 363)
+        Me.ViewPanel.Size = New System.Drawing.Size(477, 315)
         Me.ViewPanel.TabIndex = 9
         '
         'HoldingRegs2
@@ -188,7 +187,7 @@ Partial Class frmModsMaster
         'cmTest
         '
         Me.cmTest.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.cmTest.Location = New System.Drawing.Point(13, 320)
+        Me.cmTest.Location = New System.Drawing.Point(15, 361)
         Me.cmTest.Name = "cmTest"
         Me.cmTest.Size = New System.Drawing.Size(178, 29)
         Me.cmTest.TabIndex = 10
@@ -202,6 +201,7 @@ Partial Class frmModsMaster
         Me.ClientSize = New System.Drawing.Size(636, 424)
         Me.Controls.Add(Me.ViewPanel)
         Me.Controls.Add(Me.StatusStrip1)
+        Me.Controls.Add(Me.cmTest)
         Me.Controls.Add(Me.lbErrorCnt)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.lbCount)
