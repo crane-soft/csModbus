@@ -18,7 +18,7 @@ namespace csModbusView
         private MbGridView mbView;
         private bool InhibitRefresh;
         private bool SizeExplizit;
-
+        
         public ModbusView(ModbusDataType MbType, string Title, bool IsMaster)
         {
             lbTitle = new Label();
@@ -43,6 +43,18 @@ namespace csModbusView
             mbView.RowHeadersWidthChanged += MbView_RowHeadersWidthChanged;
             this.SizeChanged += ModbusView_SizeChanged;
         }
+
+       public void setDesignMode (bool desigMode)
+        {
+            if (desigMode) {
+                mbView.Enabled = false;
+                lbTitle.Enabled = false;
+            } else {
+                mbView.Enabled = true;
+                lbTitle.Enabled = true;
+
+            }
+        } 
 
         protected void SetDataSize(ushort BaseAddr, ushort NumItems, int ItemColumns)
         {
@@ -108,6 +120,8 @@ namespace csModbusView
         }
 
         [System.ComponentModel.Category("csModbus")]
+        [System.ComponentModel.Browsable(true)]
+        [System.ComponentModel.Description("Set the name of each item")]
         public string[] ItemNames {
             get {
                 return mbView.ItemNames;

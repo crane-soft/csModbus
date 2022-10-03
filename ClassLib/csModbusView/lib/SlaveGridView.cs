@@ -29,6 +29,7 @@ namespace csModbusView
             MbData.ValueReadEvent += MbData_ValueReadEvent;
         }
 
+        private delegate void ValueChangedCallback(object sender, ModbusData.ModbusValueEventArgs e);
         private void MbData_ValueReadEvent(object sender, ModbusData.ModbusValueEventArgs e)
         {
             if (this.ValueReadEvent != null) {
@@ -41,7 +42,6 @@ namespace csModbusView
             }
         }
 
-        public delegate void ValueChangedCallback(object sender, ModbusData.ModbusValueEventArgs e);
         public void MbData_ValueChangedEvent(object sender, ModbusData.ModbusValueEventArgs e)
         {
             if (this.ValueChangedEvent != null) {

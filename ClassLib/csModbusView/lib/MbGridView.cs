@@ -30,6 +30,7 @@ namespace csModbusView
             this.CellValueChanged += MbGridView_CellValueChanged;
         }
 
+        [System.ComponentModel.Browsable(false)]
         public bool IsCoil { get; set; }
         public bool DisableCellEvents { get; set; }
         public ushort BaseAddr { get; set; }

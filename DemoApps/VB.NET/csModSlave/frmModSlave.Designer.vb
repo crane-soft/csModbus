@@ -53,10 +53,12 @@ Partial Class frmModSlave
         '
         'mainMenu
         '
+        Me.mainMenu.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.mainMenu.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.FileToolStripMenuItem, Me.OptionsToolStripMenuItem})
         Me.mainMenu.Location = New System.Drawing.Point(0, 0)
         Me.mainMenu.Name = "mainMenu"
-        Me.mainMenu.Size = New System.Drawing.Size(472, 24)
+        Me.mainMenu.Padding = New System.Windows.Forms.Padding(8, 2, 0, 2)
+        Me.mainMenu.Size = New System.Drawing.Size(629, 28)
         Me.mainMenu.TabIndex = 0
         Me.mainMenu.Text = "MenuStrip1"
         '
@@ -64,65 +66,67 @@ Partial Class frmModSlave
         '
         Me.FileToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ExitToolStripMenuItem})
         Me.FileToolStripMenuItem.Name = "FileToolStripMenuItem"
-        Me.FileToolStripMenuItem.Size = New System.Drawing.Size(37, 20)
+        Me.FileToolStripMenuItem.Size = New System.Drawing.Size(44, 24)
         Me.FileToolStripMenuItem.Text = "File"
         '
         'ExitToolStripMenuItem
         '
         Me.ExitToolStripMenuItem.Name = "ExitToolStripMenuItem"
-        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(93, 22)
+        Me.ExitToolStripMenuItem.Size = New System.Drawing.Size(108, 26)
         Me.ExitToolStripMenuItem.Text = "Exit"
         '
         'OptionsToolStripMenuItem
         '
         Me.OptionsToolStripMenuItem.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ModbusTCPToolStripMenuItem, Me.ModbusRTUToolStripMenuItem, Me.ToolStripSeparator1, Me.SettingsToolStripMenuItem})
         Me.OptionsToolStripMenuItem.Name = "OptionsToolStripMenuItem"
-        Me.OptionsToolStripMenuItem.Size = New System.Drawing.Size(61, 20)
+        Me.OptionsToolStripMenuItem.Size = New System.Drawing.Size(73, 24)
         Me.OptionsToolStripMenuItem.Text = "Options"
         '
         'ModbusTCPToolStripMenuItem
         '
         Me.ModbusTCPToolStripMenuItem.Name = "ModbusTCPToolStripMenuItem"
-        Me.ModbusTCPToolStripMenuItem.Size = New System.Drawing.Size(141, 22)
+        Me.ModbusTCPToolStripMenuItem.Size = New System.Drawing.Size(181, 26)
         Me.ModbusTCPToolStripMenuItem.Text = "Modbus TCP"
         '
         'ModbusRTUToolStripMenuItem
         '
         Me.ModbusRTUToolStripMenuItem.Name = "ModbusRTUToolStripMenuItem"
-        Me.ModbusRTUToolStripMenuItem.Size = New System.Drawing.Size(141, 22)
+        Me.ModbusRTUToolStripMenuItem.Size = New System.Drawing.Size(181, 26)
         Me.ModbusRTUToolStripMenuItem.Text = "Modbus RTU"
         '
         'ToolStripSeparator1
         '
         Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        Me.ToolStripSeparator1.Size = New System.Drawing.Size(138, 6)
+        Me.ToolStripSeparator1.Size = New System.Drawing.Size(178, 6)
         '
         'SettingsToolStripMenuItem
         '
         Me.SettingsToolStripMenuItem.Name = "SettingsToolStripMenuItem"
-        Me.SettingsToolStripMenuItem.Size = New System.Drawing.Size(141, 22)
+        Me.SettingsToolStripMenuItem.Size = New System.Drawing.Size(181, 26)
         Me.SettingsToolStripMenuItem.Text = "Settings"
         '
         'StatusStrip1
         '
+        Me.StatusStrip1.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.StatusStrip1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.lbConnectionOptions, Me.lbListenStatus, Me.lbAutoStatus})
-        Me.StatusStrip1.Location = New System.Drawing.Point(0, 417)
+        Me.StatusStrip1.Location = New System.Drawing.Point(0, 515)
         Me.StatusStrip1.Name = "StatusStrip1"
-        Me.StatusStrip1.Size = New System.Drawing.Size(472, 22)
+        Me.StatusStrip1.Padding = New System.Windows.Forms.Padding(1, 0, 19, 0)
+        Me.StatusStrip1.Size = New System.Drawing.Size(629, 25)
         Me.StatusStrip1.TabIndex = 1
         Me.StatusStrip1.Text = "StatusStrip1"
         '
         'lbConnectionOptions
         '
         Me.lbConnectionOptions.Name = "lbConnectionOptions"
-        Me.lbConnectionOptions.Size = New System.Drawing.Size(69, 17)
+        Me.lbConnectionOptions.Size = New System.Drawing.Size(84, 20)
         Me.lbConnectionOptions.Text = "Connection"
         '
         'lbListenStatus
         '
         Me.lbListenStatus.AutoSize = False
         Me.lbListenStatus.Name = "lbListenStatus"
-        Me.lbListenStatus.Size = New System.Drawing.Size(40, 17)
+        Me.lbListenStatus.Size = New System.Drawing.Size(40, 20)
         Me.lbListenStatus.Text = "_"
         Me.lbListenStatus.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
@@ -130,15 +134,16 @@ Partial Class frmModSlave
         '
         Me.lbAutoStatus.Margin = New System.Windows.Forms.Padding(15, 3, 0, 2)
         Me.lbAutoStatus.Name = "lbAutoStatus"
-        Me.lbAutoStatus.Size = New System.Drawing.Size(118, 17)
+        Me.lbAutoStatus.Size = New System.Drawing.Size(149, 20)
         Me.lbAutoStatus.Text = "Automation Stopped"
         '
         'mainToolBar
         '
+        Me.mainToolBar.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.mainToolBar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.ToolButtonStart, Me.ToolButtonStop, Me.ToolButtonConnection})
-        Me.mainToolBar.Location = New System.Drawing.Point(0, 24)
+        Me.mainToolBar.Location = New System.Drawing.Point(0, 28)
         Me.mainToolBar.Name = "mainToolBar"
-        Me.mainToolBar.Size = New System.Drawing.Size(472, 39)
+        Me.mainToolBar.Size = New System.Drawing.Size(629, 39)
         Me.mainToolBar.TabIndex = 2
         Me.mainToolBar.Text = "mainToolStrip"
         '
@@ -181,17 +186,19 @@ Partial Class frmModSlave
         Me.ViewPanel.Controls.Add(Me.ucHoldingRegs1)
         Me.ViewPanel.Controls.Add(Me.ucCoils)
         Me.ViewPanel.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.ViewPanel.Location = New System.Drawing.Point(0, 63)
+        Me.ViewPanel.Location = New System.Drawing.Point(0, 67)
+        Me.ViewPanel.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.ViewPanel.Name = "ViewPanel"
-        Me.ViewPanel.Size = New System.Drawing.Size(472, 354)
+        Me.ViewPanel.Size = New System.Drawing.Size(629, 448)
         Me.ViewPanel.TabIndex = 3
         '
         'cmStartAuto
         '
         Me.cmStartAuto.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.cmStartAuto.Location = New System.Drawing.Point(12, 314)
+        Me.cmStartAuto.Location = New System.Drawing.Point(16, 398)
+        Me.cmStartAuto.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.cmStartAuto.Name = "cmStartAuto"
-        Me.cmStartAuto.Size = New System.Drawing.Size(185, 23)
+        Me.cmStartAuto.Size = New System.Drawing.Size(247, 28)
         Me.cmStartAuto.TabIndex = 5
         Me.cmStartAuto.Text = "Start Automation"
         Me.cmStartAuto.UseVisualStyleBackColor = True
@@ -201,10 +208,11 @@ Partial Class frmModSlave
         Me.ucDiscretInputs.BaseAddr = CType(20US, UShort)
         Me.ucDiscretInputs.ItemColumns = 8
         Me.ucDiscretInputs.ItemNames = Nothing
-        Me.ucDiscretInputs.Location = New System.Drawing.Point(129, 207)
+        Me.ucDiscretInputs.Location = New System.Drawing.Point(172, 255)
+        Me.ucDiscretInputs.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.ucDiscretInputs.Name = "ucDiscretInputs"
         Me.ucDiscretInputs.NumItems = CType(20US, UShort)
-        Me.ucDiscretInputs.Size = New System.Drawing.Size(223, 72)
+        Me.ucDiscretInputs.Size = New System.Drawing.Size(307, 94)
         Me.ucDiscretInputs.TabIndex = 4
         Me.ucDiscretInputs.Title = "DiscretInputs"
         '
@@ -213,10 +221,11 @@ Partial Class frmModSlave
         Me.ucInputRegs.BaseAddr = CType(7US, UShort)
         Me.ucInputRegs.ItemColumns = 3
         Me.ucInputRegs.ItemNames = New String() {"Velo", "Accel"}
-        Me.ucInputRegs.Location = New System.Drawing.Point(129, 4)
+        Me.ucInputRegs.Location = New System.Drawing.Point(172, 5)
+        Me.ucInputRegs.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.ucInputRegs.Name = "ucInputRegs"
         Me.ucInputRegs.NumItems = CType(10US, UShort)
-        Me.ucInputRegs.Size = New System.Drawing.Size(221, 90)
+        Me.ucInputRegs.Size = New System.Drawing.Size(305, 116)
         Me.ucInputRegs.TabIndex = 3
         Me.ucInputRegs.Title = "Input Register"
         '
@@ -225,10 +234,11 @@ Partial Class frmModSlave
         Me.ucHoldingRegs2.BaseAddr = CType(20US, UShort)
         Me.ucHoldingRegs2.ItemColumns = 1
         Me.ucHoldingRegs2.ItemNames = Nothing
-        Me.ucHoldingRegs2.Location = New System.Drawing.Point(3, 171)
+        Me.ucHoldingRegs2.Location = New System.Drawing.Point(4, 210)
+        Me.ucHoldingRegs2.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.ucHoldingRegs2.Name = "ucHoldingRegs2"
         Me.ucHoldingRegs2.NumItems = CType(5US, UShort)
-        Me.ucHoldingRegs2.Size = New System.Drawing.Size(124, 108)
+        Me.ucHoldingRegs2.Size = New System.Drawing.Size(175, 138)
         Me.ucHoldingRegs2.TabIndex = 2
         Me.ucHoldingRegs2.Title = "Holding Register"
         '
@@ -237,10 +247,11 @@ Partial Class frmModSlave
         Me.ucHoldingRegs1.BaseAddr = CType(10US, UShort)
         Me.ucHoldingRegs1.ItemColumns = 1
         Me.ucHoldingRegs1.ItemNames = Nothing
-        Me.ucHoldingRegs1.Location = New System.Drawing.Point(3, 3)
+        Me.ucHoldingRegs1.Location = New System.Drawing.Point(4, 4)
+        Me.ucHoldingRegs1.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.ucHoldingRegs1.Name = "ucHoldingRegs1"
         Me.ucHoldingRegs1.NumItems = CType(8US, UShort)
-        Me.ucHoldingRegs1.Size = New System.Drawing.Size(124, 162)
+        Me.ucHoldingRegs1.Size = New System.Drawing.Size(175, 204)
         Me.ucHoldingRegs1.TabIndex = 1
         Me.ucHoldingRegs1.Title = "Holding Register"
         '
@@ -249,22 +260,24 @@ Partial Class frmModSlave
         Me.ucCoils.BaseAddr = CType(10US, UShort)
         Me.ucCoils.ItemColumns = 8
         Me.ucCoils.ItemNames = Nothing
-        Me.ucCoils.Location = New System.Drawing.Point(129, 111)
+        Me.ucCoils.Location = New System.Drawing.Point(172, 137)
+        Me.ucCoils.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.ucCoils.Name = "ucCoils"
         Me.ucCoils.NumItems = CType(20US, UShort)
-        Me.ucCoils.Size = New System.Drawing.Size(223, 72)
+        Me.ucCoils.Size = New System.Drawing.Size(307, 94)
         Me.ucCoils.TabIndex = 0
         Me.ucCoils.Title = "Coils"
         '
         'frmModSlave
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(472, 439)
+        Me.ClientSize = New System.Drawing.Size(629, 540)
         Me.Controls.Add(Me.ViewPanel)
         Me.Controls.Add(Me.mainToolBar)
         Me.Controls.Add(Me.StatusStrip1)
         Me.Controls.Add(Me.mainMenu)
+        Me.Margin = New System.Windows.Forms.Padding(4, 4, 4, 4)
         Me.Name = "frmModSlave"
         Me.Text = "cs-Modbus Slave"
         Me.mainMenu.ResumeLayout(False)
