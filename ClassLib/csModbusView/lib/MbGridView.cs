@@ -20,17 +20,17 @@ namespace csModbusView
             RowHeadersVisible = true;
             ColumnHeadersVisible = false;
             RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
-
+           
             RowCount = 0;
             ColumnCount = 0;
 
             MultiSelect = false;
+            this.ScrollBars = ScrollBars.None;
             this.SelectionChanged += MbGridView_SelectionChanged;
             this.CellClick += MbGridView_CellClick;
             this.CellValueChanged += MbGridView_CellValueChanged;
         }
 
-        [System.ComponentModel.Browsable(false)]
         public bool IsCoil { get; set; }
         public bool DisableCellEvents { get; set; }
         public ushort BaseAddr { get; set; }
@@ -91,14 +91,14 @@ namespace csModbusView
         {
             if ((NumItems == 0) | (this.RowCount == 0))
                 return;
-            parent.Height = this.Top + this.RowCount * this.RowTemplate.Height + 1;
+            parent.Height = this.Top + this.RowCount * this.RowTemplate.Height + 3;
 
             int ColWidth;
             if (IsCoil)
                 ColWidth = Columns[0].Width;
             else
                 ColWidth = 45;
-            parent.Width = RowHeadersWidth + ItemColumns * ColWidth + 1;
+            parent.Width = RowHeadersWidth + ItemColumns * ColWidth + 2;
         }
 
         private void NewItemCell(int Row, int Col)
@@ -137,8 +137,6 @@ namespace csModbusView
                 Rows[iRow].HeaderCell.Value = Names[iRow];
             }
         }
-
-
 
         private void MbGridView_SelectionChanged(object sender, EventArgs e)
         {

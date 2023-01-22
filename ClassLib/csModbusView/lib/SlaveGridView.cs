@@ -191,19 +191,13 @@ namespace csModbusView
 
     public  class SlaveDiscretInputsGridView : SlaveGridViewDataT<bool>
     {
-        public SlaveDiscretInputsGridView() : this(0, 8)
-        {
-        }
+        public SlaveDiscretInputsGridView() : this(0, 8) { }
 
         public SlaveDiscretInputsGridView(ushort BaseAddr, ushort NumItems) 
-            : this("DiscretInputs", BaseAddr, NumItems, 8)
-        {
-        }
+            : this("DiscretInputs", BaseAddr, NumItems, 8) {}
 
         public SlaveDiscretInputsGridView(string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
-            : base(ModbusDataType.DiscreteInputs, Title, BaseAddr, NumItems, ItemColumns)
-        {
-        }
+            : base(ModbusDataType.DiscreteInputs, Title, BaseAddr, NumItems, ItemColumns){ }
 
         public override void AddDataToServer(StdDataServer DataSerer)
         {

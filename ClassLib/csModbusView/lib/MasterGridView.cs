@@ -106,7 +106,8 @@ namespace csModbusView
 
         protected override void CellValueChanged(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
         {
-            ModBusSendRegs(MbDataAddress(e), Convert.ToUInt16(CurrentCell.Value));
+            if (MyMaster.IsConnected)
+                ModBusSendRegs(MbDataAddress(e), Convert.ToUInt16(CurrentCell.Value));
         }
 
         private void ModBusSendRegs(ushort Address, ushort Value)
@@ -153,7 +154,8 @@ namespace csModbusView
         {
             bool NewCellValue = !(bool)CurrentCell.Value;
             CurrentCell.Value = NewCellValue;
-            ModbusSendCoils(MbDataAddress(e), NewCellValue);
+            if (MyMaster.IsConnected)
+                ModbusSendCoils(MbDataAddress(e), NewCellValue);
         }
 
         private  void ModbusSendCoils(ushort Address, bool Value)

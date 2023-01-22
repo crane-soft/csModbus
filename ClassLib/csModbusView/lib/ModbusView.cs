@@ -17,18 +17,19 @@ namespace csModbusView
         private Label lbTitle;
         private MbGridView mbView;
         private bool InhibitRefresh;
-        private bool SizeExplizit;
-        
+        private bool _AutoSize;
+
         public ModbusView(ModbusDataType MbType, string Title, bool IsMaster)
         {
             lbTitle = new Label();
-            lbTitle.Text = Title;
             lbTitle.BackColor = System.Drawing.SystemColors.ControlLight;
             lbTitle.Dock = DockStyle.Top;
             lbTitle.Location = new System.Drawing.Point(0, 0);
             lbTitle.Height = 17;
             lbTitle.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.Controls.Add(lbTitle);
+            this.Title = Title;
+
             mbView = new MbGridView();
             mbView.Left = 0;
             mbView.Top = lbTitle.Height;
@@ -41,10 +42,15 @@ namespace csModbusView
             mbView.MbCellValueChanged += MbView_CellValueChanged;
             mbView.MbCellContentClick += MbView_CellContentClick;
             mbView.RowHeadersWidthChanged += MbView_RowHeadersWidthChanged;
+            BorderStyle = BorderStyle.FixedSingle;
+            this.NumItems = 1;
+            this.ItemColumns = 1;
             this.SizeChanged += ModbusView_SizeChanged;
+            this.AutoSizeChanged += ModbusView_AutoSizeChanged;
+            AutoSize = true;
         }
 
-       public void setDesignMode (bool desigMode)
+        public void setDesignMode(bool desigMode)
         {
             if (desigMode) {
                 mbView.Enabled = false;
@@ -54,7 +60,7 @@ namespace csModbusView
                 lbTitle.Enabled = true;
 
             }
-        } 
+        }
 
         protected void SetDataSize(ushort BaseAddr, ushort NumItems, int ItemColumns)
         {
@@ -73,17 +79,16 @@ namespace csModbusView
         }
 
         [System.ComponentModel.Category("csModbus")]
-        public string Title {
-            get {
-                return lbTitle.Text;
-            }
-
-            set {
-                lbTitle.Text = value;
-            }
+        [System.ComponentModel.Description("The title of this register group")]
+        [System.ComponentModel.DefaultValue("")]
+        public virtual string Title {
+            get { return lbTitle.Text; }
+            set {lbTitle.Text = value;  }
         }
 
         [System.ComponentModel.Category("csModbus")]
+        [System.ComponentModel.Description("The modbus base address of this register group")]
+        [System.ComponentModel.DefaultValue(0)]
         public ushort BaseAddr {
             get {
                 return mbView.BaseAddr;
@@ -96,7 +101,9 @@ namespace csModbusView
         }
 
         [System.ComponentModel.Category("csModbus")]
-        public ushort NumItems {
+        [System.ComponentModel.Description("Number of consecutive registers / coils for this group")]
+        [System.ComponentModel.DefaultValue(1)]
+        public virtual ushort NumItems {
             get {
                 return mbView.NumItems;
             }
@@ -108,7 +115,9 @@ namespace csModbusView
         }
 
         [System.ComponentModel.Category("csModbus")]
-        public int ItemColumns {
+        [System.ComponentModel.Description("Number of register-/ coil- columns for this group")]
+        [System.ComponentModel.DefaultValue(1)]
+        public virtual int ItemColumns {
             get {
                 return mbView.ItemColumns;
             }
@@ -120,8 +129,8 @@ namespace csModbusView
         }
 
         [System.ComponentModel.Category("csModbus")]
-        [System.ComponentModel.Browsable(true)]
-        [System.ComponentModel.Description("Set the name of each item")]
+        [System.ComponentModel.Description("Edit register row names for this group")]
+        [System.ComponentModel.DefaultValue(null)]
         public string[] ItemNames {
             get {
                 return mbView.ItemNames;
@@ -129,6 +138,18 @@ namespace csModbusView
 
             set {
                 mbView.ItemNames = value;
+                RefreshView();
+            }
+        }
+
+        [System.ComponentModel.Category("Layout")]
+        [System.ComponentModel.DefaultValue(true)]
+        public bool MyAutoSize {
+            get {
+                return _AutoSize;
+            } 
+            set {
+                _AutoSize = value;
                 RefreshView();
             }
         }
@@ -162,11 +183,10 @@ namespace csModbusView
             }
         }
 
-        private bool DisableSizeChangedEvent;
         private void MbView_RowHeadersWidthChanged(object sender, System.EventArgs e)
         {
             if (InhibitRefresh == false) {
-                AdjustParentSize(); ;
+                AdjustSize(); ;
             }
         }
 
@@ -174,22 +194,24 @@ namespace csModbusView
         {
             if (InhibitRefresh == false) {
                 mbView.InitGridView();
-                AdjustParentSize();
+                AdjustSize();
             }
         }
 
-        private void AdjustParentSize() {
-            if (SizeExplizit == false) {
-                DisableSizeChangedEvent = true;
+        public void AdjustSize() {
+            if (AutoSize) {
                 mbView.AdjustParentSize(this);
-                DisableSizeChangedEvent = false;
             }
+        }
+
+        private void ModbusView_AutoSizeChanged(object sender, System.EventArgs e)
+        {
+            RefreshView();
         }
 
         private void ModbusView_SizeChanged(object sender, System.EventArgs e)
         {
-            if ((DisableSizeChangedEvent == false) && (DesignMode == false))
-                SizeExplizit = true;
+            RefreshView();
         }
 
         private void MbView_CellValueChanged(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
