@@ -14,7 +14,7 @@ namespace csModbusView
         public event ValueChangedHandler ValueChangedEvent;
         public event ValueReadHandler ValueReadEvent;
 
-        public SlaveGridView(ModbusDataType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) : base(MbType, Title, false)
+        public SlaveGridView(ModbusObjectType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) : base(MbType, Title, false)
         {
             this.SetDataSize(BaseAddr, NumItems, ItemColumns);
         }
@@ -71,7 +71,7 @@ namespace csModbusView
     {
         protected ModbusDataT<DataT> ModbusData;
 
-        public SlaveGridViewDataT(ModbusDataType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
+        public SlaveGridViewDataT(ModbusObjectType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
             : base(MbType, Title, BaseAddr, NumItems, ItemColumns)
         {
         }
@@ -129,7 +129,7 @@ namespace csModbusView
         }
 
         public SlaveHoldingRegsGridView(string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
-            : base(ModbusDataType.HoldingRegister, Title, BaseAddr, NumItems, ItemColumns)
+            : base(ModbusObjectType.HoldingRegister, Title, BaseAddr, NumItems, ItemColumns)
         {
         }
 
@@ -153,7 +153,7 @@ namespace csModbusView
         }
 
         public SlaveInputRegsGridView(string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
-            : base(ModbusDataType.InputRegister, Title, BaseAddr, NumItems, ItemColumns)
+            : base(ModbusObjectType.InputRegister, Title, BaseAddr, NumItems, ItemColumns)
         {
         }
 
@@ -177,7 +177,7 @@ namespace csModbusView
         }
 
         public SlaveCoilsGridView(string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
-            : base(ModbusDataType.Coils, Title, BaseAddr, NumItems, ItemColumns)
+            : base(ModbusObjectType.Coils, Title, BaseAddr, NumItems, ItemColumns)
         {
         }
 
@@ -197,7 +197,7 @@ namespace csModbusView
             : this("DiscretInputs", BaseAddr, NumItems, 8) {}
 
         public SlaveDiscretInputsGridView(string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
-            : base(ModbusDataType.DiscreteInputs, Title, BaseAddr, NumItems, ItemColumns){ }
+            : base(ModbusObjectType.DiscreteInputs, Title, BaseAddr, NumItems, ItemColumns){ }
 
         public override void AddDataToServer(StdDataServer DataSerer)
         {

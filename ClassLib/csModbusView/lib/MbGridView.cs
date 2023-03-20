@@ -8,6 +8,19 @@ namespace csModbusView
     [System.ComponentModel.ToolboxItem(false)]
     public class MbGridView : DataGridView
     {
+        public enum ModbusDataType
+        {
+            INT16,
+            UINT16,
+            INT32,
+            UINT32
+        }
+
+        ModbusDataType _DataType;
+        private ushort _NumItems;
+        private int _TypeSize;
+        private int _DataSize;
+
         public MbGridView()
         {
             AllowUserToAddRows = false;
@@ -20,11 +33,12 @@ namespace csModbusView
             RowHeadersVisible = true;
             ColumnHeadersVisible = false;
             RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.AutoSizeToDisplayedHeaders;
-           
+
             RowCount = 0;
             ColumnCount = 0;
 
             MultiSelect = false;
+            this.DataType = ModbusDataType.UINT16;
             this.ScrollBars = ScrollBars.None;
             this.SelectionChanged += MbGridView_SelectionChanged;
             this.CellClick += MbGridView_CellClick;
@@ -34,9 +48,38 @@ namespace csModbusView
         public bool IsCoil { get; set; }
         public bool DisableCellEvents { get; set; }
         public ushort BaseAddr { get; set; }
-        public ushort NumItems { get; set; }
+
         public int ItemColumns { get; set; }
         public string[] ItemNames { get; set; }
+        public ushort NumItems
+        {
+            get {
+                return _NumItems;
+            }
+            set {
+                _NumItems = value;
+                _DataSize = _NumItems * _TypeSize;
+            }
+        }
+        public ModbusDataType DataType
+        {
+            get {
+                return _DataType;
+            }
+            set {
+                _DataType = value;
+                switch (_DataType) {
+                    case ModbusDataType.INT32:
+                    case ModbusDataType.UINT32:
+                        _TypeSize = 2;
+                        break;
+                    default:
+                        _TypeSize = 1;
+                        break;
+                }
+                _DataSize = _NumItems * _TypeSize;
+            }
+        }
 
         public void InitGridView()
         {
@@ -57,15 +100,13 @@ namespace csModbusView
 
             DisableCellEvents = true;
             int itemCount = NumItems;
-            for (int i = 0; i <= this.RowCount - 1; i++)
-            {
+            for (int i = 0; i <= this.RowCount - 1; i++) {
                 if (ItemNameCount > i)
                     Rows[i].HeaderCell.Value = ItemNames[i];
                 else
                     Rows[i].HeaderCell.Value = "R" + (BaseAddr + i * ItemColumns).ToString();
 
-                for (int itemCol = 0; itemCol <= ItemColumns - 1; itemCol++)
-                {
+                for (int itemCol = 0; itemCol <= ItemColumns - 1; itemCol++) {
                     itemCount -= 1;
                     if (itemCount >= 0)
                         NewItemCell(i, itemCol);
@@ -74,14 +115,11 @@ namespace csModbusView
                 }
             }
 
-            for (int itemCol = 0; itemCol <= ItemColumns - 1; itemCol++)
-            {
-                if (IsCoil)
-                {
+            for (int itemCol = 0; itemCol <= ItemColumns - 1; itemCol++) {
+                if (IsCoil) {
                     Columns[itemCol].AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
                     Columns[itemCol].Width = RowTemplate.Height;
-                }
-                else
+                } else
                     Columns[itemCol].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             }
             DisableCellEvents = false;
@@ -104,12 +142,10 @@ namespace csModbusView
         private void NewItemCell(int Row, int Col)
         {
             DataGridViewCell itemCell;
-            if (IsCoil)
-            {
+            if (IsCoil) {
                 itemCell = new DataGridViewCheckBoxCell();
                 itemCell.Value = false;
-            }
-            else
+            } else
                 itemCell = new DataGridViewTextBoxCell();
             itemCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
             itemCell.Tag = this;
@@ -130,8 +166,7 @@ namespace csModbusView
 
         public void SetItemNames(string[] Names)
         {
-            for (int iRow = 0; iRow <= Names.Length; iRow++)
-            {
+            for (int iRow = 0; iRow <= Names.Length; iRow++) {
                 if (iRow >= RowCount)
                     break;
                 Rows[iRow].HeaderCell.Value = Names[iRow];
@@ -155,11 +190,10 @@ namespace csModbusView
         {
             if (DisableCellEvents)
                 return;
-            if (e.ColumnIndex >= 0)
-            {
+            if (e.ColumnIndex >= 0) {
                 DataGridViewCell CurrentCell = this.Rows[e.RowIndex].Cells[e.ColumnIndex];
                 if (CurrentCell.Tag != null)
-                   MbCellContentClick?.Invoke(CurrentCell, e);
+                    MbCellContentClick?.Invoke(CurrentCell, e);
             }
         }
 
@@ -167,8 +201,7 @@ namespace csModbusView
         {
             if (DisableCellEvents)
                 return;
-            if (e.ColumnIndex >= 0)
-            {
+            if (e.ColumnIndex >= 0) {
                 DataGridViewCell CurrentCell = this.Rows[e.RowIndex].Cells[e.ColumnIndex];
                 if (CurrentCell.Tag != null)
                     MbCellValueChanged?.Invoke(CurrentCell, e);
@@ -184,13 +217,11 @@ namespace csModbusView
         {
             int iRow = BaseIdx / ItemColumns;
             int iCol = BaseIdx % ItemColumns;
-            for (int i = BaseIdx; i <= BaseIdx + Size - 1; i++)
-            {
+            for (int i = BaseIdx; i <= BaseIdx + Size - 1; i++) {
                 DataGridViewCell mbCell = this.Rows[iRow].Cells[iCol];
                 mbCell.Value = ModbusData[i];
                 iCol += 1;
-                if ((iCol == this.ColumnCount))
-                {
+                if ((iCol == this.ColumnCount)) {
                     iCol = 0;
                     iRow += 1;
                 }

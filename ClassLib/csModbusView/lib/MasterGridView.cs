@@ -6,13 +6,13 @@ using csModbusLib;
 namespace csModbusView
 {
     [System.ComponentModel.DesignerCategory("")]
-    public abstract class MasterGridView : ModbusView
+    public abstract class MasterGridView :  ModbusView
     {
         protected MbMaster MyMaster;
         protected ErrorCodes ErrCode;
         protected static Mutex mut = new Mutex();
 
-        public MasterGridView(ModbusDataType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
+        public MasterGridView(ModbusObjectType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
             : base(MbType, Title, true)
         {
             this.SetDataSize(BaseAddr, NumItems, ItemColumns);
@@ -62,7 +62,7 @@ namespace csModbusView
     {
         protected DataT[] ModbusData;
 
-        public MasterGridViewDataT(ModbusDataType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns)
+        public MasterGridViewDataT(ModbusObjectType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns)
             : base(MbType, Title, BaseAddr, NumItems, ItemColumns)
         {
         }
@@ -97,7 +97,7 @@ namespace csModbusView
             : this("Holding Register", BaseAddr, NumItems, 1) {}
 
         public MasterHoldingRegsGridView(string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
-            : base(ModbusDataType.HoldingRegister, Title, BaseAddr, NumItems, ItemColumns) {}
+            : base(ModbusObjectType.HoldingRegister, Title, BaseAddr, NumItems, ItemColumns) {}
 
         protected override ErrorCodes Modbus_ReadData()
         {
@@ -127,7 +127,7 @@ namespace csModbusView
             : this("Input Register", BaseAddr, NumItems, 1) {}
 
         public MasterInputRegsGridView(string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
-            : base(ModbusDataType.InputRegister, Title, BaseAddr, NumItems, ItemColumns) {}
+            : base(ModbusObjectType.InputRegister, Title, BaseAddr, NumItems, ItemColumns) {}
 
         protected override ErrorCodes Modbus_ReadData()
         {
@@ -143,7 +143,7 @@ namespace csModbusView
             : this("Coils", BaseAddr, NumItems, 8) {}
 
         public MasterCoilsGridView(string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
-            : base(ModbusDataType.Coils, Title, BaseAddr, NumItems, ItemColumns) {}
+            : base(ModbusObjectType.Coils, Title, BaseAddr, NumItems, ItemColumns) {}
 
         protected override ErrorCodes Modbus_ReadData()
         {
@@ -175,7 +175,7 @@ namespace csModbusView
             : this("DiscretInputs", BaseAddr, NumItems, 8) {}
 
         public MasterDiscretInputsGridView(string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
-            : base(ModbusDataType.DiscreteInputs, Title, BaseAddr, NumItems, ItemColumns) {}
+            : base(ModbusObjectType.DiscreteInputs, Title, BaseAddr, NumItems, ItemColumns) {}
 
         protected override ErrorCodes Modbus_ReadData()
         {

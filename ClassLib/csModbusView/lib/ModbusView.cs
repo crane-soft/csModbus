@@ -1,4 +1,6 @@
 ﻿using csModbusLib;
+using System.ComponentModel;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace csModbusView
@@ -6,7 +8,7 @@ namespace csModbusView
     [System.ComponentModel.DesignerCategory("")]
     public abstract class ModbusView : Panel
     {
-        public enum ModbusDataType
+        public enum ModbusObjectType
         {
             Coils,
             DiscreteInputs,
@@ -14,12 +16,12 @@ namespace csModbusView
             InputRegister
         }
 
+        protected MbGridView mbView;
         private Label lbTitle;
-        private MbGridView mbView;
         private bool InhibitRefresh;
         private bool _AutoSize;
 
-        public ModbusView(ModbusDataType MbType, string Title, bool IsMaster)
+        public ModbusView(ModbusObjectType MbType, string Title, bool IsMaster)
         {
             lbTitle = new Label();
             lbTitle.BackColor = System.Drawing.SystemColors.ControlLight;
@@ -58,8 +60,12 @@ namespace csModbusView
             } else {
                 mbView.Enabled = true;
                 lbTitle.Enabled = true;
-
             }
+        }
+
+        public void setBrowsableProperties()
+        {
+            setBrowsableProperty("DataType", mbView.IsCoil == false);
         }
 
         protected void SetDataSize(ushort BaseAddr, ushort NumItems, int ItemColumns)
@@ -100,6 +106,8 @@ namespace csModbusView
             }
         }
 
+        // TODO wegen neu Datentypen int32 etc
+        // neue internes Property für DataSize 
         [System.ComponentModel.Category("csModbus")]
         [System.ComponentModel.Description("Number of consecutive registers / coils for this group")]
         [System.ComponentModel.DefaultValue(1)]
@@ -142,6 +150,20 @@ namespace csModbusView
             }
         }
 
+        [System.ComponentModel.Category("csModbus")]
+        [System.ComponentModel.Browsable(true)]
+        [System.ComponentModel.Description("Type of date")]
+        [System.ComponentModel.DefaultValue(MbGridView.ModbusDataType.UINT16)]
+        public MbGridView.ModbusDataType DataType
+        {
+            get {
+                return mbView.DataType;
+            }
+            set {
+                mbView.DataType = value;
+            }
+        }
+
         [System.ComponentModel.Category("Layout")]
         [System.ComponentModel.DefaultValue(true)]
         public bool MyAutoSize {
@@ -154,32 +176,32 @@ namespace csModbusView
             }
         }
 
-        public void InitModbusType(ModbusDataType MbType, bool IsMaster)
+        public void InitModbusType(ModbusObjectType MbType, bool IsMaster)
         {
             switch (MbType) {
-                case ModbusDataType.DiscreteInputs: {
-                        mbView.IsCoil = true;
-                        mbView.ReadOnly = IsMaster;
-                        break;
-                    }
+                case ModbusObjectType.DiscreteInputs: {
+                    mbView.IsCoil = true;
+                    mbView.ReadOnly = IsMaster;
+                    break;
+                }
 
-                case ModbusDataType.Coils: {
-                        mbView.IsCoil = true;
-                        mbView.ReadOnly = false;
-                        break;
-                    }
+                case ModbusObjectType.Coils: {
+                    mbView.IsCoil = true;
+                    mbView.ReadOnly = false;
+                    break;
+                }
 
-                case ModbusDataType.InputRegister: {
-                        mbView.IsCoil = false;
-                        mbView.ReadOnly = IsMaster;
-                        break;
-                    }
+                case ModbusObjectType.InputRegister: {
+                    mbView.IsCoil = false;
+                    mbView.ReadOnly = IsMaster;
+                    break;
+                }
 
-                case ModbusDataType.HoldingRegister: {
-                        mbView.IsCoil = false;
-                        mbView.ReadOnly = false;
-                        break;
-                    }
+                case ModbusObjectType.HoldingRegister: {
+                    mbView.IsCoil = false;
+                    mbView.ReadOnly = false;
+                    break;
+                }
             }
         }
 
@@ -230,6 +252,25 @@ namespace csModbusView
 
         protected virtual void CellContentClick(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
         {
+        }
+
+        /// <summary>
+        /// Set the Browsable property.
+        /// NOTE: Be sure to decorate the property with [Browsable(true)]
+        /// </summary>
+        /// <param name="PropertyName">Name of the variable</param>
+        /// <param name="bIsBrowsable">Browsable Value</param>
+        private void setBrowsableProperty(string strPropertyName, bool bIsBrowsable)
+        {
+            // Get the Descriptor's Properties
+            PropertyDescriptor theDescriptor = TypeDescriptor.GetProperties(this.GetType())[strPropertyName];
+
+            // Get the Descriptor's "Browsable" Attribute
+            BrowsableAttribute theDescriptorBrowsableAttribute = (BrowsableAttribute)theDescriptor.Attributes[typeof(BrowsableAttribute)];
+            FieldInfo isBrowsable = theDescriptorBrowsableAttribute.GetType().GetField("Browsable", BindingFlags.IgnoreCase | BindingFlags.NonPublic | BindingFlags.Instance);
+
+            // Set the Descriptor's "Browsable" Attribute
+            isBrowsable.SetValue(theDescriptorBrowsableAttribute, bIsBrowsable);
         }
     }
 }
