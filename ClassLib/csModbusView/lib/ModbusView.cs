@@ -16,7 +16,7 @@ namespace csModbusView
             InputRegister
         }
 
-        protected MbGridView mbView;
+        private MbGridView mbView;
         private Label lbTitle;
         private bool InhibitRefresh;
         private bool _AutoSize;
@@ -106,8 +106,6 @@ namespace csModbusView
             }
         }
 
-        // TODO wegen neu Datentypen int32 etc
-        // neue internes Property für DataSize 
         [System.ComponentModel.Category("csModbus")]
         [System.ComponentModel.Description("Number of consecutive registers / coils for this group")]
         [System.ComponentModel.DefaultValue(1)]
@@ -166,7 +164,7 @@ namespace csModbusView
 
         [System.ComponentModel.Category("Layout")]
         [System.ComponentModel.DefaultValue(true)]
-        public bool MyAutoSize {
+        public override bool AutoSize {
             get {
                 return _AutoSize;
             } 
@@ -176,6 +174,18 @@ namespace csModbusView
             }
         }
 
+        public int DataSize
+        {
+            get {
+                return mbView.DataSize;
+            }
+        }
+        public int TypeSize
+        {
+            get {
+                return mbView.TypeSize;
+            }
+        }
         public void InitModbusType(ModbusObjectType MbType, bool IsMaster)
         {
             switch (MbType) {
@@ -236,9 +246,9 @@ namespace csModbusView
             RefreshView();
         }
 
-        private void MbView_CellValueChanged(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
+        private void MbView_CellValueChanged(ushort[] data, DataGridViewCellEventArgs e)
         {
-            CellValueChanged(CurrentCell, e);
+            CellValueChanged(data, e);
         }
 
         private void MbView_CellContentClick(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
@@ -246,7 +256,7 @@ namespace csModbusView
             CellContentClick(CurrentCell, e);
         }
 
-        protected virtual void CellValueChanged(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
+        protected virtual void CellValueChanged(ushort[] data, DataGridViewCellEventArgs e)
         {
         }
 

@@ -59,7 +59,7 @@ namespace csModbusView
 
         protected int GridDataIdx(DataGridViewCellEventArgs e)
         {
-            return e.RowIndex * ItemColumns + e.ColumnIndex;
+            return (e.RowIndex * ItemColumns + e.ColumnIndex) * TypeSize;
         }
 
         public abstract void AddDataToServer(StdDataServer DataSerer);
@@ -81,6 +81,12 @@ namespace csModbusView
                 return ModbusData.Data;
             }
         }
+        protected void InitModbusData()
+        {
+            ModbusData = new ModbusDataT<DataT>(BaseAddr, DataSize);
+            InitData(ModbusData);
+        }
+
         public void SetValue(int Idx, DataT Value)
         {
             ModbusData.Data[Idx] = Value;
@@ -97,10 +103,14 @@ namespace csModbusView
             GridView.UpDateModbusCells(ModbusData.Data, e.BaseIdx, e.Size);
         }
 
-        protected override void CellValueChanged(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
+        protected override void CellValueChanged(ushort[] data, DataGridViewCellEventArgs e)
         {
             if (typeof(DataT) == typeof(ushort)) {
-                ModbusData.Data[GridDataIdx(e)] =  (DataT) (object) Convert.ToUInt16(CurrentCell.Value);
+                int idx = GridDataIdx(e);
+                ModbusData.Data[idx] = (DataT) (object) data[0];
+                if (data.Length > 1) {
+                    ModbusData.Data[idx+1] = (DataT)(object)data[1];
+                }
             }
         }
 
@@ -132,11 +142,9 @@ namespace csModbusView
             : base(ModbusObjectType.HoldingRegister, Title, BaseAddr, NumItems, ItemColumns)
         {
         }
-
         public override void AddDataToServer(StdDataServer DataSerer)
         {
-            ModbusData = new ModbusDataT<ushort>(BaseAddr, NumItems);
-            InitData(ModbusData);
+            InitModbusData();
             DataSerer.AddHoldingRegisters(ModbusData);
         }
     }
@@ -159,8 +167,7 @@ namespace csModbusView
 
         public override void AddDataToServer(StdDataServer DataSerer)
         {
-            ModbusData = new ModbusDataT<ushort>(BaseAddr, NumItems);
-            InitData(ModbusData);
+            InitModbusData();
             DataSerer.AddInputRegisters(ModbusData);
         }
     }
@@ -183,8 +190,7 @@ namespace csModbusView
 
         public override void AddDataToServer(StdDataServer DataSerer)
         {
-            ModbusData = new ModbusDataT<bool>(BaseAddr, NumItems);
-            InitData(ModbusData);
+            InitModbusData();
             DataSerer.AddCoils(ModbusData);
         }
     }
@@ -201,8 +207,7 @@ namespace csModbusView
 
         public override void AddDataToServer(StdDataServer DataSerer)
         {
-            ModbusData = new ModbusDataT<bool>(BaseAddr, NumItems);
-            InitData(ModbusData);
+            InitModbusData();
             DataSerer.AddDiscreteInputs(ModbusData);
         }
     }

@@ -80,6 +80,17 @@ namespace csModbusView
                 _DataSize = _NumItems * _TypeSize;
             }
         }
+        public int DataSize {
+            get {
+                return _DataSize;
+            }
+        }
+        public int TypeSize
+        {
+            get {
+                return _TypeSize;
+            }
+        }
 
         public void InitGridView()
         {
@@ -104,7 +115,7 @@ namespace csModbusView
                 if (ItemNameCount > i)
                     Rows[i].HeaderCell.Value = ItemNames[i];
                 else
-                    Rows[i].HeaderCell.Value = "R" + (BaseAddr + i * ItemColumns).ToString();
+                    Rows[i].HeaderCell.Value = "R" + (BaseAddr + i * TypeSize * ItemColumns).ToString();
 
                 for (int itemCol = 0; itemCol <= ItemColumns - 1; itemCol++) {
                     itemCount -= 1;
@@ -184,7 +195,7 @@ namespace csModbusView
         public event MbCellContentClickEventHandler MbCellContentClick;
         public delegate void MbCellContentClickEventHandler(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e);
         public event MbCellValueChangedEventHandler MbCellValueChanged;
-        public delegate void MbCellValueChangedEventHandler(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e);
+        public delegate void MbCellValueChangedEventHandler(ushort[] data, DataGridViewCellEventArgs e);
 
         private void MbGridView_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -203,8 +214,30 @@ namespace csModbusView
                 return;
             if (e.ColumnIndex >= 0) {
                 DataGridViewCell CurrentCell = this.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                if (CurrentCell.Tag != null)
-                    MbCellValueChanged?.Invoke(CurrentCell, e);
+                if (CurrentCell.Tag != null) {
+                    try {
+                        ushort[] modData = new ushort[TypeSize];
+                        UInt32 modValue;
+                        if ((_DataType == ModbusDataType.INT16) || (_DataType == ModbusDataType.INT32)) {
+                            Int32 iValue = Convert.ToInt32(CurrentCell.Value);
+                            modValue = unchecked((UInt32)iValue);
+                        } else {
+                            modValue = Convert.ToUInt32(CurrentCell.Value);
+                        }
+
+                        if (TypeSize == 2) {
+                            modData[0] = (ushort)(modValue >> 16);
+                            modData[1] = (ushort)(modValue & 0xffff);
+                        } else {
+                            modData[0] = (ushort)(modValue & 0xffff);
+                        }
+                        MbCellValueChanged?.Invoke(modData, e);
+
+                    }
+                    catch (Exception ex) {
+                        MessageBox.Show(ex.Message);
+                    }
+                }
             }
         }
 
@@ -215,11 +248,34 @@ namespace csModbusView
 
         public void UpDateModbusCells<DataT>(DataT[] ModbusData, int BaseIdx, int Size)
         {
-            int iRow = BaseIdx / ItemColumns;
-            int iCol = BaseIdx % ItemColumns;
-            for (int i = BaseIdx; i <= BaseIdx + Size - 1; i++) {
+            int CellIdx = BaseIdx / _TypeSize;
+            int iRow = CellIdx / ItemColumns;
+            int iCol = CellIdx % ItemColumns;
+
+            bool isLongValue = (typeof(DataT) == typeof(ushort)) && (_TypeSize == 2);
+
+            for (int dIdx = BaseIdx; dIdx <= BaseIdx + Size - 1; dIdx += _TypeSize) {
                 DataGridViewCell mbCell = this.Rows[iRow].Cells[iCol];
-                mbCell.Value = ModbusData[i];
+                if (isLongValue) {
+                    UInt32 cellValue;
+                    cellValue = Convert.ToUInt32(ModbusData[dIdx]) << 16;
+                    cellValue |= Convert.ToUInt32(ModbusData[dIdx + 1]);
+                    if (_DataType == ModbusDataType.INT32) {
+                        mbCell.Value = unchecked((Int32)cellValue);
+                    } else {
+                        mbCell.Value = unchecked((UInt32)cellValue); ;
+                    }
+
+                } else {
+                    UInt16 cellValue = Convert.ToUInt16 (ModbusData[dIdx]);
+
+                    if (_DataType == ModbusDataType.INT16) {
+                        mbCell.Value = unchecked((Int16)cellValue);
+                    } else {
+                        mbCell.Value = cellValue;
+                    }
+                }
+
                 iCol += 1;
                 if ((iCol == this.ColumnCount)) {
                     iCol = 0;

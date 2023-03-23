@@ -51,7 +51,7 @@ namespace csModbusView
         protected ushort MbDataAddress(DataGridViewCellEventArgs e)
         {
             int DataIdx = e.RowIndex * ItemColumns + e.ColumnIndex;
-            return (ushort)(BaseAddr + DataIdx);
+            return (ushort)(BaseAddr + DataIdx * TypeSize);
         }
 
         protected abstract ErrorCodes Modbus_ReadData();
@@ -80,7 +80,7 @@ namespace csModbusView
         public override void InitGridView(MbMaster Master)
         {
             base.InitGridView(Master);
-            ModbusData = new DataT[NumItems];
+            ModbusData = new DataT[this.DataSize];
         }
 
         public override void UpdateCellValues()
@@ -101,20 +101,26 @@ namespace csModbusView
 
         protected override ErrorCodes Modbus_ReadData()
         {
-            return MyMaster.ReadHoldingRegisters(BaseAddr, NumItems, ModbusData, 0);
+            return MyMaster.ReadHoldingRegisters(BaseAddr, (ushort)DataSize, ModbusData, 0);
         }
 
-        protected override void CellValueChanged(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
+        protected override void CellValueChanged(ushort[] modData, DataGridViewCellEventArgs e)
         {
-            if (MyMaster.IsConnected)
-                ModBusSendRegs(MbDataAddress(e), Convert.ToUInt16(CurrentCell.Value));
+            if (MyMaster.IsConnected) {
+                ushort Address = MbDataAddress(e);
+                ModBusSendRegs(Address, modData);
+            }
         }
 
-        private void ModBusSendRegs(ushort Address, ushort Value)
+        private void ModBusSendRegs(ushort Address, ushort[] Data)
         {
             mut.WaitOne();
             // TODO Async Call ?
-            ErrCode = MyMaster.WriteSingleRegister(Address, Value);
+            if (Data.Length == 1) {
+                ErrCode = MyMaster.WriteSingleRegister(Address, Data[0]);
+            } else {
+                ErrCode = MyMaster.WriteMultipleRegisters(Address, (ushort)Data.Length, Data);
+            }
             mut.ReleaseMutex();
         }
     }
