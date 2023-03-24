@@ -16,7 +16,14 @@ namespace csModbusView
             UINT32
         }
 
-        ModbusDataType _DataType;
+        public enum Endianess
+        {
+            LittleEndian,
+            BigEndian,
+        }
+
+        private ModbusDataType _DataType;
+        private int[] EndianIdx = new int[2];
         private ushort _NumItems;
         private int _TypeSize;
         private int _DataSize;
@@ -80,7 +87,8 @@ namespace csModbusView
                 _DataSize = _NumItems * _TypeSize;
             }
         }
-        public int DataSize {
+        public int DataSize
+        {
             get {
                 return _DataSize;
             }
@@ -91,9 +99,18 @@ namespace csModbusView
                 return _TypeSize;
             }
         }
+        public Endianess Int32Endianes { get; set; }
 
         public void InitGridView()
         {
+            if (Int32Endianes == Endianess.LittleEndian) {
+                EndianIdx[0] = 0;
+                EndianIdx[1] = 1;
+            } else {
+                EndianIdx[0] = 1;
+                EndianIdx[1] = 0;
+            }
+
             if (NumItems == 0)
                 return;
             if (ItemColumns == 0)
@@ -226,8 +243,8 @@ namespace csModbusView
                         }
 
                         if (TypeSize == 2) {
-                            modData[0] = (ushort)(modValue >> 16);
-                            modData[1] = (ushort)(modValue & 0xffff);
+                            modData[EndianIdx[0]] = (ushort)(modValue & 0xffff);
+                            modData[EndianIdx[1]] = (ushort)(modValue >> 16);
                         } else {
                             modData[0] = (ushort)(modValue & 0xffff);
                         }
@@ -256,31 +273,40 @@ namespace csModbusView
 
             for (int dIdx = BaseIdx; dIdx <= BaseIdx + Size - 1; dIdx += _TypeSize) {
                 DataGridViewCell mbCell = this.Rows[iRow].Cells[iCol];
-                if (isLongValue) {
-                    UInt32 cellValue;
-                    cellValue = Convert.ToUInt32(ModbusData[dIdx]) << 16;
-                    cellValue |= Convert.ToUInt32(ModbusData[dIdx + 1]);
-                    if (_DataType == ModbusDataType.INT32) {
-                        mbCell.Value = unchecked((Int32)cellValue);
-                    } else {
-                        mbCell.Value = unchecked((UInt32)cellValue); ;
-                    }
-
+                if (IsCoil) {
+                    mbCell.Value = ModbusData[dIdx];
                 } else {
-                    UInt16 cellValue = Convert.ToUInt16 (ModbusData[dIdx]);
-
-                    if (_DataType == ModbusDataType.INT16) {
-                        mbCell.Value = unchecked((Int16)cellValue);
+                    if (isLongValue) {
+                        SetLongCellValue(mbCell, (ushort[])(object)ModbusData, dIdx);
                     } else {
-                        mbCell.Value = cellValue;
+                        SetCellValue(mbCell, (ushort[])(object)ModbusData, dIdx);
                     }
                 }
-
                 iCol += 1;
                 if ((iCol == this.ColumnCount)) {
                     iCol = 0;
                     iRow += 1;
                 }
+            }
+        }
+        private void SetLongCellValue(DataGridViewCell mbCell, ushort[] ModbusData, int dIdx)
+        {
+            UInt32 cellValue;
+            cellValue = Convert.ToUInt32(ModbusData[dIdx + EndianIdx[0]]);
+            cellValue |= Convert.ToUInt32(ModbusData[dIdx + EndianIdx[1]]) << 16;
+            if (_DataType == ModbusDataType.INT32) {
+                mbCell.Value = unchecked((Int32)cellValue);
+            } else {
+                mbCell.Value = unchecked((UInt32)cellValue); ;
+            }
+        }
+        private void SetCellValue(DataGridViewCell mbCell, ushort[] ModbusData, int dIdx)
+        {
+            UInt16 cellValue = Convert.ToUInt16(ModbusData[dIdx]);
+            if (_DataType == ModbusDataType.INT16) {
+                mbCell.Value = unchecked((Int16)cellValue);
+            } else {
+                mbCell.Value = cellValue;
             }
         }
     }

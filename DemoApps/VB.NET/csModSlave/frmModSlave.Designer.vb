@@ -206,65 +206,64 @@ Partial Class frmModSlave
         'ucDiscretInputs
         '
         Me.ucDiscretInputs.BaseAddr = CType(20US, UShort)
+        Me.ucDiscretInputs.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.ucDiscretInputs.ItemColumns = 8
-        Me.ucDiscretInputs.ItemNames = Nothing
         Me.ucDiscretInputs.Location = New System.Drawing.Point(194, 180)
         Me.ucDiscretInputs.Margin = New System.Windows.Forms.Padding(4)
         Me.ucDiscretInputs.Name = "ucDiscretInputs"
         Me.ucDiscretInputs.NumItems = CType(20US, UShort)
-        Me.ucDiscretInputs.Size = New System.Drawing.Size(226, 72)
+        Me.ucDiscretInputs.Size = New System.Drawing.Size(227, 74)
         Me.ucDiscretInputs.TabIndex = 4
         Me.ucDiscretInputs.Title = "DiscretInputs"
         '
         'ucInputRegs
         '
         Me.ucInputRegs.BaseAddr = CType(7US, UShort)
+        Me.ucInputRegs.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.ucInputRegs.ItemColumns = 3
         Me.ucInputRegs.ItemNames = New String() {"Velo", "Accel"}
         Me.ucInputRegs.Location = New System.Drawing.Point(194, 6)
         Me.ucInputRegs.Margin = New System.Windows.Forms.Padding(0)
         Me.ucInputRegs.Name = "ucInputRegs"
         Me.ucInputRegs.NumItems = CType(10US, UShort)
-        Me.ucInputRegs.Size = New System.Drawing.Size(226, 90)
+        Me.ucInputRegs.Size = New System.Drawing.Size(224, 92)
         Me.ucInputRegs.TabIndex = 3
         Me.ucInputRegs.Title = "Input Register"
         '
         'ucHoldingRegs2
         '
         Me.ucHoldingRegs2.BaseAddr = CType(20US, UShort)
-        Me.ucHoldingRegs2.ItemColumns = 1
-        Me.ucHoldingRegs2.ItemNames = Nothing
+        Me.ucHoldingRegs2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.ucHoldingRegs2.Location = New System.Drawing.Point(4, 180)
         Me.ucHoldingRegs2.Margin = New System.Windows.Forms.Padding(4)
         Me.ucHoldingRegs2.Name = "ucHoldingRegs2"
         Me.ucHoldingRegs2.NumItems = CType(5US, UShort)
-        Me.ucHoldingRegs2.Size = New System.Drawing.Size(127, 108)
+        Me.ucHoldingRegs2.Size = New System.Drawing.Size(128, 110)
         Me.ucHoldingRegs2.TabIndex = 2
         Me.ucHoldingRegs2.Title = "Holding Register"
         '
         'ucHoldingRegs1
         '
         Me.ucHoldingRegs1.BaseAddr = CType(10US, UShort)
-        Me.ucHoldingRegs1.ItemColumns = 1
-        Me.ucHoldingRegs1.ItemNames = Nothing
+        Me.ucHoldingRegs1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.ucHoldingRegs1.Location = New System.Drawing.Point(4, 4)
         Me.ucHoldingRegs1.Margin = New System.Windows.Forms.Padding(4)
         Me.ucHoldingRegs1.Name = "ucHoldingRegs1"
         Me.ucHoldingRegs1.NumItems = CType(8US, UShort)
-        Me.ucHoldingRegs1.Size = New System.Drawing.Size(127, 162)
+        Me.ucHoldingRegs1.Size = New System.Drawing.Size(128, 164)
         Me.ucHoldingRegs1.TabIndex = 1
         Me.ucHoldingRegs1.Title = "Holding Register"
         '
         'ucCoils
         '
         Me.ucCoils.BaseAddr = CType(10US, UShort)
+        Me.ucCoils.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.ucCoils.ItemColumns = 8
-        Me.ucCoils.ItemNames = Nothing
         Me.ucCoils.Location = New System.Drawing.Point(194, 100)
         Me.ucCoils.Margin = New System.Windows.Forms.Padding(4)
         Me.ucCoils.Name = "ucCoils"
         Me.ucCoils.NumItems = CType(20US, UShort)
-        Me.ucCoils.Size = New System.Drawing.Size(226, 72)
+        Me.ucCoils.Size = New System.Drawing.Size(227, 74)
         Me.ucCoils.TabIndex = 0
         Me.ucCoils.Title = "Coils"
         '
@@ -287,6 +286,7 @@ Partial Class frmModSlave
         Me.mainToolBar.ResumeLayout(False)
         Me.mainToolBar.PerformLayout()
         Me.ViewPanel.ResumeLayout(False)
+        Me.ViewPanel.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 

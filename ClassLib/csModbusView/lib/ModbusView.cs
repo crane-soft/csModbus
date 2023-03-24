@@ -50,6 +50,8 @@ namespace csModbusView
             this.SizeChanged += ModbusView_SizeChanged;
             this.AutoSizeChanged += ModbusView_AutoSizeChanged;
             AutoSize = true;
+            DataType = MbGridView.ModbusDataType.UINT16;
+            Endianes = MbGridView.Endianess.BigEndian;
         }
 
         public void setDesignMode(bool desigMode)
@@ -65,7 +67,9 @@ namespace csModbusView
 
         public void setBrowsableProperties()
         {
-            setBrowsableProperty("DataType", mbView.IsCoil == false);
+            bool isBrowsable = mbView.IsCoil == false;
+            setBrowsableProperty("DataType", isBrowsable);
+            setBrowsableProperty("Endianes", isBrowsable && (TypeSize == 2));
         }
 
         protected void SetDataSize(ushort BaseAddr, ushort NumItems, int ItemColumns)
@@ -162,7 +166,22 @@ namespace csModbusView
             }
         }
 
-        [System.ComponentModel.Category("Layout")]
+        [System.ComponentModel.Category("csModbus")]
+        [System.ComponentModel.Browsable(true)]
+        [System.ComponentModel.Description("Enianess for 32bit data types")]
+        [System.ComponentModel.DefaultValue(MbGridView.Endianess.BigEndian)]
+        public MbGridView.Endianess Endianes
+        {
+            get {
+                return mbView.Int32Endianes;
+            }
+            set {
+                mbView.Int32Endianes = value;
+            }
+        }
+
+
+            [System.ComponentModel.Category("Layout")]
         [System.ComponentModel.DefaultValue(true)]
         public override bool AutoSize {
             get {
