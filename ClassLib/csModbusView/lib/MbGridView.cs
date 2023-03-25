@@ -13,7 +13,9 @@ namespace csModbusView
             INT16,
             UINT16,
             INT32,
-            UINT32
+            UINT32,
+            IEEE_754,
+            PRO_STUD
         }
 
         public enum Endianess
@@ -23,11 +25,10 @@ namespace csModbusView
         }
 
         private ModbusDataType _DataType;
-        private int[] EndianIdx = new int[2];
         private ushort _NumItems;
         private int _TypeSize;
         private int _DataSize;
-
+        
         public MbGridView()
         {
             AllowUserToAddRows = false;
@@ -76,12 +77,12 @@ namespace csModbusView
             set {
                 _DataType = value;
                 switch (_DataType) {
-                    case ModbusDataType.INT32:
-                    case ModbusDataType.UINT32:
-                        _TypeSize = 2;
+                    case ModbusDataType.UINT16:
+                    case ModbusDataType.INT16:
+                        _TypeSize = 1;
                         break;
                     default:
-                        _TypeSize = 1;
+                        _TypeSize = 2;
                         break;
                 }
                 _DataSize = _NumItems * _TypeSize;
@@ -100,17 +101,8 @@ namespace csModbusView
             }
         }
         public Endianess Int32Endianes { get; set; }
-
         public void InitGridView()
         {
-            if (Int32Endianes == Endianess.LittleEndian) {
-                EndianIdx[0] = 0;
-                EndianIdx[1] = 1;
-            } else {
-                EndianIdx[0] = 1;
-                EndianIdx[1] = 0;
-            }
-
             if (NumItems == 0)
                 return;
             if (ItemColumns == 0)
@@ -233,20 +225,12 @@ namespace csModbusView
                 DataGridViewCell CurrentCell = this.Rows[e.RowIndex].Cells[e.ColumnIndex];
                 if (CurrentCell.Tag != null) {
                     try {
-                        ushort[] modData = new ushort[TypeSize];
-                        UInt32 modValue;
-                        if ((_DataType == ModbusDataType.INT16) || (_DataType == ModbusDataType.INT32)) {
-                            Int32 iValue = Convert.ToInt32(CurrentCell.Value);
-                            modValue = unchecked((UInt32)iValue);
+                        ushort[] modData;
+                        if (_TypeSize == 1) {
+                            modData = Get16bitModbusData(CurrentCell.Value);
                         } else {
-                            modValue = Convert.ToUInt32(CurrentCell.Value);
-                        }
-
-                        if (TypeSize == 2) {
-                            modData[EndianIdx[0]] = (ushort)(modValue & 0xffff);
-                            modData[EndianIdx[1]] = (ushort)(modValue >> 16);
-                        } else {
-                            modData[0] = (ushort)(modValue & 0xffff);
+                            modData = Get32bitModbusData(CurrentCell.Value);
+                            SwapEndinness(modData);
                         }
                         MbCellValueChanged?.Invoke(modData, e);
 
@@ -277,9 +261,13 @@ namespace csModbusView
                     mbCell.Value = ModbusData[dIdx];
                 } else {
                     if (isLongValue) {
-                        SetLongCellValue(mbCell, (ushort[])(object)ModbusData, dIdx);
+                        ushort[] mData = new ushort[2];
+                        Array.Copy(ModbusData, dIdx, mData, 0, 2);
+                        SwapEndinness(mData);
+
+                        mbCell.Value = Get32bitCellValue(mData);
                     } else {
-                        SetCellValue(mbCell, (ushort[])(object)ModbusData, dIdx);
+                        mbCell.Value = Get16bitCellValue((ushort)(object)ModbusData[dIdx]);
                     }
                 }
                 iCol += 1;
@@ -289,24 +277,114 @@ namespace csModbusView
                 }
             }
         }
-        private void SetLongCellValue(DataGridViewCell mbCell, ushort[] ModbusData, int dIdx)
+
+        private object Get16bitCellValue(ushort ModbusData)
         {
-            UInt32 cellValue;
-            cellValue = Convert.ToUInt32(ModbusData[dIdx + EndianIdx[0]]);
-            cellValue |= Convert.ToUInt32(ModbusData[dIdx + EndianIdx[1]]) << 16;
-            if (_DataType == ModbusDataType.INT32) {
-                mbCell.Value = unchecked((Int32)cellValue);
+            UInt16 cellValue = Convert.ToUInt16(ModbusData);
+            if (_DataType == ModbusDataType.INT16) {
+                return unchecked((Int16)cellValue);
             } else {
-                mbCell.Value = unchecked((UInt32)cellValue); ;
+                return cellValue;
             }
         }
-        private void SetCellValue(DataGridViewCell mbCell, ushort[] ModbusData, int dIdx)
+
+        private object Get32bitCellValue(ushort[] ModbusData)
         {
-            UInt16 cellValue = Convert.ToUInt16(ModbusData[dIdx]);
+            UInt32 cellValue;
+            cellValue = Convert.ToUInt32(ModbusData[1]) << 16;
+            cellValue |= Convert.ToUInt32(ModbusData[0]);
+            switch (_DataType) {
+                case ModbusDataType.INT32:
+                    return unchecked((Int32)cellValue);
+
+                case ModbusDataType.IEEE_754:
+                    Single[] fValue = new Single[1];
+                    Buffer.BlockCopy(ModbusData, 0, fValue, 0, 4);
+                    return fValue[0];
+
+                case ModbusDataType.PRO_STUD:
+                    int IntValue = ModbusData[1];
+                    int sign = 1;
+                    if ((IntValue & 0x8000) != 0) {
+                        IntValue = IntValue & 0x7fff;
+                        sign = -1;
+                    }
+                    int FractValue = ModbusData[0];
+                    double value = (double)IntValue;
+                    value += (double)FractValue / 100;
+                    if (sign < 0) {
+                        value = -value;
+                    }
+                    return value;
+
+                default:
+                    return unchecked((UInt32)cellValue);
+            }
+        }
+
+
+        private ushort[] Get16bitModbusData(object cValue)
+        {
+            ushort[] modData = new ushort[1];
             if (_DataType == ModbusDataType.INT16) {
-                mbCell.Value = unchecked((Int16)cellValue);
+                Int16 iValue = Convert.ToInt16(cValue);
+                modData[0] = unchecked((ushort)iValue);
             } else {
-                mbCell.Value = cellValue;
+                modData[0] = Convert.ToUInt16(cValue);
+            }
+            return modData;
+        }
+
+        private ushort[] Get32bitModbusData(object cValue)
+        {
+            ushort[] modData = new ushort[2];
+            UInt32 modValue = 0;
+            Int32 iValue;
+            switch (_DataType) {
+                case ModbusDataType.PRO_STUD:
+                    double dValue = Convert.ToDouble(cValue);
+                    ushort sign = 0;
+                    if (dValue < 0) {
+                        dValue = -dValue;
+                        sign = 0x8000;
+                    }
+                    iValue = (ushort)Math.Truncate(dValue);
+                    if (iValue > Int16.MaxValue) {
+                        iValue = Int16.MaxValue;
+                    } else if (iValue < Int16.MinValue) {
+                        iValue = Int16.MinValue;
+                    }
+                    modData[1] = (ushort)(iValue | sign);
+                    modData[0] = Convert.ToUInt16((dValue - iValue) * 100);
+                    return modData;
+
+                case ModbusDataType.IEEE_754:
+                    Single[] fValue = new Single[1];
+                    fValue[0] = Convert.ToSingle(cValue);
+                    Buffer.BlockCopy(fValue, 0, modData, 0, 4);
+                    return modData;
+
+                case ModbusDataType.INT32:
+                    iValue = Convert.ToInt32(cValue);
+                    modValue = unchecked((UInt32)iValue);
+                    break;
+
+                default:
+                    modValue = Convert.ToUInt32(CurrentCell.Value);
+                    break;
+            }
+
+            modData[1] = (ushort)(modValue >> 16);
+            modData[0] = (ushort)(modValue & 0xffff);
+            return modData;
+        }
+
+        void SwapEndinness(ushort[] data)
+        {
+            if (Int32Endianes == Endianess.BigEndian) {
+                ushort tmp = data[0];
+                data[0] = data[1];
+                data[1] = tmp;
             }
         }
     }

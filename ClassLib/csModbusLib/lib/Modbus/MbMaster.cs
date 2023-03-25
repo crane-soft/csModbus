@@ -173,11 +173,21 @@ namespace csModbusLib
         public MbMaster() { }
         public MbMaster(MbInterface Interface) : base(Interface) { }
 
+        public ErrorCodes ReadCoils(ushort Address, bool[] DestData)
+        {
+            return ReadCoils(Address, (ushort)DestData.Length, DestData);
+        }
+
         public ErrorCodes ReadCoils(ushort Address, ushort Length, bool[] DestData, int DestOffs = 0)
         {
             if (SendSingleRequest(ModbusCodes.READ_COILS, Address, Length))
                 ReadSlaveBitValues(DestData, DestOffs);
             return LastError;
+        }
+
+        public ErrorCodes ReadDiscreteInputs(ushort Address, bool[] DestData)
+        {
+            return ReadDiscreteInputs(Address, (ushort)DestData.Length, DestData);
         }
 
         public ErrorCodes ReadDiscreteInputs(ushort Address, ushort Length, bool[] DestData, int DestOffs = 0)
@@ -187,11 +197,21 @@ namespace csModbusLib
             return LastError;
         }
 
+        public ErrorCodes ReadHoldingRegisters(ushort Address, ushort[] DestData)
+        {
+            return ReadHoldingRegisters(Address, (ushort)DestData.Length, DestData, 0);
+        }
+
         public ErrorCodes ReadHoldingRegisters(ushort Address, ushort Length, ushort[] DestData, int DestOffs = 0)
         {
             if (SendSingleRequest(ModbusCodes.READ_HOLDING_REGISTERS, Address, Length))
                 ReadSlaveRegisterValues(DestData, DestOffs);
             return LastError;
+        }
+
+        public ErrorCodes ReadInputRegisters(ushort Address, ushort[] DestData)
+        {
+            return ReadInputRegisters(Address, (ushort)DestData.Length, DestData);
         }
 
         public ErrorCodes ReadInputRegisters(ushort Address, ushort Length, ushort[] DestData, int DestOffs = 0)
@@ -223,8 +243,13 @@ namespace csModbusLib
             return LastError;
         }
 
+        public ErrorCodes WriteMultipleRegisters(ushort Address, ushort[] SrcData)
+        {
+            return WriteMultipleRegisters(Address, (ushort) SrcData.Length, SrcData);
+        }
+
         public ErrorCodes WriteMultipleRegisters(ushort Address, ushort Length, ushort[] SrcData, int SrcOffs = 0)
-        {  // TODO not yet tested
+        {
             if (SendMultipleWriteRequest(ModbusCodes.WRITE_MULTIPLE_REGISTERS, Address, Length, SrcData, SrcOffs))
                 ReceiveSlaveResponse();
 

@@ -101,7 +101,7 @@ namespace csModbusView
 
         protected override ErrorCodes Modbus_ReadData()
         {
-            return MyMaster.ReadHoldingRegisters(BaseAddr, (ushort)DataSize, ModbusData, 0);
+            return MyMaster.ReadHoldingRegisters(BaseAddr, ModbusData);
         }
 
         protected override void CellValueChanged(ushort[] modData, DataGridViewCellEventArgs e)
@@ -119,7 +119,7 @@ namespace csModbusView
             if (Data.Length == 1) {
                 ErrCode = MyMaster.WriteSingleRegister(Address, Data[0]);
             } else {
-                ErrCode = MyMaster.WriteMultipleRegisters(Address, (ushort)Data.Length, Data);
+                ErrCode = MyMaster.WriteMultipleRegisters(Address, Data);
             }
             mut.ReleaseMutex();
         }
@@ -137,7 +137,7 @@ namespace csModbusView
 
         protected override ErrorCodes Modbus_ReadData()
         {
-            return MyMaster.ReadInputRegisters(BaseAddr, NumItems, ModbusData, 0);
+            return MyMaster.ReadInputRegisters(BaseAddr,  ModbusData);
         }
     }
 
@@ -153,7 +153,7 @@ namespace csModbusView
 
         protected override ErrorCodes Modbus_ReadData()
         {
-            return MyMaster.ReadCoils(BaseAddr, NumItems, ModbusData, 0);
+            return MyMaster.ReadCoils(BaseAddr, ModbusData);
         }
 
         protected override void CellContentClick(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
@@ -161,10 +161,10 @@ namespace csModbusView
             bool NewCellValue = !(bool)CurrentCell.Value;
             CurrentCell.Value = NewCellValue;
             if (MyMaster.IsConnected)
-                ModbusSendCoils(MbDataAddress(e), NewCellValue);
+                ModbusSendCoil(MbDataAddress(e), NewCellValue);
         }
 
-        private  void ModbusSendCoils(ushort Address, bool Value)
+        private  void ModbusSendCoil(ushort Address, bool Value)
         {
             // TODO Async Call ?
             mut.WaitOne();
@@ -185,7 +185,7 @@ namespace csModbusView
 
         protected override ErrorCodes Modbus_ReadData()
         {
-            return MyMaster.ReadDiscreteInputs(BaseAddr, NumItems, ModbusData, 0);
+            return MyMaster.ReadDiscreteInputs(BaseAddr, ModbusData);
         }
     }
 }

@@ -22,3 +22,5 @@
 /DemoApps/csharp/csModMaster/bin
 /DemoApps/csharp/csModMaster/obj
 /ClassLib/csModbusLib/.vs
+/DemoApps/VB.NET/.vs
+/DemoApps/VB.NET/csModSlave/.vs

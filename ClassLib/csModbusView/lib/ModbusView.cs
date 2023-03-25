@@ -67,9 +67,9 @@ namespace csModbusView
 
         public void setBrowsableProperties()
         {
-            bool isBrowsable = mbView.IsCoil == false;
-            setBrowsableProperty("DataType", isBrowsable);
-            setBrowsableProperty("Endianes", isBrowsable && (TypeSize == 2));
+            bool isNotCoil = mbView.IsCoil == false;
+            setBrowsableProperty("DataType", isNotCoil);
+            setBrowsableProperty("Endianes", isNotCoil && (TypeSize > 1));
         }
 
         protected void SetDataSize(ushort BaseAddr, ushort NumItems, int ItemColumns)
