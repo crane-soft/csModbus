@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="lib\MasterGridView.cs" />
     <Compile Include="lib\MbGridView.cs" />
+    <Compile Include="lib\ModbusGridViewCell.cs" />
     <Compile Include="lib\ModbusView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="lib\SlaveGridView.cs" />
@@ -57,9 +58,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagramm\SlaveGridView.cd" />
-    <None Include="ClassDiagramm\MasterGridView.cd" />
+    <None Include="ClassDiagram\MasterGridView.cd" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

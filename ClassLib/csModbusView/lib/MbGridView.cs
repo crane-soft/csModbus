@@ -25,10 +25,10 @@ namespace csModbusView
         }
 
         private ModbusDataType _DataType;
-        private ushort _NumItems;
         private int _TypeSize;
         private int _DataSize;
-        
+        private ushort _NumItems;
+
         public MbGridView()
         {
             AllowUserToAddRows = false;
@@ -76,14 +76,18 @@ namespace csModbusView
             }
             set {
                 _DataType = value;
-                switch (_DataType) {
-                    case ModbusDataType.UINT16:
-                    case ModbusDataType.INT16:
-                        _TypeSize = 1;
-                        break;
-                    default:
-                        _TypeSize = 2;
-                        break;
+                if (IsCoil) {
+                    _TypeSize = 1;
+                } else {
+                    switch (_DataType) {
+                        case ModbusDataType.UINT16:
+                        case ModbusDataType.INT16:
+                            _TypeSize = 1;
+                            break;
+                        default:
+                            _TypeSize = 2;
+                            break;
+                    }
                 }
                 _DataSize = _NumItems * _TypeSize;
             }
@@ -145,6 +149,52 @@ namespace csModbusView
             DisableCellEvents = false;
         }
 
+        private void NewItemCell(int Row, int Col)
+        {
+            DataGridViewCell itemCell;
+            if (IsCoil) {
+                itemCell = new ModbusCoilGridViewCell(this);
+            } else {
+                switch (_DataType) {
+                    default:
+                        itemCell = new UINT16_GridViewCell(this);
+                        break;
+                    case ModbusDataType.INT16:
+                        itemCell = new INT16_GridViewCell(this);
+                        break;
+                    case ModbusDataType.UINT32:
+                        itemCell = new UINT32_GridViewCell(this, Int32Endianes);
+                        break;
+                    case ModbusDataType.INT32:
+                        itemCell = new INT32_GridViewCell(this, Int32Endianes);
+                        break;
+                    case ModbusDataType.IEEE_754:
+                        itemCell = new IEEE754_GridViewCell(this, Int32Endianes);
+                        break;
+                    case ModbusDataType.PRO_STUD:
+                        itemCell = new PROSTUD_GridViewCell(this);
+                        break;
+                }
+            }
+
+            Rows[Row].Cells[Col] = itemCell;
+
+            // All Coils Read-Only because chec changed is done in CellClick Event
+            // ReadOnly can only be set after assigned to a row
+            itemCell.ReadOnly = IsCoil;
+
+        }
+
+        private void NewEmptyCell(int Row, int Col)
+        {
+            DataGridViewCell itemCell;
+            itemCell = new DataGridViewTextBoxCell();
+            itemCell.Value = "";
+            itemCell.Style.BackColor = this.BackgroundColor;
+            Rows[Row].Cells[Col] = itemCell;
+            itemCell.ReadOnly = true;
+        }
+
         public void AdjustParentSize(Control parent)
         {
             if ((NumItems == 0) | (this.RowCount == 0))
@@ -159,31 +209,6 @@ namespace csModbusView
             parent.Width = RowHeadersWidth + ItemColumns * ColWidth + 2;
         }
 
-        private void NewItemCell(int Row, int Col)
-        {
-            DataGridViewCell itemCell;
-            if (IsCoil) {
-                itemCell = new DataGridViewCheckBoxCell();
-                itemCell.Value = false;
-            } else
-                itemCell = new DataGridViewTextBoxCell();
-            itemCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            itemCell.Tag = this;
-            Rows[Row].Cells[Col] = itemCell;
-            // All Coils Read-Only becaus chec changed is done in CellClick Event
-            itemCell.ReadOnly = IsCoil;
-        }
-
-        private void NewEmptyCell(int Row, int Col)
-        {
-            DataGridViewCell itemCell;
-            itemCell = new DataGridViewTextBoxCell();
-            itemCell.Value = "";
-            itemCell.Style.BackColor = this.BackgroundColor;
-            Rows[Row].Cells[Col] = itemCell;
-            itemCell.ReadOnly = true;
-        }
-
         public void SetItemNames(string[] Names)
         {
             for (int iRow = 0; iRow <= Names.Length; iRow++) {
@@ -195,9 +220,6 @@ namespace csModbusView
 
         private void MbGridView_SelectionChanged(object sender, EventArgs e)
         {
-
-            // For Each Item As DataGridViewCell In Me.SelectedCells
-            // If Item.Tag Is Nothing Then   ' If only empty cells should be selected off ?
             this.ClearSelection();
         }
 
@@ -210,31 +232,28 @@ namespace csModbusView
         {
             if (DisableCellEvents)
                 return;
+
             if (e.ColumnIndex >= 0) {
-                DataGridViewCell CurrentCell = this.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                if (CurrentCell.Tag != null)
-                    MbCellContentClick?.Invoke(CurrentCell, e);
+                DataGridViewCell clieckedCell = this.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                if (clieckedCell.Tag != null)
+                    MbCellContentClick?.Invoke(clieckedCell, e);
             }
         }
 
         private void MbGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            if (DisableCellEvents)
+            if (DisableCellEvents || IsCoil)
                 return;
-            if (e.ColumnIndex >= 0) {
-                DataGridViewCell CurrentCell = this.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                if (CurrentCell.Tag != null) {
-                    try {
-                        ushort[] modData;
-                        if (_TypeSize == 1) {
-                            modData = Get16bitModbusData(CurrentCell.Value);
-                        } else {
-                            modData = Get32bitModbusData(CurrentCell.Value);
-                            SwapEndinness(modData);
-                        }
-                        MbCellValueChanged?.Invoke(modData, e);
 
+            if (e.ColumnIndex >= 0) {
+                ModbusRegGridViewCell changedCell = (ModbusRegGridViewCell)this.Rows[e.RowIndex].Cells[e.ColumnIndex];
+                if (changedCell.Tag != null) {
+
+                    try {
+                        ushort[] modData = changedCell.GetValue();
+                        MbCellValueChanged?.Invoke(modData, e);
                     }
+
                     catch (Exception ex) {
                         MessageBox.Show(ex.Message);
                     }
@@ -253,22 +272,14 @@ namespace csModbusView
             int iRow = CellIdx / ItemColumns;
             int iCol = CellIdx % ItemColumns;
 
-            bool isLongValue = (typeof(DataT) == typeof(ushort)) && (_TypeSize == 2);
+            // bool isLongValue = (typeof(DataT) == typeof(ushort)) && (_TypeSize == 2);
 
             for (int dIdx = BaseIdx; dIdx <= BaseIdx + Size - 1; dIdx += _TypeSize) {
                 DataGridViewCell mbCell = this.Rows[iRow].Cells[iCol];
                 if (IsCoil) {
                     mbCell.Value = ModbusData[dIdx];
                 } else {
-                    if (isLongValue) {
-                        ushort[] mData = new ushort[2];
-                        Array.Copy(ModbusData, dIdx, mData, 0, 2);
-                        SwapEndinness(mData);
-
-                        mbCell.Value = Get32bitCellValue(mData);
-                    } else {
-                        mbCell.Value = Get16bitCellValue((ushort)(object)ModbusData[dIdx]);
-                    }
+                    ((ModbusRegGridViewCell)mbCell).SetValue((ushort[])(object)ModbusData, dIdx);
                 }
                 iCol += 1;
                 if ((iCol == this.ColumnCount)) {
@@ -277,115 +288,6 @@ namespace csModbusView
                 }
             }
         }
-
-        private object Get16bitCellValue(ushort ModbusData)
-        {
-            UInt16 cellValue = Convert.ToUInt16(ModbusData);
-            if (_DataType == ModbusDataType.INT16) {
-                return unchecked((Int16)cellValue);
-            } else {
-                return cellValue;
-            }
-        }
-
-        private object Get32bitCellValue(ushort[] ModbusData)
-        {
-            UInt32 cellValue;
-            cellValue = Convert.ToUInt32(ModbusData[1]) << 16;
-            cellValue |= Convert.ToUInt32(ModbusData[0]);
-            switch (_DataType) {
-                case ModbusDataType.INT32:
-                    return unchecked((Int32)cellValue);
-
-                case ModbusDataType.IEEE_754:
-                    Single[] fValue = new Single[1];
-                    Buffer.BlockCopy(ModbusData, 0, fValue, 0, 4);
-                    return fValue[0];
-
-                case ModbusDataType.PRO_STUD:
-                    int IntValue = ModbusData[1];
-                    int sign = 1;
-                    if ((IntValue & 0x8000) != 0) {
-                        IntValue = IntValue & 0x7fff;
-                        sign = -1;
-                    }
-                    int FractValue = ModbusData[0];
-                    double value = (double)IntValue;
-                    value += (double)FractValue / 100;
-                    if (sign < 0) {
-                        value = -value;
-                    }
-                    return value;
-
-                default:
-                    return unchecked((UInt32)cellValue);
-            }
-        }
-
-
-        private ushort[] Get16bitModbusData(object cValue)
-        {
-            ushort[] modData = new ushort[1];
-            if (_DataType == ModbusDataType.INT16) {
-                Int16 iValue = Convert.ToInt16(cValue);
-                modData[0] = unchecked((ushort)iValue);
-            } else {
-                modData[0] = Convert.ToUInt16(cValue);
-            }
-            return modData;
-        }
-
-        private ushort[] Get32bitModbusData(object cValue)
-        {
-            ushort[] modData = new ushort[2];
-            UInt32 modValue = 0;
-            Int32 iValue;
-            switch (_DataType) {
-                case ModbusDataType.PRO_STUD:
-                    double dValue = Convert.ToDouble(cValue);
-                    ushort sign = 0;
-                    if (dValue < 0) {
-                        dValue = -dValue;
-                        sign = 0x8000;
-                    }
-                    iValue = (ushort)Math.Truncate(dValue);
-                    if (iValue > Int16.MaxValue) {
-                        iValue = Int16.MaxValue;
-                    } else if (iValue < Int16.MinValue) {
-                        iValue = Int16.MinValue;
-                    }
-                    modData[1] = (ushort)(iValue | sign);
-                    modData[0] = Convert.ToUInt16((dValue - iValue) * 100);
-                    return modData;
-
-                case ModbusDataType.IEEE_754:
-                    Single[] fValue = new Single[1];
-                    fValue[0] = Convert.ToSingle(cValue);
-                    Buffer.BlockCopy(fValue, 0, modData, 0, 4);
-                    return modData;
-
-                case ModbusDataType.INT32:
-                    iValue = Convert.ToInt32(cValue);
-                    modValue = unchecked((UInt32)iValue);
-                    break;
-
-                default:
-                    modValue = Convert.ToUInt32(CurrentCell.Value);
-                    break;
-            }
-
-            modData[1] = (ushort)(modValue >> 16);
-            modData[0] = (ushort)(modValue & 0xffff);
-            return modData;
-        }
-
-        void SwapEndinness(ushort[] data)
-        {
-            if (Int32Endianes == Endianess.BigEndian) {
-                ushort tmp = data[0];
-                data[0] = data[1];
-                data[1] = tmp;
-            }
-        }
     }
 }
+

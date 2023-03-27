@@ -18,11 +18,12 @@ namespace csModbusView
 
         private MbGridView mbView;
         private Label lbTitle;
-        private bool InhibitRefresh;
+        private bool EnableRefresh;
         private bool _AutoSize;
 
         public ModbusView(ModbusObjectType MbType, string Title, bool IsMaster)
         {
+            
             lbTitle = new Label();
             lbTitle.BackColor = System.Drawing.SystemColors.ControlLight;
             lbTitle.Dock = DockStyle.Top;
@@ -52,6 +53,8 @@ namespace csModbusView
             AutoSize = true;
             DataType = MbGridView.ModbusDataType.UINT16;
             Endianes = MbGridView.Endianess.BigEndian;
+            EnableRefresh = true;
+            RefreshView();
         }
 
         public void setDesignMode(bool desigMode)
@@ -62,6 +65,7 @@ namespace csModbusView
             } else {
                 mbView.Enabled = true;
                 lbTitle.Enabled = true;
+                RefreshView();
             }
         }
 
@@ -74,11 +78,11 @@ namespace csModbusView
 
         protected void SetDataSize(ushort BaseAddr, ushort NumItems, int ItemColumns)
         {
-            InhibitRefresh = true;
+            EnableRefresh = false;
             this.BaseAddr = BaseAddr;
             this.NumItems = NumItems;
             this.ItemColumns = ItemColumns;
-            InhibitRefresh = false;
+            EnableRefresh = true;
             RefreshView();
         }
    
@@ -236,14 +240,14 @@ namespace csModbusView
 
         private void MbView_RowHeadersWidthChanged(object sender, System.EventArgs e)
         {
-            if (InhibitRefresh == false) {
+            if (EnableRefresh) {
                 AdjustSize(); ;
             }
         }
 
         private void RefreshView()
         {
-            if (InhibitRefresh == false) {
+            if (EnableRefresh) {
                 mbView.InitGridView();
                 AdjustSize();
             }
