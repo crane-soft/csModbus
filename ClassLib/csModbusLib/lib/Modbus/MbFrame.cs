@@ -138,32 +138,38 @@ namespace csModbusLib
             ExceptionCode = ExceptionCodes.NO_EXCEPTION;
         }
 
-        protected int GetNumBytesOfBits ()
+        public void GetBitData(UInt16[] DestBits, int DestIdx, int FrameIdx)
         {
-            int numBytes = DataCount / 8;
-            if ((DataCount % 8) > 0)
-                ++numBytes;
-            return numBytes;
+            int bitCnt = 0;
+            byte dataByte = 0;
+
+            for (int i = 0; i < DataCount; ++i) {
+                if (bitCnt == 0) {
+                    dataByte = RawData.Data[FrameIdx++];
+                }
+                int b = dataByte & 1;
+                DestBits[DestIdx++] = (ushort)b;
+                dataByte >>= 1;
+                bitCnt = (bitCnt + 1) & 0x07;
+            }
         }
 
-        public void GetBitData(bool[] DestBits, int DestIdx, int FrameIdx)
+        public int PutBitData(UInt16[] SrcBits, int SrcIdx, int FrameIdx)
         {
-            int NumBytes = GetNumBytesOfBits();
-            byte[] byteArray = new byte[NumBytes];
-            Array.Copy(RawData.Data, FrameIdx, byteArray, 0, NumBytes);
-            BitArray Bits = new BitArray(byteArray);
-            Bits.Length = DataCount;
-            Bits.CopyTo(DestBits, DestIdx);
-        }
-
-        public int PutBitData(bool[] SrcBits, int SrcIdx, int FrameIdx)
-        {
-            bool[] boolArray = new bool[DataCount];
-            Array.Copy(SrcBits, SrcIdx, boolArray, 0, DataCount);
-            BitArray Bits = new BitArray(boolArray);
-            Bits.CopyTo(RawData.Data, FrameIdx);
-            int NumBytes = GetNumBytesOfBits();
-            RawData.Data[FrameIdx-1] = (byte)(NumBytes);
+            int bitCnt = 0;
+            byte dataByte = 0;
+            int NumBytes = 1;
+            for (int i = 0; i < DataCount; ++i) {
+                if (SrcBits[SrcIdx++] != 0) {
+                    dataByte |= 1;
+                }
+                if (++bitCnt == 8) {
+                    RawData.Data[FrameIdx++] = dataByte;
+                    bitCnt = 0;
+                    ++NumBytes;
+                }
+                dataByte <<= 1;
+            }
             return NumBytes;
         }
 
@@ -313,12 +319,12 @@ namespace csModbusLib
             return RawData.GetUInt16(REQST_SINGLE_DATA_IDX);
         }
 
-        public bool GetRequestSingleBit()
+        public ushort GetRequestSingleBit()
         {
-            return RawData.Data[REQST_SINGLE_DATA_IDX] != 0;
+            return RawData.Data[REQST_SINGLE_DATA_IDX];
         }
 
-        public void PutResponseValues(int BaseAddr, bool[] SrcBits)
+        public void PutResponseBitValues(int BaseAddr, ushort[] SrcBits)
         {
             PutBitData(SrcBits, DataAddress - BaseAddr, RESPNS_DATA_IDX);
         }
@@ -333,7 +339,7 @@ namespace csModbusLib
             RawData.Data[RESPNS_LEN_IDX] = (byte)(DataCount * 2);
         }
 
-        public void GetRequestValues(int BaseAddr, bool[] DestBits)
+        public void GetRequestBitValues(int BaseAddr, UInt16[] DestBits)
         {
             GetBitData(DestBits, DataAddress - BaseAddr, REQST_DATA_IDX);
         }
@@ -375,7 +381,7 @@ namespace csModbusLib
             return 6;
         }
 
-        public int BuildMultipleWriteRequest(ModbusCodes FuncCode, ushort Address, ushort Length, object SrcData, int SrcOffs) 
+        public int BuildMultipleWriteRequest(ModbusCodes FuncCode, ushort Address, ushort Length, ushort[] SrcData, int SrcOffs) 
         {
             BuildRequest(FuncCode, Address, Length);
             int NumDataBytes;
@@ -383,9 +389,9 @@ namespace csModbusLib
             if (FuncCode == ModbusCodes.WRITE_MULTIPLE_REGISTERS) {
                 NumDataBytes = Length * 2; // TODO überflow
                 RawData.Data[REQST_DATA_LEN_IDX] = (Byte)NumDataBytes;
-                RawData.FillUInt16(SrcData as ushort[], SrcOffs, REQST_DATA_IDX, Length);
+                RawData.FillUInt16(SrcData, SrcOffs, REQST_DATA_IDX, Length);
             } else if (FuncCode == ModbusCodes.WRITE_MULTIPLE_COILS) {
-                NumDataBytes = PutBitData(SrcData as bool[], SrcOffs, REQST_DATA_IDX);
+                NumDataBytes = PutBitData(SrcData, SrcOffs, REQST_DATA_IDX);
             }else {
                 return 0;
             }
@@ -434,7 +440,7 @@ namespace csModbusLib
             RawData.CopyUInt16(DestArray, SLAVE_DATA_IDX, DestOffs, DataCount);
         }
 
-        public void ReadSlaveBitValues(bool[] DestBits, int DestOffs)
+        public void ReadSlaveBitValues(ushort[] DestBits, int DestOffs)
         {
             GetBitData(DestBits, DestOffs, SLAVE_DATA_IDX);
         }

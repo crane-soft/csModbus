@@ -102,7 +102,7 @@ namespace csModbusLib
             return SendRequestMessage(MsgLen);
         }
 
-        protected bool SendMultipleWriteRequest(ModbusCodes Fcode, ushort Address, ushort Length, object SrcData, int SrcOffs)
+        protected bool SendMultipleWriteRequest(ModbusCodes Fcode, ushort Address, ushort Length, ushort[] SrcData, int SrcOffs)
         {
             int MsgLen = Frame.BuildMultipleWriteRequest(Fcode, Address, Length, SrcData, SrcOffs);
             return SendRequestMessage(MsgLen);
@@ -133,7 +133,7 @@ namespace csModbusLib
             return true;
         }
 
-        protected bool ReadSlaveBitValues(bool[] DestArray, int DestOffs)
+        protected bool ReadSlaveBitValues(ushort[] DestArray, int DestOffs)
         {
             if (ReceiveSlaveResponse()) {
                 Frame.ReadSlaveBitValues(DestArray, DestOffs);
@@ -173,24 +173,24 @@ namespace csModbusLib
         public MbMaster() { }
         public MbMaster(MbInterface Interface) : base(Interface) { }
 
-        public ErrorCodes ReadCoils(ushort Address, bool[] DestData)
+        public ErrorCodes ReadCoils(ushort Address, ushort[] DestData)
         {
             return ReadCoils(Address, (ushort)DestData.Length, DestData);
         }
 
-        public ErrorCodes ReadCoils(ushort Address, ushort Length, bool[] DestData, int DestOffs = 0)
+        public ErrorCodes ReadCoils(ushort Address, ushort Length, ushort[] DestData, int DestOffs = 0)
         {
             if (SendSingleRequest(ModbusCodes.READ_COILS, Address, Length))
                 ReadSlaveBitValues(DestData, DestOffs);
             return LastError;
         }
 
-        public ErrorCodes ReadDiscreteInputs(ushort Address, bool[] DestData)
+        public ErrorCodes ReadDiscreteInputs(ushort Address, ushort[] DestData)
         {
             return ReadDiscreteInputs(Address, (ushort)DestData.Length, DestData);
         }
 
-        public ErrorCodes ReadDiscreteInputs(ushort Address, ushort Length, bool[] DestData, int DestOffs = 0)
+        public ErrorCodes ReadDiscreteInputs(ushort Address, ushort Length, ushort[] DestData, int DestOffs = 0)
         {
             if (SendSingleRequest(ModbusCodes.READ_DISCRETE_INPUTS, Address, Length))
                 ReadSlaveBitValues(DestData, DestOffs);
@@ -221,10 +221,10 @@ namespace csModbusLib
             return LastError;
         }
 
-        public ErrorCodes WriteSingleCoil(ushort Address, bool BitData)
+        public ErrorCodes WriteSingleCoil(ushort Address, ushort BitData)
         {
-            UInt16 Data = (UInt16)(BitData ? 0xff00 : 0);
-            if (SendSingleRequest(ModbusCodes.WRITE_SINGLE_COIL, Address, Data))
+            BitData = (ushort)((BitData != 0) ? 0xff00 : 0);
+            if (SendSingleRequest(ModbusCodes.WRITE_SINGLE_COIL, Address, BitData))
                 ReceiveSlaveResponse();
             return LastError;
         }
@@ -236,7 +236,7 @@ namespace csModbusLib
             return LastError;
         }
 
-        public ErrorCodes WriteMultipleCoils(ushort Address, ushort Length, bool[] SrcData, int SrcOffs = 0)
+        public ErrorCodes WriteMultipleCoils(ushort Address, ushort Length, ushort[] SrcData, int SrcOffs = 0)
         {   // TODO not yet tested
             if (SendMultipleWriteRequest(ModbusCodes.WRITE_MULTIPLE_COILS, Address, Length, SrcData, SrcOffs))
                 ReceiveSlaveResponse();
@@ -274,7 +274,7 @@ namespace csModbusLib
         public MbMasterAsync() {}
         public MbMasterAsync(MbInterface Interface) : base(Interface) {}
 
-        public async Task<ErrorCodes> ReadCoils(ushort Address, ushort Length, bool[] DestData, int DestOffs = 0)
+        public async Task<ErrorCodes> ReadCoils(ushort Address, ushort Length, ushort[] DestData, int DestOffs = 0)
         {
             if (SendSingleRequest(ModbusCodes.READ_COILS, Address, Length)) {
                 await Task.Run(() => ReadSlaveBitValues(DestData, DestOffs));
@@ -282,7 +282,7 @@ namespace csModbusLib
             return LastError;
         }
 
-        public async Task<ErrorCodes> ReadDiscreteInputs(ushort Address, ushort Length, bool[] DestData, int DestOffs = 0)
+        public async Task<ErrorCodes> ReadDiscreteInputs(ushort Address, ushort Length, ushort[] DestData, int DestOffs = 0)
         {
             if (SendSingleRequest(ModbusCodes.READ_DISCRETE_INPUTS, Address, Length)) {
                 await Task.Run(() => ReadSlaveBitValues(DestData, DestOffs));
@@ -307,10 +307,10 @@ namespace csModbusLib
             return LastError;
         }
 
-        public async Task<ErrorCodes> WriteSingleCoil(ushort Address, bool BitData)
+        public async Task<ErrorCodes> WriteSingleCoil(ushort Address, ushort BitData)
         {
-            UInt16 Data = (UInt16)(BitData ? 1 : 0);
-            if (SendSingleRequest(ModbusCodes.WRITE_SINGLE_COIL, Address, Data)) {
+            BitData = (ushort)((BitData != 0) ? 0xff00 : 0);
+            if (SendSingleRequest(ModbusCodes.WRITE_SINGLE_COIL, Address, BitData)) {
                 await Task.Run(() => ReceiveSlaveResponse());
             }
             return LastError;
@@ -324,7 +324,7 @@ namespace csModbusLib
             return LastError;
         }
 
-        public async Task<ErrorCodes> WriteMultipleCoils(ushort Address, ushort Length, bool[] SrcData, int SrcOffs = 0)
+        public async Task<ErrorCodes> WriteMultipleCoils(ushort Address, ushort Length, ushort[] SrcData, int SrcOffs = 0)
         {
             if (SendMultipleWriteRequest(ModbusCodes.WRITE_MULTIPLE_COILS, Address, Length, SrcData, SrcOffs)) {
                 await Task.Run(() => ReceiveSlaveResponse());

@@ -11,6 +11,7 @@ namespace csModbusView
         protected MbMaster MyMaster;
         protected ErrorCodes ErrCode;
         protected static Mutex mut = new Mutex();
+        protected ushort[] ModbusData;
 
         public MasterGridView(ModbusObjectType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
             : base(MbType, Title, true)
@@ -21,6 +22,7 @@ namespace csModbusView
         public virtual void InitGridView(MbMaster Master)
         {
             MyMaster = Master;
+            ModbusData = new ushort[this.DataSize];
         }
 
         public ErrorCodes Update_ModbusData()
@@ -36,9 +38,10 @@ namespace csModbusView
 
             return ErrCode;
         }
+        protected abstract ErrorCodes Modbus_ReadData();
 
-        public delegate void Update_Cells_Callback();
-        protected void Invoke_UpdateCells()
+        private delegate void Update_Cells_Callback();
+        private void Invoke_UpdateCells()
         {
             if (GridView.InvokeRequired) {
                 var d = new Update_Cells_Callback(UpdateCellValues);
@@ -48,48 +51,32 @@ namespace csModbusView
             }
         }
 
+        private void UpdateCellValues()
+        {
+            GridView.UpDateModbusCells(ModbusData);
+        }
+
         protected ushort MbDataAddress(DataGridViewCellEventArgs e)
         {
             int DataIdx = e.RowIndex * ItemColumns + e.ColumnIndex;
             return (ushort)(BaseAddr + DataIdx * TypeSize);
         }
 
-        protected abstract ErrorCodes Modbus_ReadData();
-        public abstract void UpdateCellValues();
-    }
 
-    public abstract class MasterGridViewDataT<DataT> : MasterGridView
-    {
-        protected DataT[] ModbusData;
-
-        public MasterGridViewDataT(ModbusObjectType MbType, string Title, ushort BaseAddr, ushort NumItems, int ItemColumns)
-            : base(MbType, Title, BaseAddr, NumItems, ItemColumns)
-        {
-        }
-        public DataT[] Data {
+        public ushort[] Data {
             get {
                 return ModbusData;
             }
         }
-        public void SetValue(int Idx, DataT Value)
+        public void SetValue(int Idx, ushort Value)
         {
             Data[Idx] = Value;
             GridView.UpDateModbusCells(Data, Idx, 1);
         }
 
-        public override void InitGridView(MbMaster Master)
-        {
-            base.InitGridView(Master);
-            ModbusData = new DataT[this.DataSize];
-        }
-
-        public override void UpdateCellValues()
-        {
-            GridView.UpDateModbusCells(ModbusData);
-        }
     }
 
-    public class MasterHoldingRegsGridView : MasterGridViewDataT<ushort>
+    public class MasterHoldingRegsGridView : MasterGridView
     {
         public MasterHoldingRegsGridView() : this(0, 1) {}
 
@@ -125,7 +112,7 @@ namespace csModbusView
         }
     }
 
-    public class MasterInputRegsGridView : MasterGridViewDataT<ushort>
+    public class MasterInputRegsGridView : MasterGridView
     {
         public MasterInputRegsGridView() : this(0, 1) {}
 
@@ -141,7 +128,7 @@ namespace csModbusView
         }
     }
 
-    public class MasterCoilsGridView : MasterGridViewDataT<bool>
+    public class MasterCoilsGridView : MasterGridView
     {
         public MasterCoilsGridView() : this(0, 8) {}
 
@@ -158,13 +145,14 @@ namespace csModbusView
 
         protected override void CellContentClick(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
         {
-            bool NewCellValue = !(bool)CurrentCell.Value;
-            CurrentCell.Value = NewCellValue;
+            bool CoilStatus = !(bool)CurrentCell.Value;
+            CurrentCell.Value = CoilStatus;
+            ushort ModbusData = (ushort)(CoilStatus ? 0xff : 0);
             if (MyMaster.IsConnected)
-                ModbusSendCoil(MbDataAddress(e), NewCellValue);
+                ModbusSendCoil(MbDataAddress(e), ModbusData);
         }
 
-        private  void ModbusSendCoil(ushort Address, bool Value)
+        private  void ModbusSendCoil(ushort Address, ushort Value)
         {
             // TODO Async Call ?
             mut.WaitOne();
@@ -173,7 +161,7 @@ namespace csModbusView
         }
     }
     
-    public class MasterDiscretInputsGridView : MasterGridViewDataT<bool>
+    public class MasterDiscretInputsGridView : MasterGridView
     {
         public MasterDiscretInputsGridView() : this(0, 8) {}
 

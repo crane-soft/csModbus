@@ -261,12 +261,12 @@ namespace csModbusView
             }
         }
 
-        public void UpDateModbusCells<DataT>(DataT[] ModbusData)
+        public void UpDateModbusCells(ushort[] ModbusData)
         {
             UpDateModbusCells(ModbusData, 0, ModbusData.Length);
         }
 
-        public void UpDateModbusCells<DataT>(DataT[] ModbusData, int BaseIdx, int Size)
+        public void UpDateModbusCells(ushort[] ModbusData, int BaseIdx, int Size)
         {
             int CellIdx = BaseIdx / _TypeSize;
             int iRow = CellIdx / ItemColumns;
@@ -277,7 +277,7 @@ namespace csModbusView
             for (int dIdx = BaseIdx; dIdx <= BaseIdx + Size - 1; dIdx += _TypeSize) {
                 DataGridViewCell mbCell = this.Rows[iRow].Cells[iCol];
                 if (IsCoil) {
-                    mbCell.Value = ModbusData[dIdx];
+                    mbCell.Value = ModbusData[dIdx] != 0;
                 } else {
                     ((ModbusRegGridViewCell)mbCell).SetValue((ushort[])(object)ModbusData, dIdx);
                 }

@@ -4,10 +4,10 @@ namespace csModbusLib {
     
     public class StdDataServer : MbSlaveDataServer {
 
-        private ModbusDataT<bool> gDiscreteInputs;
-        private ModbusDataT<bool> gCoils;
-        private ModbusDataT<ushort> gInputRegisters;
-        private ModbusDataT<ushort> gHoldingRegisters;
+        private ModbusCoilsData gDiscreteInputs;
+        private ModbusCoilsData gCoils;
+        private ModbusRegsData gInputRegisters;
+        private ModbusRegsData gHoldingRegisters;
 
         public StdDataServer() : this (0) {}
 
@@ -19,36 +19,36 @@ namespace csModbusLib {
             gHoldingRegisters = null;
         }
 
-        public void AddCoils(ModbusDataT<bool> BoolData)  {
-            AddModbusData<bool> (ref gCoils, BoolData);
+        public void AddCoils(ModbusCoilsData CoilsData)  {
+            AddModbusData (gCoils, CoilsData);
         }
 
-        public void AddCoils(int BaseAddr, bool[] Coils) {
-            AddModbusData<bool>(ref gCoils, BaseAddr, Coils);
+        public void AddCoils(int BaseAddr, ushort[] Coils) {
+            AddModbusCoilsData(gCoils, BaseAddr, Coils);
         }
 
-        public void AddDiscreteInputs(ModbusDataT<bool> BoolData){
-            AddModbusData<bool>(ref gDiscreteInputs, BoolData);
+        public void AddDiscreteInputs(ModbusCoilsData CoilsData){
+            AddModbusData(gDiscreteInputs, CoilsData);
         }
 
-        public void AddDiscreteInputs(int BaseAddr, bool[] Coils) {
-            AddModbusData<bool>(ref gDiscreteInputs,BaseAddr, Coils);
+        public void AddDiscreteInputs(int BaseAddr, ushort[] Coils) {
+            AddModbusCoilsData(gDiscreteInputs,BaseAddr, Coils);
         }
 
-        public void AddInputRegisters(ModbusDataT<ushort> RegsData){
-            AddModbusData<ushort>(ref gInputRegisters,RegsData);
+        public void AddInputRegisters(ModbusRegsData RegsData){
+            AddModbusData(gInputRegisters,RegsData);
         }
 
         public void AddInputRegisters(int BaseAddr, ushort[] Registers) {
-            AddModbusData<ushort>(ref gInputRegisters,BaseAddr, Registers);
+            AddModbusRegsData(gInputRegisters,BaseAddr, Registers);
         }
 
-        public void AddHoldingRegisters(ModbusDataT<ushort> RegsData) {
-            AddModbusData<ushort>(ref gHoldingRegisters,RegsData);
+        public void AddHoldingRegisters(ModbusRegsData RegsData) {
+            AddModbusData(gHoldingRegisters,RegsData);
         }
 
         public void AddHoldingRegisters(int BaseAddr, ushort[] Registers)  {
-            AddModbusData<ushort>(ref gHoldingRegisters,BaseAddr, Registers);
+            AddModbusRegsData(gHoldingRegisters,BaseAddr, Registers);
         }
 
         protected override bool ReadCoils() {
@@ -104,7 +104,7 @@ namespace csModbusLib {
             return Data.ScannAll4Writing(Frame);
         }
 
-        private void AddModbusData<DataT>(ref ModbusDataT<DataT> BaseData, ModbusDataT<DataT> AddData)
+        private void AddModbusData(ModbusData BaseData, ModbusData AddData)
         {
             if (BaseData == null) {
                 BaseData = AddData;
@@ -113,12 +113,19 @@ namespace csModbusLib {
             }
         }
 
-        private void AddModbusData<DataT>(ref ModbusDataT<DataT> BaseData, int BaseAddr, DataT[] ModbusData)
+        private void AddModbusRegsData(ModbusData BaseData, int BaseAddr, ushort[] Data)
         {
             if (BaseData == null) {
-                BaseData = new ModbusDataT<DataT>();
+                BaseData = new ModbusRegsData();
             }
-            BaseData.AddData(BaseAddr, ModbusData);
+            BaseData.AddData(BaseAddr, Data);
+        }
+        private void AddModbusCoilsData(ModbusData BaseData, int BaseAddr, ushort[] Data)
+        {
+            if (BaseData == null) {
+                BaseData = new ModbusCoilsData();
+            }
+            BaseData.AddData(BaseAddr, Data);
         }
     }
 }
