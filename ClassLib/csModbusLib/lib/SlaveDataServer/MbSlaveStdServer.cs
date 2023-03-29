@@ -20,35 +20,35 @@ namespace csModbusLib {
         }
 
         public void AddCoils(ModbusCoilsData CoilsData)  {
-            AddModbusData (gCoils, CoilsData);
+            gCoils = (ModbusCoilsData)AddModbusData(gCoils, CoilsData);
         }
 
         public void AddCoils(int BaseAddr, ushort[] Coils) {
-            AddModbusCoilsData(gCoils, BaseAddr, Coils);
+            gCoils = (ModbusCoilsData)AddModbusData<ModbusCoilsData>(gCoils, BaseAddr, Coils);
         }
 
         public void AddDiscreteInputs(ModbusCoilsData CoilsData){
-            AddModbusData(gDiscreteInputs, CoilsData);
+            gDiscreteInputs = (ModbusCoilsData)AddModbusData(gDiscreteInputs, CoilsData);
         }
 
         public void AddDiscreteInputs(int BaseAddr, ushort[] Coils) {
-            AddModbusCoilsData(gDiscreteInputs,BaseAddr, Coils);
+            gDiscreteInputs = (ModbusCoilsData)AddModbusData<ModbusCoilsData>(gDiscreteInputs,BaseAddr, Coils);
         }
 
         public void AddInputRegisters(ModbusRegsData RegsData){
-            AddModbusData(gInputRegisters,RegsData);
+            gInputRegisters = (ModbusRegsData)AddModbusData(gInputRegisters,RegsData);
         }
 
         public void AddInputRegisters(int BaseAddr, ushort[] Registers) {
-            AddModbusRegsData(gInputRegisters,BaseAddr, Registers);
+            gInputRegisters = (ModbusRegsData)AddModbusData<ModbusRegsData>(gInputRegisters,BaseAddr, Registers);
         }
 
         public void AddHoldingRegisters(ModbusRegsData RegsData) {
-            AddModbusData(gHoldingRegisters,RegsData);
+            gHoldingRegisters = (ModbusRegsData)AddModbusData(gHoldingRegisters,RegsData);
         }
 
         public void AddHoldingRegisters(int BaseAddr, ushort[] Registers)  {
-            AddModbusRegsData(gHoldingRegisters,BaseAddr, Registers);
+            gHoldingRegisters = (ModbusRegsData)AddModbusData<ModbusRegsData>(gHoldingRegisters,BaseAddr, Registers);
         }
 
         protected override bool ReadCoils() {
@@ -104,28 +104,28 @@ namespace csModbusLib {
             return Data.ScannAll4Writing(Frame);
         }
 
-        private void AddModbusData(ModbusData BaseData, ModbusData AddData)
+
+        private ModbusData AddModbusData(ModbusData BaseData, ModbusData AddData)
         {
             if (BaseData == null) {
                 BaseData = AddData;
             } else {
                 BaseData.AddModbusData(AddData);
             }
+            return BaseData;
         }
 
-        private void AddModbusRegsData(ModbusData BaseData, int BaseAddr, ushort[] Data)
+        private ModbusData AddModbusData<ModbusDataT>(ModbusData BaseData, int BaseAddr, ushort[] Data)
         {
             if (BaseData == null) {
-                BaseData = new ModbusRegsData();
+                if (typeof(ModbusDataT) == typeof(ModbusCoilsData)) {
+                    BaseData = new ModbusCoilsData();
+                } else {
+                    BaseData = new ModbusRegsData();
+                }
             }
             BaseData.AddData(BaseAddr, Data);
-        }
-        private void AddModbusCoilsData(ModbusData BaseData, int BaseAddr, ushort[] Data)
-        {
-            if (BaseData == null) {
-                BaseData = new ModbusCoilsData();
-            }
-            BaseData.AddData(BaseAddr, Data);
+            return BaseData;
         }
     }
 }

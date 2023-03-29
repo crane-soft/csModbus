@@ -74,6 +74,26 @@ namespace csModbusLib {
             }
         }
 
+        public void AddData(int aAddress, int Length)
+        {
+            if (MySize == 0) {
+                Init(aAddress, Length);
+                Data = new ushort[Length];
+            } else {
+                AddModbusData(new ModbusData(aAddress, Length));
+            }
+        }
+
+        public void AddData(int aAddress, ushort[] bData)
+        {
+            if (MySize == 0) {
+                Init(aAddress, bData.Length);
+                Data = bData;
+            } else {
+                AddModbusData(new ModbusData(aAddress, bData));
+            }
+        }
+
         public bool ScannAll4Reading(MBSFrame Frame)
         {
             return ScannAll(x => x.ReadMultipleEvent(Frame), Frame);
@@ -123,27 +143,6 @@ namespace csModbusLib {
         protected virtual void ReadMultiple(MBSFrame Frame) { }
         protected virtual void WriteMultiple(MBSFrame Frame) { }
         protected virtual void WriteSingle(MBSFrame Frame) { }
-
-
-        public void AddData(int aAddress, int Length)
-        {
-            if (MySize == 0) {
-                Init(aAddress, Length);
-                Data = new ushort[Length];
-            } else {
-                AddModbusData(new ModbusData(aAddress, Length));
-            }
-        }
-
-        public void AddData(int aAddress, ushort[] bData)
-        {
-            if (MySize == 0) {
-                Init(aAddress, bData.Length);
-                Data = bData;
-            } else {
-                AddModbusData(new ModbusData(aAddress, bData));
-            }
-        }
     }
 
     public class ModbusRegsData : ModbusData

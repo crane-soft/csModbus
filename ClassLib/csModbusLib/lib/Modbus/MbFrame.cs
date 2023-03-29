@@ -156,20 +156,31 @@ namespace csModbusLib
 
         public int PutBitData(UInt16[] SrcBits, int SrcIdx, int FrameIdx)
         {
-            int bitCnt = 0;
+            int bitCnt = 8;
             byte dataByte = 0;
-            int NumBytes = 1;
+            int NumBytes = 0;
+
             for (int i = 0; i < DataCount; ++i) {
+                dataByte >>= 1;
                 if (SrcBits[SrcIdx++] != 0) {
-                    dataByte |= 1;
+                    dataByte |= 0x80;
                 }
-                if (++bitCnt == 8) {
-                    RawData.Data[FrameIdx++] = dataByte;
-                    bitCnt = 0;
+
+                if (--bitCnt == 0) {
+                    RawData.Data[FrameIdx+ NumBytes] = dataByte;
+                    bitCnt = 8;
+                    dataByte = 0;
                     ++NumBytes;
                 }
-                dataByte <<= 1;
             }
+            if (bitCnt != 0) {
+                dataByte >>= bitCnt;
+                RawData.Data[FrameIdx + NumBytes] = dataByte;
+                ++NumBytes;
+            } else {
+                bitCnt = 1;
+            }
+            RawData.Data[FrameIdx - 1] = (byte)NumBytes;
             return NumBytes;
         }
 
