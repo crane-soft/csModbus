@@ -139,7 +139,7 @@ namespace csModbusView
         }
         public override void AddDataToServer(StdDataServer DataSerer)
         {
-            ModbusRegsData RegsData = new ModbusRegsData(BaseAddr, DataSize);
+            ModbusRegsData RegsData = new ModbusRegsData(uBaseAddr, DataSize);
             InitData(RegsData);
             DataSerer.AddHoldingRegisters(RegsData);
         }
@@ -163,7 +163,7 @@ namespace csModbusView
 
         public override void AddDataToServer(StdDataServer DataSerer)
         {
-            ModbusRegsData RegsData = new ModbusRegsData(BaseAddr, DataSize);
+            ModbusRegsData RegsData = new ModbusRegsData(uBaseAddr, DataSize);
             InitData(RegsData);
             DataSerer.AddInputRegisters(RegsData);
         }
@@ -187,7 +187,7 @@ namespace csModbusView
 
         public override void AddDataToServer(StdDataServer DataSerer)
         {
-            ModbusCoilsData CoilsData = new ModbusCoilsData(BaseAddr, DataSize);
+            ModbusCoilsData CoilsData = new ModbusCoilsData(uBaseAddr, DataSize);
             InitData(CoilsData);
             DataSerer.AddCoils(CoilsData);
         }
@@ -205,7 +205,7 @@ namespace csModbusView
 
         public override void AddDataToServer(StdDataServer DataSerer)
         {
-            ModbusCoilsData CoilsData = new ModbusCoilsData(BaseAddr, DataSize);
+            ModbusCoilsData CoilsData = new ModbusCoilsData(uBaseAddr, DataSize);
             InitData(CoilsData);
             DataSerer.AddDiscreteInputs(CoilsData);
         }

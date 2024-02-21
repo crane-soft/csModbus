@@ -12,8 +12,10 @@ namespace csModbusView
         {
             INT16,
             UINT16,
+            HEX_16,
             INT32,
             UINT32,
+            HEX_32,
             IEEE_754,
             PRO_STUD
         }
@@ -81,6 +83,7 @@ namespace csModbusView
                 } else {
                     switch (_DataType) {
                         case ModbusDataType.UINT16:
+                        case ModbusDataType.HEX_16:
                         case ModbusDataType.INT16:
                             _TypeSize = 1;
                             break;
@@ -162,7 +165,11 @@ namespace csModbusView
                     case ModbusDataType.INT16:
                         itemCell = new INT16_GridViewCell(this);
                         break;
+                    case ModbusDataType.HEX_16:
+                        itemCell = new HEX16_GridViewCell(this);
+                        break;
                     case ModbusDataType.UINT32:
+                    case ModbusDataType.HEX_32:
                         itemCell = new UINT32_GridViewCell(this, Int32Endianes);
                         break;
                     case ModbusDataType.INT32:

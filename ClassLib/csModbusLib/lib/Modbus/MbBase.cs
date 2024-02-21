@@ -40,7 +40,7 @@ namespace csModbusLib
 
     public enum DeviceType
     {
-        NO_TYPE = 0,
+        DEFAULT = 0,
         MASTER = 1,
         SLAVE = 2
     }

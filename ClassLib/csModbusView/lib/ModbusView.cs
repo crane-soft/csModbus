@@ -1,4 +1,5 @@
 ﻿using csModbusLib;
+using System;
 using System.ComponentModel;
 using System.Reflection;
 using System.Windows.Forms;
@@ -21,9 +22,18 @@ namespace csModbusView
         private bool EnableRefresh;
         private bool _AutoSize;
 
+        private enum uintFormat
+        {
+            isdecimal,
+            trailing_h,
+            leading_0x
+        }
+
+        private uintFormat _BaseAddrFormat;
+        private ModbusObjectType _MbType;
         public ModbusView(ModbusObjectType MbType, string Title, bool IsMaster)
         {
-            
+            this._MbType = MbType;
             lbTitle = new Label();
             lbTitle.BackColor = System.Drawing.SystemColors.ControlLight;
             lbTitle.Dock = DockStyle.Top;
@@ -54,6 +64,7 @@ namespace csModbusView
             DataType = MbGridView.ModbusDataType.UINT16;
             Endianes = MbGridView.Endianess.BigEndian;
             EnableRefresh = true;
+            _BaseAddrFormat = uintFormat.isdecimal;
             RefreshView();
         }
 
@@ -74,19 +85,22 @@ namespace csModbusView
             bool isNotCoil = mbView.IsCoil == false;
             setBrowsableProperty("DataType", isNotCoil);
             setBrowsableProperty("Endianes", isNotCoil && (TypeSize > 1));
+
+            setAllPropertyCategory(_MbType.ToString());
         }
 
         protected void SetDataSize(ushort BaseAddr, ushort NumItems, int ItemColumns)
         {
             EnableRefresh = false;
-            this.BaseAddr = BaseAddr;
+            this.uBaseAddr = BaseAddr;
             this.NumItems = NumItems;
             this.ItemColumns = ItemColumns;
             EnableRefresh = true;
             RefreshView();
         }
-   
-        public MbGridView GridView {
+
+        public MbGridView GridView
+        {
             get {
                 return mbView;
             }
@@ -95,15 +109,51 @@ namespace csModbusView
         [System.ComponentModel.Category("csModbus")]
         [System.ComponentModel.Description("The title of this register group")]
         [System.ComponentModel.DefaultValue("")]
-        public virtual string Title {
+        public virtual string Title
+        {
             get { return lbTitle.Text; }
-            set {lbTitle.Text = value;  }
+            set { lbTitle.Text = value; }
         }
-
+                
         [System.ComponentModel.Category("csModbus")]
         [System.ComponentModel.Description("The modbus base address of this register group")]
         [System.ComponentModel.DefaultValue(0)]
-        public ushort BaseAddr {
+        public string BaseAddr
+        {
+            get {
+                switch (_BaseAddrFormat) {
+                    case uintFormat.leading_0x:
+                        return "0x" + uBaseAddr.ToString("X4");
+                    case uintFormat.trailing_h:
+                        return uBaseAddr.ToString("X4") + "h";
+                    default:
+                        return uBaseAddr.ToString();
+                }
+
+            }
+
+            set {
+                string sAddr = value;
+                if (sAddr.StartsWith("0x")) {
+                    _BaseAddrFormat = uintFormat.leading_0x;
+                    sAddr = sAddr.Replace("0x", "");
+                } else if (value.EndsWith("h")) {
+                    _BaseAddrFormat = uintFormat.trailing_h;
+                    sAddr = sAddr.Replace("h", "");
+                } else {
+                    _BaseAddrFormat = uintFormat.isdecimal;
+
+                }
+                if (_BaseAddrFormat == uintFormat.isdecimal)
+                    uBaseAddr = Convert.ToUInt16(sAddr);
+                else
+                    uBaseAddr = Convert.ToUInt16(sAddr, 16);
+            }
+        }
+
+        [Browsable(false)]
+        public ushort uBaseAddr
+        {
             get {
                 return mbView.BaseAddr;
             }
@@ -117,7 +167,8 @@ namespace csModbusView
         [System.ComponentModel.Category("csModbus")]
         [System.ComponentModel.Description("Number of consecutive registers / coils for this group")]
         [System.ComponentModel.DefaultValue(1)]
-        public virtual ushort NumItems {
+        public virtual ushort NumItems
+        {
             get {
                 return mbView.NumItems;
             }
@@ -131,7 +182,8 @@ namespace csModbusView
         [System.ComponentModel.Category("csModbus")]
         [System.ComponentModel.Description("Number of register-/ coil- columns for this group")]
         [System.ComponentModel.DefaultValue(1)]
-        public virtual int ItemColumns {
+        public virtual int ItemColumns
+        {
             get {
                 return mbView.ItemColumns;
             }
@@ -145,7 +197,8 @@ namespace csModbusView
         [System.ComponentModel.Category("csModbus")]
         [System.ComponentModel.Description("Edit register row names for this group")]
         [System.ComponentModel.DefaultValue(null)]
-        public string[] ItemNames {
+        public string[] ItemNames
+        {
             get {
                 return mbView.ItemNames;
             }
@@ -185,12 +238,13 @@ namespace csModbusView
         }
 
 
-            [System.ComponentModel.Category("Layout")]
+        [System.ComponentModel.Category("Layout")]
         [System.ComponentModel.DefaultValue(true)]
-        public override bool AutoSize {
+        public override bool AutoSize
+        {
             get {
                 return _AutoSize;
-            } 
+            }
             set {
                 _AutoSize = value;
                 RefreshView();
@@ -253,7 +307,8 @@ namespace csModbusView
             }
         }
 
-        public void AdjustSize() {
+        public void AdjustSize()
+        {
             if (AutoSize) {
                 mbView.AdjustParentSize(this);
             }
@@ -304,6 +359,24 @@ namespace csModbusView
 
             // Set the Descriptor's "Browsable" Attribute
             isBrowsable.SetValue(theDescriptorBrowsableAttribute, bIsBrowsable);
+        }
+
+        private void setAllPropertyCategory(string newCategory)
+        {
+            string[] propertyList = {
+                "Title", "BaseAddr", "NumItems", "ItemColumns", "ItemNames", "DataType", "Endianes" 
+            };
+
+            foreach (string prop in propertyList) {
+                setBrowsableCategory(prop, newCategory);
+            }
+        }
+        private void setBrowsableCategory(string strPropertyName, string newCategory)
+        {
+            PropertyDescriptor descriptor = TypeDescriptor.GetProperties(this.GetType())[strPropertyName];
+            CategoryAttribute categoryAttribute = (CategoryAttribute)descriptor.Attributes[typeof(CategoryAttribute)];
+            FieldInfo category = categoryAttribute.GetType().GetField("categoryValue", BindingFlags.NonPublic | BindingFlags.Instance);
+            category.SetValue(categoryAttribute, newCategory);
         }
     }
 }

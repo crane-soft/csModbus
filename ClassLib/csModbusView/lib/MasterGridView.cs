@@ -59,7 +59,7 @@ namespace csModbusView
         protected ushort MbDataAddress(DataGridViewCellEventArgs e)
         {
             int DataIdx = e.RowIndex * ItemColumns + e.ColumnIndex;
-            return (ushort)(BaseAddr + DataIdx * TypeSize);
+            return (ushort)(uBaseAddr + DataIdx * TypeSize);
         }
 
 
@@ -88,7 +88,7 @@ namespace csModbusView
 
         protected override ErrorCodes Modbus_ReadData()
         {
-            return MyMaster.ReadHoldingRegisters(BaseAddr, ModbusData);
+            return MyMaster.ReadHoldingRegisters(uBaseAddr, ModbusData);
         }
 
         protected override void CellValueChanged(ushort[] modData, DataGridViewCellEventArgs e)
@@ -124,7 +124,7 @@ namespace csModbusView
 
         protected override ErrorCodes Modbus_ReadData()
         {
-            return MyMaster.ReadInputRegisters(BaseAddr,  ModbusData);
+            return MyMaster.ReadInputRegisters(uBaseAddr,  ModbusData);
         }
     }
 
@@ -140,7 +140,7 @@ namespace csModbusView
 
         protected override ErrorCodes Modbus_ReadData()
         {
-            return MyMaster.ReadCoils(BaseAddr, ModbusData);
+            return MyMaster.ReadCoils(uBaseAddr, ModbusData);
         }
 
         protected override void CellContentClick(DataGridViewCell CurrentCell, DataGridViewCellEventArgs e)
@@ -173,7 +173,7 @@ namespace csModbusView
 
         protected override ErrorCodes Modbus_ReadData()
         {
-            return MyMaster.ReadDiscreteInputs(BaseAddr, ModbusData);
+            return MyMaster.ReadDiscreteInputs(uBaseAddr, ModbusData);
         }
     }
 }

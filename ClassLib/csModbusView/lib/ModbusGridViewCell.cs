@@ -70,6 +70,30 @@ namespace csModbusView
         }
     }
 
+    public class HEX16_GridViewCell : ModbusRegGridViewCell
+    {
+        public HEX16_GridViewCell(MbGridView GridView)
+            : base(GridView)
+        {
+        }
+        public override void SetValue(UInt16[] mValue, int idx = 0)
+        {
+            this.Value = mValue[idx].ToString("X4")+ "h";
+        }
+
+        public override UInt16[] GetValue()
+        {
+            UInt16[] mValue = new UInt16[1];
+            string hexStr = this.Value.ToString().ToLower();
+            if (hexStr.StartsWith("0x"))
+                hexStr = hexStr.Substring(2);
+            if (hexStr.EndsWith("h"))
+                hexStr = hexStr.Substring(0,4);
+            mValue[0] = Convert.ToUInt16(hexStr,16);
+            return mValue;
+        }
+    }
+
     public abstract class Regs32_GridViewCell : ModbusRegGridViewCell
     {
       
