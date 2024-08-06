@@ -6,7 +6,7 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ACAACAEIQIAACAAAAAAAIAQAAAAAJAGAQAAARAAIIAE=</HashCode>
+      <HashCode>ACAACAEIQIAACAAAAAAAIIQAAAAAJAEAQAAARAAIIAE=</HashCode>
       <FileName>lib\Modbus\MbFrame.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -14,17 +14,17 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="csModbusLib.MBSFrame">
-    <Position X="0.75" Y="3.75" Width="2.5" />
+    <Position X="0.75" Y="4.5" Width="2.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAgAUIGAAYAAAAIAAAAAgAAAAAAAAAAAQCAAAAAEA=</HashCode>
+      <HashCode>AAABgEUoAAAYEAAAIAAAgAgAAAAgAAAAAAQCAAAAAEA=</HashCode>
       <FileName>lib\Modbus\MbFrame.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MBMFrame">
-    <Position X="3.75" Y="3.75" Width="2.5" />
+    <Position X="4" Y="4.5" Width="2.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
@@ -39,7 +39,7 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAQAAAAACBQAAAEAAAAAAAAABBAAAAAACABAAA=</HashCode>
+      <HashCode>AAAAAAAQAAAAACBQAAAEAAAAAAAAABBAAAACACABEAA=</HashCode>
       <FileName>lib\Modbus\MbFrame.cs</FileName>
     </TypeIdentifier>
   </Class>

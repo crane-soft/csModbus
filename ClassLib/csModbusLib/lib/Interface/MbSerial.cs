@@ -3,19 +3,25 @@ using System.IO.Ports;
 using System.Threading;
 using System.Diagnostics;
 
-namespace csModbusLib {
+namespace csModbusLib
+{
 
-    public abstract class MbSerial : MbInterface {
-        public enum ModbusSerialType {
+    public delegate void DataReceivedHandler();
+
+    public abstract class MbSerial : MbInterface
+    {
+        public enum ModbusSerialType
+        {
             RTU = 0,
             ASCII = 1
         }
 
-        private int oneByteTime_us;     
 
         protected SerialPort sp = new SerialPort();
         protected abstract bool StartOfFrameDetected();
-        protected abstract bool Check_EndOfFrame(MbRawData RxData);
+        protected abstract bool Check_EndOfFrame();
+
+        private int oneByteTime_us;
 
         public MbSerial()
         {
@@ -43,6 +49,7 @@ namespace csModbusLib {
             oneByteTime_us = GetCharTime();
         }
 
+
         private int GetCharTime()
         {
             int nbits = 1 + sp.DataBits;
@@ -61,23 +68,24 @@ namespace csModbusLib {
             return (1000000 * nbits) / sp.BaudRate;
         }
 
-        protected virtual int GetTimeOut_ms (int NumBytes)
+        protected int GetTimeOut_ms(int ByteCount)
         {
-            int timeOut = (NumBytes * oneByteTime_us) / 1000;
+            ByteCount = RawNumOfBytes(ByteCount);
+            int timeOut = (ByteCount * oneByteTime_us) / 1000;
             return timeOut + 50;    // 
-
         }
 
-        public override bool Connect()
+        public override bool Connect(MbRawData Data)
         {
-            IsConnected = false;
+            base.Connect(Data);
             try {
                 sp.Open();
                 if (sp.IsOpen) {
                     IsConnected = true;
                     sp.WriteTimeout = 200;
                 }
-            } catch (System.Exception ex) {
+            }
+            catch (System.Exception ex) {
                 Debug.Print(ex.Message);
                 IsConnected = false;
             }
@@ -108,21 +116,22 @@ namespace csModbusLib {
             }
         }
 
-        public override void ReceiveHeader(int timeOut, MbRawData RxData)
+
+        public override void ReceiveHeader(int timeOut)
         {
-            RxData.IniADUoffs();
+            MbData.IniADUoffs();
             WaitFrameStart(timeOut);
-            ReceiveBytes(RxData, 2); // Node-ID + Function-Byte
+            ReceiveBytes( 2); // Node-ID + Function-Byte
         }
 
-        public override void ReceiveBytes (MbRawData RxData, int count)
+        public override void ReceiveBytes(int count)
         {
-            sp.ReadTimeout= GetTimeOut_ms(count);
-            ReceiveBytes(RxData.Data, RxData.EndIdx, count);
-            RxData.EndIdx += count;
+            sp.ReadTimeout = GetTimeOut_ms(count);
+            ReceiveBytes(MbData.Data, MbData.EndIdx, count);
+            MbData.EndIdx += count;
         }
 
-        protected virtual void ReceiveBytes (byte[] RxData, int offset, int count)
+        protected virtual void ReceiveBytes(byte[] RxData, int offset, int count)
         {
             try {
                 int bytesRead;
@@ -131,21 +140,22 @@ namespace csModbusLib {
                     count -= bytesRead;
                     offset += bytesRead;
                 }
-            } catch (SystemException) {
+            }
+            catch (SystemException) {
                 throw new ModbusException(csModbusLib.ErrorCodes.TX_TIMEOUT);
             }
         }
 
-        public override void EndOfFrame(MbRawData RxData)
+        public override void EndOfFrame()
         {
-            if (Check_EndOfFrame(RxData) == false) {
-               // If the server receives the request, but detects a communication error (parity, LRC, CRC,  ...),
+            if (Check_EndOfFrame() == false) {
+                // If the server receives the request, but detects a communication error (parity, LRC, CRC,  ...),
                 // no response is returned. The client program will eventually process a timeout condition for the request.
                 throw new ModbusException(csModbusLib.ErrorCodes.WRONG_CRC);
             }
-         }
+        }
 
-        protected void SendData (byte[] Data, int offs, int count)
+        protected void SendData(byte[] Data, int offs, int count)
         {
             try {
                 // DiscardBuffer to resync start of frame
@@ -154,10 +164,72 @@ namespace csModbusLib {
 
                 sp.Write(Data, offs, count);
 
-            } catch (SystemException ex) {
+            }
+            catch (SystemException ex) {
                 Debug.Print(ex.Message);
                 throw new ModbusException(csModbusLib.ErrorCodes.TX_TIMEOUT);
             }
+        }
+        public bool BytesAvailable(int bytesNeeded)
+        {
+            bytesNeeded = RawNumOfBytes(bytesNeeded);
+            return (sp.BytesToRead >= bytesNeeded);
+        }
+
+        protected virtual int RawNumOfBytes(int count)
+        {
+            return count;
+        }
+
+        // Event driven section
+        public event DataReceivedHandler DataReceivedEvent;
+
+        private int DataNeeded;
+
+        public void Wait4FrameStartEvent()
+        {
+            SetDataReceivedEventHandler (Sp_Wait4FrameStart);
+        }
+        public void Wait4Date(int DataCount = 0)
+        {
+            DataNeeded = DataCount;
+            SetDataReceivedEventHandler(Sp_DataReceived);
+        }
+
+        private void SetDataReceivedEventHandler(SerialDataReceivedEventHandler handler)
+        {
+            ClearDataReceivedEventHandler();
+            sp.DataReceived += handler;
+            handler(null, null);
+        }
+
+        private void ClearDataReceivedEventHandler()
+        {
+            sp.DataReceived -= Sp_Wait4FrameStart;
+            sp.DataReceived -= Sp_DataReceived;
+
+        }
+        private void Sp_Wait4FrameStart(object sender, SerialDataReceivedEventArgs e)
+        {
+            if (StartOfFrameDetected()) {
+                MbData.IniADUoffs();
+                RaiseReceiveEvent();
+            }
+        }
+
+        private void Sp_DataReceived(object sender, SerialDataReceivedEventArgs e)
+        {
+            if (BytesAvailable(DataNeeded)) {
+                ReceiveBytes(DataNeeded);
+                RaiseReceiveEvent();
+            }
+        }
+        private void RaiseReceiveEvent()
+        {
+            ClearDataReceivedEventHandler();
+            if (DataReceivedEvent != null)
+                DataReceivedEvent();
+
         }
     }
 }

@@ -23,9 +23,9 @@ namespace csModbusLib
             return false;
         }
 
-        protected override int GetTimeOut_ms(int NumBytes)
+        protected override int RawNumOfBytes(int count)
         {
-            return base.GetTimeOut_ms(NumBytes * 2);
+            return 2* count;
         }
 
         protected override void ReceiveBytes (byte[] RxData, int offset, int count)
@@ -56,15 +56,15 @@ namespace csModbusLib
             }
         }
      
-        protected override bool Check_EndOfFrame(MbRawData RxData)
+        protected override bool Check_EndOfFrame()
         {
-            ReceiveBytes(RxData, 1);   // Read LRC
+            ReceiveBytes(1);   // Read LRC
 
             byte[] crlf = new byte[2];       // Read CR/LF
             base.ReceiveBytes (crlf,0,2);
 
             // Check LRC
-            byte calc_lrv = CalcLRC(RxData.Data, MbRawData.ADU_OFFS, RxData.EndIdx - MbRawData.ADU_OFFS);
+            byte calc_lrv = CalcLRC(MbData.Data, MbRawData.ADU_OFFS, MbData.EndIdx - MbRawData.ADU_OFFS);
             return (calc_lrv == 0);
         }
 
@@ -79,18 +79,18 @@ namespace csModbusLib
             return (byte) lrc_result;
         }
 
-        public override void SendFrame(MbRawData TransmitData, int Length)
+        public override void SendFrame(int Length)
         {
-            byte lrc_value = CalcLRC(TransmitData.Data, MbRawData.ADU_OFFS, Length);
+            byte lrc_value = CalcLRC(MbData.Data, MbRawData.ADU_OFFS, Length);
 
-            TransmitData.Data[MbRawData.ADU_OFFS + Length] = lrc_value;
+            MbData.Data[MbRawData.ADU_OFFS + Length] = lrc_value;
             Length += 1;
             byte[] hexbuff = new byte[Length * 2 + 3];
             hexbuff[0] = (byte)':';
 
             for (int i = 0; i < Length; ++i) {
-                hexbuff[1 + 2 * i] = ByteToHexChar(TransmitData.Data[MbRawData.ADU_OFFS + i] >> 4);
-                hexbuff[2 + 2 * i] = ByteToHexChar(TransmitData.Data[MbRawData.ADU_OFFS + i]);
+                hexbuff[1 + 2 * i] = ByteToHexChar(MbData.Data[MbRawData.ADU_OFFS + i] >> 4);
+                hexbuff[2 + 2 * i] = ByteToHexChar(MbData.Data[MbRawData.ADU_OFFS + i]);
             }
             hexbuff[hexbuff.Length - 2] = 0x0d;
             hexbuff[hexbuff.Length - 1] = 0x0a;

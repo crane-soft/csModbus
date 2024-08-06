@@ -57,7 +57,7 @@ namespace csModbusLib
                 if (running) {
                     Close();
                 }
-                if (gInterface.Connect()) {
+                if (gInterface.Connect(Frame.RawData)) {
                     running = true;
                     return true;
                 }
@@ -118,7 +118,7 @@ namespace csModbusLib
         {   // TODO check if connected
             LastError = ErrorCodes.NO_ERROR;
             try {
-                gInterface.SendFrame(Frame.RawData, MsgLen);
+                gInterface.SendFrame(MsgLen);
             } catch (ModbusException ex) {
                 LastError = ex.ErrorCode;
                 //if (running) {
@@ -154,7 +154,7 @@ namespace csModbusLib
         protected bool ReceiveSlaveResponse()
         {
             try {
-                gInterface.ReceiveHeader(MbInterface.ResponseTimeout, Frame.RawData);
+                gInterface.ReceiveHeader(MbInterface.ResponseTimeout);
                 Frame.ReceiveSlaveResponse(gInterface);
             } catch (ModbusException ex) {
                 //if ((ex.ErrorCode != ErrorCodes.CONNECTION_CLOSED) && (ex.ErrorCode != ErrorCodes.MODBUS_EXCEPTION))

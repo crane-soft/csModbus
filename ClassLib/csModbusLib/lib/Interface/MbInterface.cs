@@ -10,22 +10,24 @@ namespace csModbusLib
         public const int ResponseTimeout = 200;
 
         protected bool IsConnected = false;
-
+        protected MbRawData MbData;
         public MbInterface() { }
 
-        public abstract bool Connect ();
-        public abstract void DisConnect();
-        public abstract void ReceiveHeader(int timeOut, MbRawData MbData);
+        
 
-        public abstract void SendFrame(MbRawData TransmitData, int Length);
-
-        public virtual void ReceiveBytes(MbRawData RxData, int count)  { }
-        public virtual void EndOfFrame(MbRawData RxData) { }
-
-        public bool ReConnect()
+        public virtual bool Connect (MbRawData Data)
         {
-            DisConnect();
-            return Connect();
+            this.MbData = Data;
+            IsConnected = false;
+            return IsConnected;
         }
+        public abstract void DisConnect();
+        public abstract void ReceiveHeader(int timeOut);
+
+        public abstract void SendFrame(int Length);
+
+        public virtual void ReceiveBytes(int count)  { }
+        public virtual void EndOfFrame() { }
+   
     }
 }

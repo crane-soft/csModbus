@@ -83,24 +83,24 @@ namespace csModbusLib {
             return (sp.BytesToRead >= 2);
         }
 
-        protected override bool Check_EndOfFrame(MbRawData RxData)
+        protected override bool Check_EndOfFrame()
         {
-            int crc_idx = RxData.EndIdx;
-            ReceiveBytes(RxData, 2);
+            int crc_idx = MbData.EndIdx;
+            ReceiveBytes(2);
 
             // Check CRC
-            ushort msg_crc = RxData.GetUInt16(crc_idx);
-            ushort calc_crc = crc16.CalcCRC16(RxData.Data, MbRawData.ADU_OFFS, crc_idx - MbRawData.ADU_OFFS);
+            ushort msg_crc = MbData.GetUInt16(crc_idx);
+            ushort calc_crc = crc16.CalcCRC16(MbData.Data, MbRawData.ADU_OFFS, crc_idx - MbRawData.ADU_OFFS);
 
             return (msg_crc == calc_crc);
         }
 
-        public override void SendFrame(MbRawData TransmitData, int Length)
+        public override void SendFrame(int Length)
         {
-            ushort calc_crc = crc16.CalcCRC16(TransmitData.Data, MbRawData.ADU_OFFS, Length);
-            TransmitData.PutUInt16(MbRawData.ADU_OFFS+Length, calc_crc);
+            ushort calc_crc = crc16.CalcCRC16(MbData.Data, MbRawData.ADU_OFFS, Length);
+            MbData.PutUInt16(MbRawData.ADU_OFFS+Length, calc_crc);
             Length += 2;
-            SendData(TransmitData.Data, MbRawData.ADU_OFFS, Length);
+            SendData(MbData.Data, MbRawData.ADU_OFFS, Length);
         }
     }
 }

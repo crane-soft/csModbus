@@ -14,6 +14,7 @@ namespace SlaveSimple
 
             const int ModbusRegsAddr = 10;
             const int ModbusInputAddr = 20;
+            const int ModbusCoilsAddr = 10;
 
             // establish a modbus slave dataserver 
             StdDataServer MyDataServer = new StdDataServer(SlaveID);
@@ -21,17 +22,23 @@ namespace SlaveSimple
             // add some data
             ushort[] SlaveRegs = new ushort[8];
             ushort[] SlaveInputs = new ushort[5];
+            ushort[] SlaveCoils = new ushort[4];
 
             MyDataServer.AddHoldingRegisters(ModbusRegsAddr, SlaveRegs);
+            MyDataServer.AddInputRegisters(ModbusRegsAddr, SlaveRegs);
             MyDataServer.AddInputRegisters(ModbusInputAddr, SlaveInputs);
+            MyDataServer.AddCoils(ModbusCoilsAddr, SlaveCoils);
+            MyDataServer.AddDiscreteInputs(ModbusCoilsAddr, SlaveCoils);
 
             // create a Modbus slave server 
-            MbSlaveServer modSlave = new MbSlaveServer();
+            //MbSlaveServer modSlave = new MbSlaveServer();
+            MbSlaveStateMachine modSlave = new MbSlaveStateMachine();
 
             // start listening for your data server and your connection interface
             // the listener is running in his own thread and can be stopped with StopListen()
 
-            modSlave.StartListen(new MbTCPSlave(TCPport), MyDataServer);
+            //modSlave.StartListen(new MbTCPSlave(TCPport), MyDataServer);
+            modSlave.StartListen(new MbRTU ("COM2",19200), MyDataServer);
 
             Console.WriteLine("Listener started...");
             while (!Console.KeyAvailable) {

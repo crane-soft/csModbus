@@ -16,7 +16,7 @@ namespace csModbusLib
             SetPort(port);
         }
 
-        public override void ReceiveHeader(int timeOut, MbRawData MbData)
+        public override void ReceiveHeader(int timeOut)
         {
             MbData.EndIdx = 0;
             ReceiveHeaderData(timeOut, MbData);
@@ -28,8 +28,9 @@ namespace csModbusLib
     {
         public MbUDPMaster(string host_name, int port)  : base(host_name, port)  { }
 
-        public override bool Connect()
+        public override bool Connect(MbRawData Data)
         {
+            base.Connect(Data);
             try {
                 if (mUdpClient == null) {
                     mUdpClient = new UdpClient(remote_host, remote_port);
@@ -51,10 +52,10 @@ namespace csModbusLib
             IsConnected = false;
         }
 
-        public override void SendFrame(MbRawData TransmitData, int Length)
+        public override void SendFrame(int Length)
         {
-            FillMBAPHeader(TransmitData, Length);
-            mUdpClient.Send(TransmitData.Data, Length + MBAP_Header_Size);
+            FillMBAPHeader(MbData, Length);
+            mUdpClient.Send(MbData.Data, Length + MBAP_Header_Size);
         }
 
         protected override void ReceiveHeaderData(int timeOut, MbRawData RxData)
@@ -74,8 +75,9 @@ namespace csModbusLib
             tcpc = new TcpClient();
         }
 
-        public override Boolean Connect()
+        public override Boolean Connect(MbRawData Data)
         {
+            base.Connect(Data);
             if (tcpc == null)
                 tcpc = new TcpClient();
             try {
@@ -100,10 +102,10 @@ namespace csModbusLib
             IsConnected = false;
         }
 
-        public override void SendFrame(MbRawData TransmitData, int Length)
+        public override void SendFrame( int Length)
         {
-            FillMBAPHeader(TransmitData, Length);
-            nwStream.Write(TransmitData.Data, 0, Length + MBAP_Header_Size);
+            FillMBAPHeader(MbData, Length);
+            nwStream.Write(MbData.Data, 0, Length + MBAP_Header_Size);
         }
 
         protected override void ReceiveHeaderData(int timeOut, MbRawData RxData)

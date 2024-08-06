@@ -11,11 +11,11 @@ namespace csModbusLib {
             SetPort(port);
         }
 
-        public override void SendFrame(MbRawData TransmitData, int Length)
+        public override void SendFrame(int Length)
         {
-            TransmitData.PutUInt16(4, (UInt16)Length);
+            MbData.PutUInt16(4, (UInt16)Length);
             try {
-                SendFrameData(TransmitData.Data, Length + MBAP_Header_Size);
+                SendFrameData(MbData.Data, Length + MBAP_Header_Size);
                 FreeMessage();
             } catch (System.Exception ex) {
                 Debug.Print(ex.Message);
@@ -30,8 +30,9 @@ namespace csModbusLib {
     {
         public MbUDPSlave(int port) : base(port) { }
 
-        public override bool Connect()
+        public override bool Connect(MbRawData Data)
         {
+            base.Connect(Data);
             try {
                 mUdpClient = new UdpClient(new IPEndPoint(IPAddress.Any, remote_port));
                 IsConnected = true;
@@ -56,9 +57,9 @@ namespace csModbusLib {
             }
         }
 
-        public override void ReceiveHeader(int timeOut, MbRawData RxData)
+        public override void ReceiveHeader(int timeOut)
         {
-            UdpReceiveHeaderData(timeOut, RxData);
+            UdpReceiveHeaderData(timeOut, MbData);
         }
 
         protected override void SendFrameData(byte[] data, int Length)
@@ -78,8 +79,9 @@ namespace csModbusLib {
         {
         }
 
-        public override bool Connect()
+        public override bool Connect(MbRawData Data)
         {
+            base.Connect(Data);
             try {
                 smRxProcess = new SemaphoreSlim(1, 1);
                 smRxDataAvail = new SemaphoreSlim(0, 1);
@@ -108,7 +110,7 @@ namespace csModbusLib {
             }
         }
 
-        public override void ReceiveHeader(int timeOut, MbRawData MbData)
+        public override void ReceiveHeader(int timeOut)
         {
             smRxDataAvail.Wait();
             if (IsConnected == false)

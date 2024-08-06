@@ -240,43 +240,58 @@ namespace csModbusLib
             throw new ModbusException(ErrorCodes.ILLEGAL_FUNCTION_CODE);
         }
 
-        public void ReceiveMasterRequest(MbInterface Interface)
+        public int ParseMasterRequest()
         {
-            ExceptionCode = ExceptionCodes.NO_EXCEPTION;
-
             SlaveId = RawData.Data[REQST_UINIT_ID_IDX];
             FunctionCode = (ModbusCodes)RawData.Data[REQST_FCODE_IDX];
 
             //Debug.WriteLine(String.Format("Rx: Cmd{0}", FunctionCode));
             int MsgLen = FromMasterRequestMessageLen();
-            Interface.ReceiveBytes(RawData, MsgLen);
+            return MsgLen;
+        }
 
+        public int ParseDataCount()
+        {
             DataAddress = RawData.GetUInt16(REQST_ADDR_IDX);
+
+            int AdditionalData = 0;
 
             if (WrSingleData == true) {
                 DataCount = 1;
             } else {
                 DataCount = RawData.GetUInt16(REQST_DATA_CNT_IDX);
                 if (WrMultipleData) {
-                    int DataLength;
                     if (FunctionCode == ModbusCodes.READ_WRITE_MULTIPLE_REGISTERS) {
-                        DataLength = RawData.Data[REQST_DATA_LEN_IDX+4];
+                        AdditionalData = RawData.Data[REQST_DATA_LEN_IDX + 4];
 
                         // Create extra RawData for Write request
-                        WriteData = new MbRawData(REQST_DATA_IDX+ DataLength);
+                        WriteData = new MbRawData(REQST_DATA_IDX + AdditionalData);
                         // Copy Head NodeID and Function Code
                         WriteData.CopyFrom(RawData.Data, 0, REQST_ADDR_IDX);
                         // Copy  the write data
-                        WriteData.CopyFrom(RawData.Data, REQST_WRADDR_IDX, DataLength+5 );
+                        WriteData.CopyFrom(RawData.Data, REQST_WRADDR_IDX, AdditionalData + 5);
 
                     } else {
-                        DataLength = RawData.Data[REQST_DATA_LEN_IDX];
-                        Interface.ReceiveBytes(RawData, DataLength);
+                        AdditionalData = RawData.Data[REQST_DATA_LEN_IDX];
                     }
+
                 }
             }
+            return AdditionalData;
+        }
+         public void ReceiveMasterRequest(MbInterface Interface)
+        {
+            int MsgLen = ParseMasterRequest();
+         
+            ExceptionCode = ExceptionCodes.NO_EXCEPTION;
+            Interface.ReceiveBytes(MsgLen);
 
-            Interface.EndOfFrame(RawData);
+            int AdditionalData = ParseDataCount();
+            if (AdditionalData != 0) {
+                Interface.ReceiveBytes(AdditionalData);
+            }
+
+            Interface.EndOfFrame();
         }
 
         public void GetRwWriteAddress()
@@ -427,7 +442,7 @@ namespace csModbusLib
             byte RetCode = RawData.Data[REQST_FCODE_IDX];
             if ((RetCode & 0x80) != 0) {
                 // Slave reports exception error
-                Interface.ReceiveBytes(RawData, 1);
+                Interface.ReceiveBytes(1);
                 ExceptionCode = (ExceptionCodes)RawData.Data[RESPNS_ERR_IDX];
                 throw new ModbusException(ErrorCodes.MODBUS_EXCEPTION);
             }
@@ -436,14 +451,14 @@ namespace csModbusLib
 
             int Bytes2Read;
             if ((FunctionCode <= ModbusCodes.READ_INPUT_REGISTERS) || (FunctionCode == ModbusCodes.READ_WRITE_MULTIPLE_REGISTERS)) {
-                Interface.ReceiveBytes(RawData, 1);
+                Interface.ReceiveBytes(1);
                 Bytes2Read = RawData.Data[RESPNS_LEN_IDX];
             } else {
                 Bytes2Read = ResponseMessageLength() - 2;
             }
             if (Bytes2Read > 0)
-                Interface.ReceiveBytes(RawData, Bytes2Read);
-            Interface.EndOfFrame(RawData);
+                Interface.ReceiveBytes(Bytes2Read);
+            Interface.EndOfFrame();
         }
 
         public void ReadSlaveRegisterValues(UInt16[] DestArray, int DestOffs)
