@@ -9,7 +9,6 @@ namespace MasterSimple
         {
             Console.WriteLine("Modbus-TCP master demo");
 
-            const int TCPport = 502;
             const int SlaveID = 1;
 
             const int ModbusRegsAddr = 10;
@@ -17,7 +16,7 @@ namespace MasterSimple
             ushort[] SlaveCoils = new ushort[] {0,1,1,0 };
 
             MbMaster modMaster = new MbMaster();
-            //modMaster.Connect(new MbTCPMaster("localhost",TCPport), SlaveID);
+            //modMaster.Connect(new MbTCPMaster("localhost",502), SlaveID);
             modMaster.Connect(new MbRTU("COM1", 19200),SlaveID);
 
             ErrorCodes mbErr;

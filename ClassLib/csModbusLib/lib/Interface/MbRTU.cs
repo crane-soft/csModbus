@@ -82,7 +82,10 @@ namespace csModbusLib {
         {
             return (sp.BytesToRead >= 2);
         }
-
+        protected override int EndOffFrameLenthth()
+        {
+            return 2;
+        }
         protected override bool Check_EndOfFrame()
         {
             int crc_idx = MbData.EndIdx;

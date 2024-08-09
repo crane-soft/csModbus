@@ -110,7 +110,6 @@ namespace csModbusLib
 
         protected MbInterface gInterface = null;
         protected bool running = false;
-        protected ConnectionType connection_type = ConnectionType.NO_CONNECTION;
     }
 
     #endregion

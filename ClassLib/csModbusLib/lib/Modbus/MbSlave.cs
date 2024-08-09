@@ -24,6 +24,47 @@ namespace csModbusLib
         }
         #endregion
 
+        public bool StartListen()
+        {
+            if (gInterface != null) {
+                if (running) {
+                    StopListen();
+                }
+
+                if (gInterface.Connect(Frame.RawData)) {
+                    StartListener();
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public bool StartListen(MbSlaveDataServer DataServer)
+        {
+            gDataServer = DataServer;
+            return StartListen();
+        }
+
+        public bool StartListen(MbInterface Interface, MbSlaveDataServer DataServer)
+        {
+            InitInterface(Interface);
+            gDataServer = DataServer;
+            return StartListen();
+        }
+
+        public void StopListen()
+        {
+            running = false;
+            StopListener();
+            if (gInterface != null) {
+                gInterface.DisConnect();
+            }
+
+        }
+
+        virtual protected void StartListener() { }
+        virtual protected void StopListener() { }
+
         public MbSlaveDataServer DataServer
         {
             get { return gDataServer; }
@@ -83,43 +124,13 @@ namespace csModbusLib
         public MbSlaveServer(MbInterface Interface) : base(Interface) { }
         public MbSlaveServer(MbInterface Interface, MbSlaveDataServer DataServer) : base(Interface, DataServer) { }
 
-        public bool StartListen()
+        override protected void StartListener() 
         {
-            if (gInterface != null) {
-                if (running) {
-                    StopListen();
-                }
-
-                if (gInterface.Connect(Frame.RawData)) {
-                    ListenThread = new Thread(this.HandleRequestMessages);
-                    ListenThread.Start();
-                    return true;
-
-                }
-            }
-            return false;
+            ListenThread = new Thread(this.HandleRequestMessages);
+            ListenThread.Start();
         }
-
-        public bool StartListen(MbSlaveDataServer DataServer)
+        override protected void StopListener() 
         {
-            gDataServer = DataServer;
-            return StartListen();
-        }
-
-        public bool StartListen(MbInterface Interface, MbSlaveDataServer DataServer)
-        {
-            InitInterface(Interface);
-            gDataServer = DataServer;
-            return StartListen();
-        }
-
-        public void StopListen()
-        {
-            running = false;
-            if (gInterface != null) {
-                gInterface.DisConnect();
-            }
-
             if (ListenThread != null) {
                 while (ListenThread.IsAlive) {
                     Thread.Yield();
@@ -134,61 +145,114 @@ namespace csModbusLib
     public class MbSlaveStateMachine : MbSlave
     {
         public enum enRxStates
-        {   // TODO Status -> MBSlave.cs
+        {  
             Idle,
             StartOfFrame,
             ReceiveHeader,
             RcvMessage,
-            RcvAdditionalData
+            RcvAdditionalData,
+            RcvEndOfFrame
         }
         private enRxStates RxState;
 
         private MbSerial SerialInterface;
-        private int DataLen;
-          public MbSlaveStateMachine() { }
+        private System.Timers.Timer TimeoutTimer;
+
+        public MbSlaveStateMachine() { }
         public MbSlaveStateMachine(MbSerial Interface) : base(Interface) { }
         public MbSlaveStateMachine(MbSerial Interface, MbSlaveDataServer DataServer) : base(Interface, DataServer) { }
-        public bool StartListen()
+        override protected void StartListener()
         {
-            if (SerialInterface != null) {
-                SerialInterface = (MbSerial)gInterface;
-                SerialInterface.DataReceivedEvent += SerialInterface_DataReceivedEvent;
-                if (running) {
-                    StopListen();
-                }
+            SerialInterface = (MbSerial)gInterface;
+            SerialInterface.DataReceivedEvent += SerialInterface_DataReceivedEvent;
+            InitTimeoutTimer();
+            WaitFrameStart();
+        }
 
-                if (SerialInterface.Connect(Frame.RawData)) {
-                    WaitFrameStart();
-                }
-            }
-            return false;
+        override protected void StopListener()
+        {
+            SerialInterface.DataReceivedEvent -= SerialInterface_DataReceivedEvent;
+            if (TimeoutTimer != null)
+                TimeoutTimer.Stop();
+        }
+
+        private void InitTimeoutTimer()
+        {
+            TimeoutTimer = new System.Timers.Timer();
+            TimeoutTimer.AutoReset = false;
+            TimeoutTimer.Elapsed += TimeoutTimer_Elapsed;
         }
 
         private void WaitFrameStart()
         {
-            Frame.RawData.IniADUoffs();
-            SerialInterface.Wait4Event(enRxStates.StartOfFrame);
+            Debug.Print("WaitFrameStart");
+            RxState = enRxStates.StartOfFrame;
+            SerialInterface.Wait4FrameStartEvent();
         }
-        private void SerialInterface_DataReceivedEvent(MbSerial.enRxStates RxState)
+
+        private void WaitFrameEnd()
         {
-            // TODO timeout 
+            RxState = enRxStates.RcvEndOfFrame;
+            int timeOut = SerialInterface.Wait4FrameEndEvent();
+            StartTimeOut(timeOut);
+        }
+
+        private void WaitFrameData(enRxStates NextState, int DataLen)
+        {
+            RxState = NextState;
+            Debug.Print("WaitFrameData NextState = " + NextState);
+            int timeOut = SerialInterface.Wait4Bytes(DataLen);
+             StartTimeOut(timeOut);
+        }
+
+        private void StartTimeOut(int timeOut)
+        {
+            if (timeOut > 0) {
+                TimeoutTimer.Enabled = false;
+                TimeoutTimer.Interval = timeOut;
+                TimeoutTimer.Start();
+            }
+        }
+        private void TimeoutTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            Debug.Print("MbSlaveStateMachine Rx-Timeout");
+            //WaitFrameStart();
+        }
+
+        private void SerialInterface_DataReceivedEvent(ModbusException ex)
+        {
+            int DataLen;
+            TimeoutTimer.Stop();
+            if (ex != null) {
+                WaitFrameStart();
+                return;
+            }
+
             switch (RxState) {
                 case enRxStates.StartOfFrame:
-                    SerialInterface.Wait4Event(enRxStates.ReceiveHeader,2);
+                    Debug.Print("StartOfFrame");
+                    WaitFrameData (enRxStates.ReceiveHeader,2);
                     break;
                 case enRxStates.ReceiveHeader:
                     DataLen = Frame.ParseMasterRequest();
-                    SerialInterface.Wait4Event(enRxStates.RcvMessage, DataLen);
+                    Debug.Print("Header Received, DateLen: " + DataLen.ToString());
+                    WaitFrameData(enRxStates.RcvMessage, DataLen);
                     break;
                 case enRxStates.RcvMessage:
                     DataLen = Frame.ParseDataCount();
+                    Debug.Print("Data Received, Additional Data: " + DataLen.ToString());
                     if (DataLen != 0) {
-                        SerialInterface.Wait4Event(enRxStates.RcvAdditionalData, DataLen);
+                        WaitFrameData(enRxStates.RcvAdditionalData, DataLen);
                     } else {
-                        MasterRequestReceived();
+                        WaitFrameEnd();
                     }
                     break;
                 case enRxStates.RcvAdditionalData:
+                    Debug.Print("Additional Data Received");
+                    WaitFrameEnd();
+                    break;
+                case enRxStates.RcvEndOfFrame:
+                    Debug.Print("EndOffFrane Received");
                     MasterRequestReceived();
                     break;
             }
@@ -196,17 +260,15 @@ namespace csModbusLib
 
         private void MasterRequestReceived()
         {
-            SerialInterface.EndOfFrame();
-            DataServices();
-            SendResponseMessage();
-
-        }
-        public void StopListen()
-        {
-            running = false;
-            if (gInterface != null) {
-                gInterface.DisConnect();
+            try {
+                SerialInterface.EndOfFrame();
+                DataServices();
+                SendResponseMessage();
             }
+            catch (ModbusException ex) {
+                Debug.Print("ModbusException  {0}", ex.ErrorCode);
+            }
+            WaitFrameStart();
         }
     }
 }

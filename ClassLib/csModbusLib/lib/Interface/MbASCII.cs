@@ -23,7 +23,7 @@ namespace csModbusLib
             return false;
         }
 
-        protected override int RawNumOfBytes(int count)
+        protected override int NumOfSerialBytes(int count)
         {
             return 2* count;
         }
@@ -55,7 +55,12 @@ namespace csModbusLib
                 }
             }
         }
-     
+
+        protected override int EndOffFrameLenthth()
+        {
+            return 4;   // 2 chars LRC  + CRLF
+        }
+
         protected override bool Check_EndOfFrame()
         {
             ReceiveBytes(1);   // Read LRC

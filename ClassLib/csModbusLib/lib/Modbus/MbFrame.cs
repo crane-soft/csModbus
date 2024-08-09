@@ -242,6 +242,7 @@ namespace csModbusLib
 
         public int ParseMasterRequest()
         {
+            ExceptionCode = ExceptionCodes.NO_EXCEPTION;
             SlaveId = RawData.Data[REQST_UINIT_ID_IDX];
             FunctionCode = (ModbusCodes)RawData.Data[REQST_FCODE_IDX];
 
@@ -282,8 +283,6 @@ namespace csModbusLib
          public void ReceiveMasterRequest(MbInterface Interface)
         {
             int MsgLen = ParseMasterRequest();
-         
-            ExceptionCode = ExceptionCodes.NO_EXCEPTION;
             Interface.ReceiveBytes(MsgLen);
 
             int AdditionalData = ParseDataCount();
