@@ -18,9 +18,9 @@ namespace csModbusLib
 
 
         protected SerialPort sp = new SerialPort();
-        protected abstract bool StartOfFrameDetected();
+        public abstract bool StartOfFrameDetected();
         protected abstract bool Check_EndOfFrame();
-        protected abstract int EndOffFrameLenthth();
+        public abstract int EndOffFrameLenthth();
 
         private int oneByteTime_us;
         public MbSerial()
@@ -49,6 +49,10 @@ namespace csModbusLib
             oneByteTime_us = SerialByteTime();
         }
 
+        public SerialPort getSerialPort ()
+        {
+            return sp;
+        }
         private int SerialByteTime()
         {
             int nbits = 1 + sp.DataBits;
@@ -67,7 +71,7 @@ namespace csModbusLib
             return (1000000 * nbits) / sp.BaudRate;
         }
 
-        protected int GetTimeOut_ms(int serialBytesCnt)
+        public int GetTimeOut_ms(int serialBytesCnt)
         {
             if (serialBytesCnt == 0)
                 return 0;
@@ -119,7 +123,7 @@ namespace csModbusLib
 
         public override void ReceiveHeader(int timeOut)
         {
-            MbData.IniADUoffs();
+            MbData.Clear();
             WaitFrameStart(timeOut);
             ReceiveBytes(2); // Node-ID + Function-Byte
         }
@@ -170,93 +174,10 @@ namespace csModbusLib
                 throw new ModbusException(csModbusLib.ErrorCodes.TX_TIMEOUT);
             }
         }
-        private bool BytesAvailable(int bytesNeeded)
-        {
-            bytesNeeded = NumOfSerialBytes(bytesNeeded);
-            return (sp.BytesToRead >= bytesNeeded);
-        }
-
-        protected virtual int NumOfSerialBytes(int count)
+ 
+        public virtual int NumOfSerialBytes(int count)
         {
             return count;   // Default (RTU) , ASCI will have double of count
         }
-    //}
-    #region Event driven section
-    //public abstract class MbStateSerial : MbSerial { 
-        public event DataReceivedHandler DataReceivedEvent;
-        private int DataBytesNeeded;
-        private int serialBytesNeeded;
-
-        public void Wait4FrameStartEvent()
-        {
-            SetDataReceivedEventHandler (Sp_Wait4FrameStart);
-        }
-
-        public int Wait4Bytes(int ByteCount)
-        {
-            DataBytesNeeded = ByteCount;
-            serialBytesNeeded = NumOfSerialBytes(ByteCount);
-            return InitReceiveByteEvent();
-        }
-
-        public int Wait4FrameEndEvent()
-        {
-            DataBytesNeeded = 0;
-            serialBytesNeeded = EndOffFrameLenthth();
-            return InitReceiveByteEvent();
-        }
-
-        private int InitReceiveByteEvent()
-        {
-            sp.ReceivedBytesThreshold = serialBytesNeeded;
-            SetDataReceivedEventHandler(Sp_DataReceived);
-            return GetTimeOut_ms(serialBytesNeeded);
-        }
-
-        private void SetDataReceivedEventHandler(SerialDataReceivedEventHandler handler)
-        {
-            ClearDataReceivedEventHandler();
-            sp.DataReceived += handler;
-            handler(null, null);
-        }
-
-        private void ClearDataReceivedEventHandler()
-        {
-            sp.DataReceived -= Sp_Wait4FrameStart;
-            sp.DataReceived -= Sp_DataReceived;
-        }
-
-        private void Sp_Wait4FrameStart(object sender, SerialDataReceivedEventArgs e)
-        {
-            if (StartOfFrameDetected()) {
-                MbData.IniADUoffs();
-                RaiseReceiveEvent();
-            }
-        }
-
-        private void Sp_DataReceived(object sender, SerialDataReceivedEventArgs e)
-        {
-            if (sp.BytesToRead >= serialBytesNeeded) {
-                if (DataBytesNeeded > 0) {
-                    try {
-                        ReceiveBytes(DataBytesNeeded);
-                    } catch (ModbusException ex) {
-                        RaiseReceiveEvent(ex);
-                    }
-                }
-                RaiseReceiveEvent();
-            }
-        }
-
-        private void RaiseReceiveEvent(ModbusException ex = null)
-        {
-            ClearDataReceivedEventHandler();
-            serialBytesNeeded = 0;
-            DataBytesNeeded = 0;
-
-            if (DataReceivedEvent != null)
-                DataReceivedEvent(ex);
-        }
     }
-    #endregion
 }

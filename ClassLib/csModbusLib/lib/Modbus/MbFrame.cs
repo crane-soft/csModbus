@@ -58,7 +58,7 @@ namespace csModbusLib
             EndIdx = 0;
         }
 
-        public void IniADUoffs() {
+        public void Clear() {
             EndIdx = ADU_OFFS;
         }
 

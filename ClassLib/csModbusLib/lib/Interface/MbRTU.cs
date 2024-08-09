@@ -78,11 +78,11 @@ namespace csModbusLib {
             crc16 = new CRC16();
         }
 
-        protected override bool StartOfFrameDetected()
+        public override bool StartOfFrameDetected()
         {
             return (sp.BytesToRead >= 2);
         }
-        protected override int EndOffFrameLenthth()
+        public override int EndOffFrameLenthth()
         {
             return 2;
         }

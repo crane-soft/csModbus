@@ -13,7 +13,7 @@ namespace csModbusLib
 
         public MbASCII(string port, int baudrate) : base(port, baudrate){  }
 
-        protected override bool StartOfFrameDetected()
+        public override bool StartOfFrameDetected()
         {
             if (sp.BytesToRead > 0) {
                 if (sp.ReadByte() == ':') {
@@ -23,7 +23,7 @@ namespace csModbusLib
             return false;
         }
 
-        protected override int NumOfSerialBytes(int count)
+        public override int NumOfSerialBytes(int count)
         {
             return 2* count;
         }
@@ -56,7 +56,7 @@ namespace csModbusLib
             }
         }
 
-        protected override int EndOffFrameLenthth()
+        public override int EndOffFrameLenthth()
         {
             return 4;   // 2 chars LRC  + CRLF
         }
