@@ -19,8 +19,8 @@ namespace csModbusLib
         public override void ReceiveHeader(int timeOut)
         {
             MbData.EndIdx = 0;
-            ReceiveHeaderData(timeOut, MbData);
-            CheckTransactionIdentifier(MbData);
+            ReceiveHeaderData(timeOut);
+            CheckTransactionIdentifier();
         }
     }
 
@@ -54,13 +54,13 @@ namespace csModbusLib
 
         public override void SendFrame(int Length)
         {
-            FillMBAPHeader(MbData, Length);
+            FillMBAPHeader(Length);
             mUdpClient.Send(MbData.Data, Length + MBAP_Header_Size);
         }
 
-        protected override void ReceiveHeaderData(int timeOut, MbRawData RxData)
+        protected override void ReceiveHeaderData(int timeOut)
         {
-            UdpReceiveHeaderData(timeOut, RxData);
+            UdpReceiveHeaderData(timeOut);
         }
     }
 
@@ -104,25 +104,25 @@ namespace csModbusLib
 
         public override void SendFrame( int Length)
         {
-            FillMBAPHeader(MbData, Length);
+            FillMBAPHeader(Length);
             nwStream.Write(MbData.Data, 0, Length + MBAP_Header_Size);
         }
 
-        protected override void ReceiveHeaderData(int timeOut, MbRawData RxData)
+        protected override void ReceiveHeaderData(int timeOut)
         {
-            ReadData(ResponseTimeout, RxData, 8);
-            int bytes2read = RxData.CheckEthFrameLength();
+            ReadData(ResponseTimeout, 8);
+            int bytes2read = MbData.CheckEthFrameLength();
             if (bytes2read > 0) {
-                ReadData(50, RxData, bytes2read);
+                ReadData(50, bytes2read);
             }
         }
 
-        protected void ReadData(int timeOut, MbRawData RxData, int length)
+        protected void ReadData(int timeOut, int length)
         {
             try {
                 nwStream.ReadTimeout = timeOut;
-                int readed = nwStream.Read(RxData.Data, RxData.EndIdx, length);
-                RxData.EndIdx += readed;
+                int readed = nwStream.Read(MbData.Data, MbData.EndIdx, length);
+                MbData.EndIdx += readed;
             } catch (IOException ) {
                 throw new ModbusException(csModbusLib.ErrorCodes.RX_TIMEOUT);
             }

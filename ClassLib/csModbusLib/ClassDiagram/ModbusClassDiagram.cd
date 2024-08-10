@@ -3,7 +3,7 @@
   <Class Name="csModbusLib.MbBase">
     <Position X="1.75" Y="1.75" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAACABAgAABAAgAAAAAAAAAAAAEAAA=</HashCode>
+      <HashCode>AAAAAAAACAAAAAAACAAAAAAAAAgAAAAAAAAAAAAEAAA=</HashCode>
       <FileName>lib\Modbus\MbBase.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -11,9 +11,9 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="csModbusLib.MbSlave">
-    <Position X="7.5" Y="6.25" Width="2.25" />
+    <Position X="7.5" Y="6.75" Width="2.25" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAgAAAAACAEACAAIAAAAAAAAAAAAAk=</HashCode>
+      <HashCode>AQAAAAAABAAAAAAgAAAAACAEACAAIgAAAAAAAQAAAAk=</HashCode>
       <FileName>lib\Modbus\MbSlave.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -22,7 +22,7 @@
     </ShowAsAssociation>
   </Class>
   <Class Name="csModbusLib.MbSlaveDataServer">
-    <Position X="7.5" Y="9.25" Width="2.5" />
+    <Position X="12.25" Y="7.75" Width="2.5" />
     <TypeIdentifier>
       <HashCode>UAIAAAAAIAABABAABABCACAAAACQAAAAAAAAACAAAAE=</HashCode>
       <FileName>lib\SlaveDataServer\MbSlaveDataServer.cs</FileName>
@@ -31,14 +31,14 @@
   <Class Name="csModbusLib.MbInterface">
     <Position X="5" Y="1.75" Width="1.75" />
     <TypeIdentifier>
-      <HashCode>BAIAAAAMAAAAAABAAAAAAIAAQAAIAABAABAAAAAAAAA=</HashCode>
+      <HashCode>AAIAAAAEAAAAAABAAAAAAIAAQAAIAAAAAJEQAAAAAAA=</HashCode>
       <FileName>lib\Interface\MbInterface.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbMasterBase">
     <Position X="0.75" Y="6.25" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AAAAgAEAKAAAAABABAAAAIAAAAgEAABAACBACACCAgM=</HashCode>
+      <HashCode>AAAAgAAAKAAAAABABAQAAIAAAAgEAAAAACBACACCAgM=</HashCode>
       <FileName>lib\Modbus\MbMaster.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -60,20 +60,41 @@
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MBSFrame">
-    <Position X="10.75" Y="4.5" Width="2.5" />
+    <Position X="12.25" Y="3.75" Width="2.5" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAgEUIAAAYAAAAIAAAAAgAAAAgAAAAAAQCAAAAAEA=</HashCode>
+      <HashCode>AAABgEUoAAAYEAAAIAAAgAgAAAAgAAAAAAQCAAAAAEA=</HashCode>
       <FileName>lib\Modbus\MbFrame.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MBMFrame">
-    <Position X="4" Y="6.25" Width="2.25" />
+    <Position X="4" Y="7.25" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAACAQCAAAAAAAAAgAACAAEAAAAAABACAAAAgI=</HashCode>
       <FileName>lib\Modbus\MbFrame.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MbSlaveServer">
+    <Position X="6.5" Y="11.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABAAAAAAAAAAAAAAAAAAAEgAAAAAAAAAAAAA=</HashCode>
+      <FileName>lib\Modbus\MbSlave.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.MbSlaveStateMachine">
+    <Position X="9.5" Y="11.5" Width="2.5" />
+    <NestedTypes>
+      <Enum Name="csModbusLib.MbSlaveStateMachine.enRxStates" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>lib\Modbus\MbSlaveStateMachine.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAIBABIIAAAAAAAEIAQBEAAAABgACAIAAiAAgAAA=</HashCode>
+      <FileName>lib\Modbus\MbSlaveStateMachine.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Tahoma" Size="8.25" />

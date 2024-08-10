@@ -28,33 +28,33 @@ namespace csModbusLib {
             remote_port = port;
         }
 
-        protected virtual void ReceiveHeaderData(int timeOut, MbRawData MbData) { }
+        protected virtual void ReceiveHeaderData(int timeOut) { }
 
-        protected void FillMBAPHeader(MbRawData TransmitData, int Length)
+        protected void FillMBAPHeader(int Length)
         {
             ++TransactionIdentifier;
-            TransmitData.PutUInt16(0, TransactionIdentifier);
-            TransmitData.PutUInt16(2, 0);
-            TransmitData.PutUInt16(4, (UInt16)Length);
+            MbData.PutUInt16(0, TransactionIdentifier);
+            MbData.PutUInt16(2, 0);
+            MbData.PutUInt16(4, (UInt16)Length);
         }
 
-        protected void CheckTransactionIdentifier(MbRawData ReceivMessage)
+        protected void CheckTransactionIdentifier()
         {
-            ushort RxIdentifier = ReceivMessage.GetUInt16(0);
+            ushort RxIdentifier = MbData.GetUInt16(0);
             if (RxIdentifier != TransactionIdentifier) {
                 throw new ModbusException(csModbusLib.ErrorCodes.WRONG_IDENTIFIER);
             }
         }
 
-        protected void UdpReceiveHeaderData(int timeOut, MbRawData RxData)
+        protected void UdpReceiveHeaderData(int timeOut)
         {
-            RxData.EndIdx = 0;
+            MbData.EndIdx = 0;
             mUdpClient.Client.ReceiveTimeout = timeOut;
             try {
                 byte[] rxbuff = mUdpClient.Receive(ref udpRemoteAddr);
-                RxData.CopyFrom(rxbuff, 0, rxbuff.Length);
+                MbData.CopyFrom(rxbuff, 0, rxbuff.Length);
 
-                if (RxData.CheckEthFrameLength() > 0) {
+                if (MbData.CheckEthFrameLength() > 0) {
                     // we assume all framedata in one datagram
                     throw new ModbusException(csModbusLib.ErrorCodes.MESSAGE_INCOMPLETE);
                 }

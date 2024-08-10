@@ -15,14 +15,14 @@ namespace csModbusLib {
         {
             MbData.PutUInt16(4, (UInt16)Length);
             try {
-                SendFrameData(MbData.Data, Length + MBAP_Header_Size);
+                SendFrameData(Length + MBAP_Header_Size);
                 FreeMessage();
             } catch (System.Exception ex) {
                 Debug.Print(ex.Message);
                 throw new ModbusException(csModbusLib.ErrorCodes.CONNECTION_ERROR);
             }
         }
-        protected abstract void SendFrameData(byte[] data, int Length);
+        protected abstract void SendFrameData(int Length);
         protected virtual void FreeMessage() { }
     }
 
@@ -59,12 +59,12 @@ namespace csModbusLib {
 
         public override void ReceiveHeader(int timeOut)
         {
-            UdpReceiveHeaderData(timeOut, MbData);
+            UdpReceiveHeaderData(timeOut);
         }
 
-        protected override void SendFrameData(byte[] data, int Length)
+        protected override void SendFrameData(int Length)
         {
-            mUdpClient.Send(data, Length, udpRemoteAddr);
+            mUdpClient.Send(MbData.Data, Length, udpRemoteAddr);
         }
     }
 
@@ -118,9 +118,9 @@ namespace csModbusLib {
             ConnectionContext.CopyRxData(MbData);
         }
 
-        protected override void SendFrameData(byte[] data, int Length)
+        protected override void SendFrameData(int Length)
         {
-            ConnectionContext.SendFrame(data, Length);
+            ConnectionContext.SendFrame(MbData.Data, Length);
         }
 
         private void OnClientAccepted(IAsyncResult ar)

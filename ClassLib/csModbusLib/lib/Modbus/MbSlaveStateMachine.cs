@@ -10,7 +10,7 @@ namespace csModbusLib
 {
     public class MbSlaveStateMachine : MbSlave
     {
-        public enum enRxStates
+        private enum enRxStates
         {
             Idle,
             StartOfFrame,

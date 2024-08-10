@@ -5,9 +5,6 @@ using System.Diagnostics;
 
 namespace csModbusLib
 {
-
-    public delegate void DataReceivedHandler(ModbusException ex);
-
     public abstract class MbSerial : MbInterface
     {
         public enum ModbusSerialType

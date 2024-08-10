@@ -55,10 +55,10 @@ namespace csModbusLib
         public void StopListen()
         {
             running = false;
-            StopListener();
             if (gInterface != null) {
                 gInterface.DisConnect();
             }
+            StopListener();
 
         }
 
