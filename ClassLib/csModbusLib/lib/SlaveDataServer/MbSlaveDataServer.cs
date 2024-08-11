@@ -56,6 +56,7 @@ namespace csModbusLib {
                         if (WriteMultipleRegisters()) return;
                         break;
                     case ModbusCodes.READ_WRITE_MULTIPLE_REGISTERS:
+                        Frame.SaveWritaData();
                         if (ReadHoldingRegisters()) {
                             Frame.GetRwWriteAddress();
                             if (WriteMultipleRegisters()) {

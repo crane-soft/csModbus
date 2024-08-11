@@ -20,7 +20,7 @@ namespace SlaveSimple
             StdDataServer MyDataServer = new StdDataServer(SlaveID);
 
             // add some data
-            ushort[] SlaveRegs = new ushort[8];
+            ushort[] SlaveRegs = new ushort[] { 502, 703, 114, 137, 178, 199 ,0,0};
             ushort[] SlaveInputs = new ushort[5];
             ushort[] SlaveCoils = new ushort[4];
 
@@ -31,8 +31,8 @@ namespace SlaveSimple
             MyDataServer.AddDiscreteInputs(ModbusCoilsAddr, SlaveCoils);
 
             // create a Modbus slave server 
-            //MbSlaveServer modSlave = new MbSlaveServer();
-            MbSlaveStateMachine modSlave = new MbSlaveStateMachine();
+            MbSlaveServer modSlave = new MbSlaveServer();
+            //MbSlaveStateMachine modSlave = new MbSlaveStateMachine();
 
             // start listening for your data server and your connection interface
             // the listener is running in his own thread and can be stopped with StopListen()
@@ -43,9 +43,11 @@ namespace SlaveSimple
             Console.WriteLine("Listener started...");
             while (!Console.KeyAvailable) {
 
-                // print some register values changed by a modbus master
-                Console.Write(String.Format("{0} {1}\r", SlaveRegs[0], SlaveRegs[1]));
-
+                // print register values changed by a modbus master
+                for (int i = 0; i < SlaveRegs.Length; ++i ) {
+                    Console.Write(String.Format("{0} ", SlaveRegs[i]));
+                }
+                Console.Write("          \r");
                 // change a register readed by a modbus master
                 SlaveRegs[7] += 1;
                 // check for exit via master

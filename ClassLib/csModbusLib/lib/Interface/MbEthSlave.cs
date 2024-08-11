@@ -185,7 +185,7 @@ namespace csModbusLib {
 
             public TcpContext(TcpClient aClient)
             {
-                FrameBuffer = new MbRawData(MbBase.MAX_FRAME_LEN);
+                FrameBuffer = new MbRawData();
                 Client = aClient;
                 Stream = Client.GetStream();
                 closed = false;
