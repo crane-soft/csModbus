@@ -78,8 +78,9 @@ namespace csModbusLib
             while (running) {
                 try {
                     ReceiveMasterRequestMessage();
-                    DataServices();
-                    SendResponseMessage();
+                    if (DataServices()) {
+                        SendResponseMessage();
+                    }
 
                 }
                 catch (ModbusException ex) {
@@ -106,13 +107,15 @@ namespace csModbusLib
             gInterface.SendFrame(MsgLen);
         }
 
-        protected void DataServices()
+        private bool DataServices()
         {
             MbSlaveDataServer DataServer = gDataServer;
+            bool ID_matched = false;
             while (DataServer != null) {
-                DataServer.DataServices(Frame);
+                ID_matched |= DataServer.DataServices(Frame);
                 DataServer = DataServer.NextDataServer;
             }
+            return ID_matched;
         }
     }
 

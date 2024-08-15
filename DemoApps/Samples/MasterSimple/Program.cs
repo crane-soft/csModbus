@@ -21,7 +21,7 @@ namespace MasterSimple
 
             ErrorCodes mbErr;
             // Registerfunctions
-            /*
+            
             mbErr = modMaster.WriteSingleRegister(ModbusRegsAddr, SlaveRegs[4]);
             mbErr = modMaster.WriteMultipleRegisters(ModbusRegsAddr, (ushort)SlaveRegs.Length, SlaveRegs);
             mbErr = modMaster.ReadHoldingRegisters(ModbusRegsAddr, (ushort) SlaveRegs.Length, SlaveRegs);
@@ -32,7 +32,7 @@ namespace MasterSimple
             mbErr = modMaster.ReadDiscreteInputs(ModbusRegsAddr, (ushort)SlaveCoils.Length, SlaveCoils);
             mbErr = modMaster.WriteMultipleCoils(ModbusRegsAddr, (ushort)SlaveCoils.Length, SlaveCoils);
             mbErr = modMaster.WriteSingleCoil(ModbusRegsAddr, SlaveCoils[1]);
-            */
+          
 
             // read write register
             int RwSize = SlaveRegs.Length / 2;

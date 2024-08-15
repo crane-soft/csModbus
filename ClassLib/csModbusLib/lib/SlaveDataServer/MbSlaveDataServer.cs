@@ -26,51 +26,54 @@ namespace csModbusLib {
             set { gSlaveID = value; }
         }
 
-        public void DataServices(MBSFrame aFrame)
+        public bool DataServices(MBSFrame aFrame)
         {
             Frame = aFrame;
-            if (Frame.SlaveId == gSlaveID) {
-                switch (Frame.FunctionCode) {
-                    case ModbusCodes.READ_COILS:
-                        if (ReadCoils()) return;
-                        break;
-                    case ModbusCodes.READ_DISCRETE_INPUTS:
-                        if (ReadDiscreteInputs()) return;
-                        break;
-                    case ModbusCodes.READ_HOLDING_REGISTERS:
-                        if (ReadHoldingRegisters()) return;
-                        break;
-                    case ModbusCodes.READ_INPUT_REGISTERS:
-                        if (ReadInputRegisters()) return;
-                        break;
-                    case ModbusCodes.WRITE_SINGLE_COIL:
-                        if (WriteSingleCoil()) return;
-                        break;
-                    case ModbusCodes.WRITE_SINGLE_REGISTER:
-                        if (WriteSingleRegister()) return;
-                        break;
-                    case ModbusCodes.WRITE_MULTIPLE_COILS:
-                        if (WriteMultipleCoills()) return;
-                        break;
-                    case ModbusCodes.WRITE_MULTIPLE_REGISTERS:
-                        if (WriteMultipleRegisters()) return;
-                        break;
-                    case ModbusCodes.READ_WRITE_MULTIPLE_REGISTERS:
-                        Frame.SaveWritaData();
-                        if (ReadHoldingRegisters()) {
-                            Frame.GetRwWriteAddress();
-                            if (WriteMultipleRegisters()) {
-                                return;
-                            }
-                        }
-                        break;
-                    default:
-                        Frame.ExceptionCode = ExceptionCodes.ILLEGAL_FUNCTION;
-                        return;
-
-                }
-                Frame.ExceptionCode = ExceptionCodes.ILLEGAL_DATA_ADDRESS;
+            if (Frame.SlaveId != gSlaveID) {
+                return false;
             }
+
+            switch (Frame.FunctionCode) {
+                case ModbusCodes.READ_COILS:
+                    if (ReadCoils()) return true; ;
+                    break;
+                case ModbusCodes.READ_DISCRETE_INPUTS:
+                    if (ReadDiscreteInputs()) return true;
+                    break;
+                case ModbusCodes.READ_HOLDING_REGISTERS:
+                    if (ReadHoldingRegisters()) return true;
+                    break;
+                case ModbusCodes.READ_INPUT_REGISTERS:
+                    if (ReadInputRegisters()) return true; ;
+                    break;
+                case ModbusCodes.WRITE_SINGLE_COIL:
+                    if (WriteSingleCoil()) return true;
+                    break;
+                case ModbusCodes.WRITE_SINGLE_REGISTER:
+                    if (WriteSingleRegister()) return true;
+                    break;
+                case ModbusCodes.WRITE_MULTIPLE_COILS:
+                    if (WriteMultipleCoills()) return true;
+                    break;
+                case ModbusCodes.WRITE_MULTIPLE_REGISTERS:
+                    if (WriteMultipleRegisters()) return true;
+                    break;
+                case ModbusCodes.READ_WRITE_MULTIPLE_REGISTERS:
+                    Frame.SaveWritaData();
+                    if (ReadHoldingRegisters()) {
+                        Frame.GetRwWriteAddress();
+                        if (WriteMultipleRegisters()) {
+                            return true;
+                        }
+                    }
+                    break;
+                default:
+                    Frame.ExceptionCode = ExceptionCodes.ILLEGAL_FUNCTION;
+                    return true;
+
+            }
+            Frame.ExceptionCode = ExceptionCodes.ILLEGAL_DATA_ADDRESS;
+            return true;
         }
 
         protected virtual bool ReadCoils() { return false; }

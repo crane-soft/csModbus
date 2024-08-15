@@ -152,13 +152,13 @@ namespace csModbusLib {
         public ModbusRegsData(int Address, ushort[] Data) : base(Address, Data) { }
 
         protected override void ReadMultiple(MBSFrame Frame) {
-            Frame.PutResponseValues(MyBaseAddr, Data);
+            Frame.PutValues(MyBaseAddr, Data);
         }
         protected override void WriteMultiple(MBSFrame Frame) {
-            Frame.GetRequestValues(MyBaseAddr, Data);
+            Frame.GetValues(MyBaseAddr, Data);
         }
         protected override void WriteSingle(MBSFrame Frame) {
-            Data[Frame.DataAddress - MyBaseAddr] = Frame.GetRequestSingleUInt16();
+            Data[Frame.DataAddress - MyBaseAddr] = Frame.GetSingleUInt16();
         }
     }
 
@@ -168,13 +168,13 @@ namespace csModbusLib {
         public ModbusCoilsData(int Address, int Length) : base(Address, Length) { }
         public ModbusCoilsData(int Address, ushort[] Data) : base(Address, Data) { }
         protected override void ReadMultiple(MBSFrame Frame) {
-            Frame.PutResponseBitValues(MyBaseAddr, Data);
+            Frame.PutBitValues(MyBaseAddr, Data);
         }
         protected override void WriteMultiple(MBSFrame Frame) {
-            Frame.GetRequestBitValues(MyBaseAddr, Data);
+            Frame.GetBitValues(MyBaseAddr, Data);
         }
         protected override void WriteSingle(MBSFrame Frame) {
-            Data[Frame.DataAddress - MyBaseAddr] = Frame.GetRequestSingleBit();
+            Data[Frame.DataAddress - MyBaseAddr] = Frame.GetSingleBit();
         }
     }
 }

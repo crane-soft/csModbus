@@ -63,6 +63,7 @@
     <Compile Include="lib\SlaveDataServer\MbSlaveDataServer.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="lib\SlaveDataServer\MbSlaveEmServer.cs" />
     <Compile Include="lib\SlaveDataServer\MbSlaveStdServer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

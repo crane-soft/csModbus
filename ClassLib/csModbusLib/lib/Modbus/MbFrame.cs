@@ -342,22 +342,22 @@ namespace csModbusLib
             return false;
         }
 
-        public ushort GetRequestSingleUInt16()
+        public ushort GetSingleUInt16()
         {
             return RawData.GetUInt16(REQST_SINGLE_DATA_IDX);
         }
 
-        public ushort GetRequestSingleBit()
+        public ushort GetSingleBit()
         {
             return RawData.Data[REQST_SINGLE_DATA_IDX];
         }
 
-        public void PutResponseBitValues(int BaseAddr, ushort[] SrcBits)
+        public void PutBitValues(int BaseAddr, ushort[] SrcBits)
         {
             PutBitData(SrcBits, DataAddress - BaseAddr, RESPNS_DATA_IDX);
         }
 
-        public void PutResponseValues(int BaseAddr, UInt16[] RegisterArray)
+        public void PutValues(int BaseAddr, UInt16[] RegisterArray)
         {
             for (int i = 0; i < DataCount; ++i) {
                 ushort Value = RegisterArray[DataAddress - BaseAddr + i];
@@ -367,12 +367,12 @@ namespace csModbusLib
             RawData.Data[RESPNS_LEN_IDX] = (byte)(DataCount * 2);
         }
 
-        public void GetRequestBitValues(int BaseAddr, UInt16[] DestBits)
+        public void GetBitValues(int BaseAddr, UInt16[] DestBits)
         {
             GetBitData(DestBits, DataAddress - BaseAddr, REQST_DATA_IDX);
         }
 
-        public void GetRequestValues(int BaseAddr, UInt16[] DestArray)
+        public void GetValues(int BaseAddr, UInt16[] DestArray)
         {
             MbRawData SrcData;
             if (FunctionCode == ModbusCodes.READ_WRITE_MULTIPLE_REGISTERS) {
