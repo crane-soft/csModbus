@@ -107,7 +107,7 @@ namespace csModbusLib
             gInterface.SendFrame(MsgLen);
         }
 
-        private bool DataServices()
+        protected bool DataServices()
         {
             MbSlaveDataServer DataServer = gDataServer;
             bool ID_matched = false;

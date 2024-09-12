@@ -31,8 +31,8 @@ namespace SlaveSimple
             MyDataServer.AddDiscreteInputs(ModbusCoilsAddr, SlaveCoils);
 
             // create a Modbus slave server 
-            MbSlaveServer modSlave = new MbSlaveServer();
-            //MbSlaveStateMachine modSlave = new MbSlaveStateMachine();
+            //MbSlaveServer modSlave = new MbSlaveServer();
+            MbSlaveStateMachine modSlave = new MbSlaveStateMachine();
 
             // start listening for your data server and your connection interface
             // the listener is running in his own thread and can be stopped with StopListen()

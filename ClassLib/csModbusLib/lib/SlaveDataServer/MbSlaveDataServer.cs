@@ -30,6 +30,8 @@ namespace csModbusLib {
         {
             Frame = aFrame;
             if (Frame.SlaveId != gSlaveID) {
+                // return false if ID does not much
+                // in all other cases true is returned
                 return false;
             }
 

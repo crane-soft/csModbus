@@ -110,7 +110,6 @@ namespace csModbusLib
         private void SerialInterface_DataReceivedEvent(object sender, SerialDataReceivedEventArgs e)
         {
             int DataLen;
-
             if (RxState == enRxStates.StartOfFrame) {
                 if (SerialInterface.StartOfFrameDetected()) {
                     Frame.RawData.Clear();

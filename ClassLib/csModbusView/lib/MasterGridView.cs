@@ -130,10 +130,10 @@ namespace csModbusView
 
     public class MasterCoilsGridView : MasterGridView
     {
-        public MasterCoilsGridView() : this(0, 8) {}
+        public MasterCoilsGridView() : this(0, 1) {}
 
         public MasterCoilsGridView(ushort BaseAddr, ushort NumItems) 
-            : this("Coils", BaseAddr, NumItems, 8) {}
+            : this("Coils", BaseAddr, NumItems, 1) {}
 
         public MasterCoilsGridView(string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
             : base(ModbusObjectType.Coils, Title, BaseAddr, NumItems, ItemColumns) {}
@@ -163,10 +163,10 @@ namespace csModbusView
     
     public class MasterDiscretInputsGridView : MasterGridView
     {
-        public MasterDiscretInputsGridView() : this(0, 8) {}
+        public MasterDiscretInputsGridView() : this(0, 1) {}
 
         public MasterDiscretInputsGridView(ushort BaseAddr, ushort NumItems) 
-            : this("DiscretInputs", BaseAddr, NumItems, 8) {}
+            : this("DiscretInputs", BaseAddr, NumItems, 1) {}
 
         public MasterDiscretInputsGridView(string Title, ushort BaseAddr, ushort NumItems, int ItemColumns) 
             : base(ModbusObjectType.DiscreteInputs, Title, BaseAddr, NumItems, ItemColumns) {}

@@ -164,7 +164,6 @@ namespace csModbusLib
                 sp.DiscardInBuffer();
 
                 sp.Write(Data, offs, count);
-
             }
             catch (SystemException ex) {
                 Debug.Print(ex.Message);
