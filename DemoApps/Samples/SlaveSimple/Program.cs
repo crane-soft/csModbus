@@ -1,6 +1,10 @@
-﻿using System;
+﻿//#define TCP_INTERFACE
+#define RTU_INTERFACE
+
+using System;
 using System.Threading;
 using csModbusLib;
+
 
 namespace SlaveSimple
 {
@@ -8,10 +12,19 @@ namespace SlaveSimple
     {
         static void Main(string[] args)
         {
+#if TCP_INTERFACE
             Console.WriteLine("Modbus-TCP slave demo");
             const int TCPport = 502;
-            const int SlaveID = 1;
+            MbInterface MyInterface = new MbTCPSlave(TCPport);
+#endif
+#if RTU_INTERFACE
+            string ComPort = "COM2";
+            int Baudrate = 19200;
+            Console.WriteLine(string.Format("Modbus-RTU slave demo {0},{1}", ComPort, Baudrate));
+            MbInterface MyInterface = new MbRTU (ComPort, Baudrate);
+#endif
 
+            const int SlaveID = 1;
             const int ModbusRegsAddr = 10;
             const int ModbusInputAddr = 20;
             const int ModbusCoilsAddr = 10;
@@ -31,14 +44,12 @@ namespace SlaveSimple
             MyDataServer.AddDiscreteInputs(ModbusCoilsAddr, SlaveCoils);
 
             // create a Modbus slave server 
-            //MbSlaveServer modSlave = new MbSlaveServer();
-            MbSlaveStateMachine modSlave = new MbSlaveStateMachine();
+            MbSlaveServer modSlave = new MbSlaveServer();
 
             // start listening for your data server and your connection interface
             // the listener is running in his own thread and can be stopped with StopListen()
 
-            //modSlave.StartListen(new MbTCPSlave(TCPport), MyDataServer);
-            modSlave.StartListen(new MbRTU ("COM2",19200), MyDataServer);
+            modSlave.StartListen(MyInterface, MyDataServer);
 
             Console.WriteLine("Listener started...");
             while (!Console.KeyAvailable) {
