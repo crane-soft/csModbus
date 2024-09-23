@@ -86,6 +86,8 @@ namespace csModbusView
             setBrowsableProperty("DataType", isNotCoil);
             setBrowsableProperty("Endianes", isNotCoil && (TypeSize > 1));
 
+            bool RdWr = (_MbType == ModbusObjectType.HoldingRegister) || (_MbType == ModbusObjectType.Coils);
+            setBrowsableProperty("WrOnly", RdWr);
             setAllPropertyCategory(_MbType.ToString());
         }
 
