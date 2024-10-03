@@ -40,8 +40,13 @@ namespace csModbusLib {
             Init(0, 0);
         }
 
-        public ModbusData(int aAddress, int aSize) {
-            Data = new ushort[aSize];
+        public ModbusData(int aAddress, int aSize, bool newData = true)
+        {
+            if (newData) {
+                Data = new ushort[aSize];
+            } else {
+                Data = null;
+            }
             Init(aAddress, aSize);
         }
 
@@ -145,10 +150,29 @@ namespace csModbusLib {
         protected virtual void WriteSingle(MBSFrame Frame) { }
     }
 
+    public class ModbusCoilsData : ModbusData
+    {
+        public ModbusCoilsData() : base() { }
+        public ModbusCoilsData(int Address, int Length) : base(Address, Length) { }
+        public ModbusCoilsData(int Address, ushort[] Data) : base(Address, Data) { }
+        protected override void ReadMultiple(MBSFrame Frame)
+        {
+            Frame.PutBitValues(MyBaseAddr, Data);
+        }
+        protected override void WriteMultiple(MBSFrame Frame)
+        {
+            Frame.GetBitValues(MyBaseAddr, Data);
+        }
+        protected override void WriteSingle(MBSFrame Frame)
+        {
+            Data[Frame.DataAddress - MyBaseAddr] = Frame.GetSingleBit();
+        }
+    }
+
     public class ModbusRegsData : ModbusData
     {
-        public ModbusRegsData() :base () {}
-        public ModbusRegsData(int Address, int Length) : base(Address, Length) {}
+        public ModbusRegsData() : base() { }
+        public ModbusRegsData(int Address, int Length) : base(Address, Length) { }
         public ModbusRegsData(int Address, ushort[] Data) : base(Address, Data) { }
 
         protected override void ReadMultiple(MBSFrame Frame) {
@@ -162,20 +186,27 @@ namespace csModbusLib {
         }
     }
 
-    public class ModbusCoilsData : ModbusData
+    public class Modbusb32Data<DataT> : ModbusData
     {
-        public ModbusCoilsData() : base() { }
-        public ModbusCoilsData(int Address, int Length) : base(Address, Length) { }
-        public ModbusCoilsData(int Address, ushort[] Data) : base(Address, Data) { }
-        protected override void ReadMultiple(MBSFrame Frame) {
-            Frame.PutBitValues(MyBaseAddr, Data);
+        private DataT[] b32Data = null;
+        public Modbusb32Data(int Address, int Length) :
+            base(Address, Length * 2, false)
+        {
+            b32Data = new DataT[Length];
         }
-        protected override void WriteMultiple(MBSFrame Frame) {
-            Frame.GetBitValues(MyBaseAddr, Data);
+        public Modbusb32Data(int Address, DataT[] Data) :
+            base(Address, Data.Length * 2, false)
+        {
+            b32Data = Data;
         }
-        protected override void WriteSingle(MBSFrame Frame) {
-            Data[Frame.DataAddress - MyBaseAddr] = Frame.GetSingleBit();
+         protected override void ReadMultiple(MBSFrame Frame)
+        {
+            Frame.putLongValues(MyBaseAddr, b32Data);
+        }
+
+        protected override void WriteMultiple(MBSFrame Frame)
+        {
+            Frame.getLongValues(MyBaseAddr, b32Data);
         }
     }
 }
-

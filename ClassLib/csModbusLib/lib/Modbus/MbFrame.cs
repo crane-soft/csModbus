@@ -43,32 +43,36 @@ namespace csModbusLib
         public const int ADU_OFFS = 6;
 
         public int EndIdx = 0;
-        public Byte[] Data = null; 
+        public Byte[] Data = null;
 
-        public MbRawData() {
+        public MbRawData()
+        {
             Init(MbBase.MAX_FRAME_LEN);
         }
 
-        public MbRawData(int Size) {
+        public MbRawData(int Size)
+        {
             Init(Size);
         }
 
-        private void Init(int Size) {
+        private void Init(int Size)
+        {
             Data = new Byte[Size];
             EndIdx = 0;
         }
 
-        public void Clear() {
+        public void Clear()
+        {
             EndIdx = ADU_OFFS;
         }
 
-        public void CopyFrom (MbRawData source)
+        public void CopyFrom(MbRawData source)
         {
             Array.Copy(source.Data, Data, source.EndIdx);
             EndIdx = source.EndIdx;
         }
 
-        public void CopyFrom (byte[] source ,int srcIdx, int length)
+        public void CopyFrom(byte[] source, int srcIdx, int length)
         {
             int maxLength = Data.Length - EndIdx;
             if (length > maxLength) {
@@ -86,10 +90,10 @@ namespace csModbusLib
         public void PutUInt16(int ByteOffs, UInt16 Value)
         {
             Data[ByteOffs] = (Byte)(Value >> 8);
-            Data[ByteOffs+1] = (Byte)(Value & 0x00FF);
+            Data[ByteOffs + 1] = (Byte)(Value & 0x00FF);
         }
 
-        public void CopyUInt16 (UInt16[] DestArray, int SrcOffs, int DestOffs, int Length)
+        public void CopyUInt16(UInt16[] DestArray, int SrcOffs, int DestOffs, int Length)
         {
             for (int i = 0; i < Length; ++i)
                 DestArray[DestOffs + i] = GetUInt16(SrcOffs + i * 2);
@@ -98,18 +102,19 @@ namespace csModbusLib
         public void FillUInt16(UInt16[] SrcArray, int SrcOffs, int DestOffs, int Length)
         {
             for (int i = 0; i < Length; ++i)
-                PutUInt16(DestOffs+ i * 2, SrcArray[SrcOffs+i]);
+                PutUInt16(DestOffs + i * 2, SrcArray[SrcOffs + i]);
         }
 
         public int CheckEthFrameLength()
         {
-            int frameLength = GetUInt16(ADU_OFFS-2);
+            int frameLength = GetUInt16(ADU_OFFS - 2);
             int bytesleft = (frameLength + ADU_OFFS) - EndIdx;
             return bytesleft;
         }
     }
 
-    public class MbFrame {
+    public class MbFrame
+    {
         protected const int REQST_UINIT_ID_IDX = MbRawData.ADU_OFFS + 0;
         protected const int REQST_FCODE_IDX = MbRawData.ADU_OFFS + 1;
         protected const int RESPNS_ERR_IDX = MbRawData.ADU_OFFS + 2;
@@ -131,11 +136,18 @@ namespace csModbusLib
 
         public ExceptionCodes ExceptionCode { get; set; }
         public MbRawData RawData;
-        
+        protected B32Converter B32Converter;
+
         public MbFrame()
         {
-            RawData = new MbRawData ();
+            RawData = new MbRawData();
+            B32Converter = new B32Converter();
             ExceptionCode = ExceptionCodes.NO_EXCEPTION;
+        }
+
+        public void setLongEndianess(B32Endianess Endianess)
+        {
+            B32Converter.setEndianess(Endianess);
         }
 
         public void GetBitData(UInt16[] DestBits, int DestIdx, int FrameIdx)
@@ -167,7 +179,7 @@ namespace csModbusLib
                 }
 
                 if (--bitCnt == 0) {
-                    RawData.Data[FrameIdx+ NumBytes] = dataByte;
+                    RawData.Data[FrameIdx + NumBytes] = dataByte;
                     bitCnt = 8;
                     dataByte = 0;
                     ++NumBytes;
@@ -204,15 +216,25 @@ namespace csModbusLib
     /* -------------------------------------------------------------------------------
      * Modbus-Slave Frame
      ---------------------------------------------------------------------------------*/
-    public class MBSFrame : MbFrame 
+    public class MBSFrame : MbFrame
     {
         private bool WrMultipleData;
         private bool WrSingleData;
         private bool ValidAddressFound;
         private MbRawData WriteData;
+
         public MBSFrame()
         {
             ValidAddressFound = false;
+        }
+
+        public bool checkEvenAddress(int DataIdx)
+        {
+            if (((DataCount & 1) != 0) || ((DataIdx & 1) != 0)) {
+                ExceptionCode = ExceptionCodes.ILLEGAL_DATA_ADDRESS;
+                return false;
+            }
+            return true;
         }
 
         private int FromMasterRequestMessageLen()
@@ -300,7 +322,7 @@ namespace csModbusLib
         {
             // Write Address for READ_WRITE_MULTIPLE_REGISTERS
             DataAddress = WriteData.GetUInt16(REQST_ADDR_IDX);
-            DataCount = WriteData.GetUInt16(REQST_DATA_CNT_IDX );
+            DataCount = WriteData.GetUInt16(REQST_DATA_CNT_IDX);
         }
 
         private void ExceptionResponse(ExceptionCodes ErrorCode)
@@ -319,6 +341,7 @@ namespace csModbusLib
 
             if (ExceptionCode != ExceptionCodes.NO_EXCEPTION) {
                 ExceptionResponse(ExceptionCode);
+                //Debug.Print("Exception " + ExceptionCode);
                 return 3;
             }
 
@@ -357,10 +380,20 @@ namespace csModbusLib
             PutBitData(SrcBits, DataAddress - BaseAddr, RESPNS_DATA_IDX);
         }
 
+        public void PutValues(UInt16[] RegisterArray)
+        {
+            PutValues(RegisterArray, 0);
+        }
+
         public void PutValues(int BaseAddr, UInt16[] RegisterArray)
         {
+            PutValues(RegisterArray, DataAddress - BaseAddr);
+        }
+
+        public void PutValues(UInt16[] RegisterArray, int offs)
+        {
             for (int i = 0; i < DataCount; ++i) {
-                ushort Value = RegisterArray[DataAddress - BaseAddr + i];
+                ushort Value = RegisterArray[offs + i];
                 RawData.PutUInt16(RESPNS_DATA_IDX + i * 2, Value);
 
             }
@@ -374,67 +407,137 @@ namespace csModbusLib
 
         public void GetValues(int BaseAddr, UInt16[] DestArray)
         {
+            CopytValues(DestArray, DataAddress - BaseAddr);
+        }
+
+        private UInt16[] GetValues()
+        {
+            ushort[] modData = new ushort[DataCount];
+            CopytValues(modData, 0);
+            return modData;
+        }
+
+        private void CopytValues(UInt16[] DestArray, int offs)
+        {
             MbRawData SrcData;
             if (FunctionCode == ModbusCodes.READ_WRITE_MULTIPLE_REGISTERS) {
                 SrcData = WriteData;    // previous saved frame
             } else {
                 SrcData = RawData;
             }
-            SrcData.CopyUInt16(DestArray, REQST_DATA_IDX, DataAddress - BaseAddr, DataCount);
+            SrcData.CopyUInt16(DestArray, REQST_DATA_IDX, offs, DataCount);
+        }
+
+
+        public void putLongValues<DataT>(int BaseAddr, DataT[] srcData)
+        {
+            int srcOffs = DataAddress - BaseAddr;
+            if (checkEvenAddress(srcOffs) == false) {
+                return;
+            }
+            srcOffs /= 2;
+            int srcCount = DataCount / 2;
+
+            ushort[] modData = B32Converter.getModbusData(srcData, srcOffs, srcCount);
+            if (modData != null) {
+                PutValues(modData);
+            } else {
+                ExceptionCode = ExceptionCodes.ILLEGAL_DATA_VALUE;
+            }
+        }
+
+        public void getLongValues<DataT>(int BaseAddr, DataT[] dstData)
+        {
+            int dstOffs = DataAddress - BaseAddr;
+            if (checkEvenAddress(dstOffs) == false) {
+                return;
+            }
+
+            ushort[] modData = GetValues();
+            B32Converter.getValues(modData, dstData, dstOffs/2, DataCount / 2);
         }
     }
 
     /* ------------------------------------------------------------
      * Modbus Frame Master Functions  
      -------------------------------------------------------------- */
-    public class MBMFrame : MbFrame 
+    public class MBMFrame : MbFrame
     {
         private const int SLAVE_DATA_IDX = MbRawData.ADU_OFFS + 3;
         private Byte Current_SlaveID;
 
         public Byte Slave_ID
         {
-            get { return Current_SlaveID;   }
-            set {  Current_SlaveID = value; }
+            get { return Current_SlaveID; }
+            set { Current_SlaveID = value; }
         }
 
-        public int BuildRequest(ModbusCodes FuncCode, ushort Address, ushort DataOrLen)
+        public int BuildRequest(ModbusCodes FuncCode, ushort Address, int DataOrLen)
         {
             DataAddress = Address;
-            DataCount = DataOrLen;   // Data kan sein DataCount oder Single Data
+            DataCount = (ushort)DataOrLen;   // Data kan sein DataCount oder Single Data
             RawData.Data[REQST_UINIT_ID_IDX] = Current_SlaveID;
             RawData.Data[REQST_FCODE_IDX] = (Byte)FuncCode;
             RawData.PutUInt16(REQST_ADDR_IDX, Address);
-            RawData.PutUInt16(REQST_SINGLE_DATA_IDX, DataOrLen);
+            RawData.PutUInt16(REQST_SINGLE_DATA_IDX, (ushort)DataOrLen);
             return 6;
         }
 
-        public int BuildMultipleWriteRequest(ModbusCodes FuncCode, ushort Address, ushort Length, ushort[] SrcData, int SrcOffs) 
+        public int BuildMultipleWriteCoilsRequest(ushort Address, ushort[] SrcData, int Length = 0, int SrcOffs = 0)
         {
-            BuildRequest(FuncCode, Address, Length);
+            if (Length == 0)
+                Length = SrcData.Length;
+            BuildRequest(ModbusCodes.WRITE_MULTIPLE_COILS, Address, Length);
             int NumDataBytes;
-
-            if (FuncCode == ModbusCodes.WRITE_MULTIPLE_REGISTERS) {
-                NumDataBytes = Length * 2; // TODO überflow
-                RawData.Data[REQST_DATA_LEN_IDX] = (Byte)NumDataBytes;
-                RawData.FillUInt16(SrcData, SrcOffs, REQST_DATA_IDX, Length);
-            } else if (FuncCode == ModbusCodes.WRITE_MULTIPLE_COILS) {
-                NumDataBytes = PutBitData(SrcData, SrcOffs, REQST_DATA_IDX);
-            }else {
-                return 0;
-            }
+            NumDataBytes = PutBitData(SrcData, SrcOffs, REQST_DATA_IDX);
             return 7 + NumDataBytes;
         }
 
-        public int BuildMultipleReadWriteRequest(ushort RdAddress, ushort RdLength, ushort WrAddress, ushort WrLength, ushort[] SrcData, int SrcOffs)
+        private UInt16[] getModbusData<DataT> (DataT[] SrcData, ref int SrcOffs, ref int WrLength, ref int RdLength)
         {
+            UInt16[] modData;
+            if (B32Converter.Is16BitType<DataT>()) {
+                modData = (dynamic)SrcData;
+            } else {
+                modData = B32Converter.getModbusData<DataT>(SrcData, SrcOffs, WrLength);
+                if (modData == null)
+                    return null;
+                WrLength = modData.Length;
+                RdLength *= 2;
+                SrcOffs = 0;
+            }
+            return modData;
+        }
+        public int BuildMultipleWriteRegsRequest<DataT>(ushort Address, DataT[] SrcData, int Length = 0, int SrcOffs = 0)
+        {
+            if (Length == 0)
+                Length = SrcData.Length;
+            int dmyWar = 0; 
+            UInt16[] modData = getModbusData(SrcData, ref SrcOffs, ref Length, ref dmyWar);
+            if (modData == null)
+                return 0;
+
+            BuildRequest(ModbusCodes.WRITE_MULTIPLE_REGISTERS, Address, Length);
+            int NumDataBytes = Length * 2; // TODO overflow
+            RawData.Data[REQST_DATA_LEN_IDX] = (Byte)NumDataBytes;
+
+            RawData.FillUInt16(modData, SrcOffs, REQST_DATA_IDX, Length);
+            return 7 + NumDataBytes;
+        }
+
+        public int BuildMultipleReadWriteRequest<DataT>(ushort RdAddress, int RdLength, ushort WrAddress, DataT[] SrcData, int WrLength, int SrcOffs)
+        {
+            UInt16[] modData = getModbusData(SrcData, ref SrcOffs, ref WrLength, ref RdLength);
+            if (modData == null)
+                return 0;
+
             BuildRequest(ModbusCodes.READ_WRITE_MULTIPLE_REGISTERS, RdAddress, RdLength);
-            RawData.PutUInt16(REQST_ADDR_IDX+4, WrAddress);
-            RawData.PutUInt16(REQST_DATA_CNT_IDX+4, WrLength);
+            RawData.PutUInt16(REQST_ADDR_IDX + 4, WrAddress);
+            RawData.PutUInt16(REQST_DATA_CNT_IDX + 4, (ushort)WrLength);
 
             int NumDataBytes = WrLength * 2; // TODO overflow
-            RawData.Data[REQST_DATA_LEN_IDX+4] = (Byte)NumDataBytes;
-            RawData.FillUInt16(SrcData, SrcOffs, REQST_DATA_IDX+4, WrLength);
+            RawData.Data[REQST_DATA_LEN_IDX + 4] = (Byte)NumDataBytes;
+            RawData.FillUInt16(modData, SrcOffs, REQST_DATA_IDX + 4, WrLength);
             return 11 + NumDataBytes;
         }
 
@@ -463,9 +566,15 @@ namespace csModbusLib
             Interface.EndOfFrame();
         }
 
-        public void ReadSlaveRegisterValues(UInt16[] DestArray, int DestOffs)
+        public void ReadSlaveRegisterValues<DataT>(DataT[] DestArray, int DestOffs)
         {
-            RawData.CopyUInt16(DestArray, SLAVE_DATA_IDX, DestOffs, DataCount);
+            if (B32Converter.Is16BitType<DataT>()) {
+                RawData.CopyUInt16((dynamic)DestArray, SLAVE_DATA_IDX, DestOffs, DataCount);
+            } else {
+                UInt16[] modData = new UInt16[DataCount];
+                RawData.CopyUInt16(modData, SLAVE_DATA_IDX, 0, DataCount);
+                B32Converter.getValues(modData, DestArray, DestOffs, DataCount / 2);
+            }
         }
 
         public void ReadSlaveBitValues(ushort[] DestBits, int DestOffs)

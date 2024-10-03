@@ -29,5 +29,14 @@ namespace csModbusLib
         public virtual void ReceiveBytes(int count)  { }
         public virtual void EndOfFrame() { }
    
+        protected void DebugPrintHexData (string head, byte[] data, int offs, int count)
+        {
+            string print = head + " ";
+            for (int i = 0; i < count; ++i) {
+                byte hexValue = data[offs + i];
+                print += " " + hexValue.ToString("X2");
+            }
+            Debug.Print(print);
+        }
     }
 }

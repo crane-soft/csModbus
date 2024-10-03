@@ -19,12 +19,13 @@ namespace csModbusLib {
             gHoldingRegisters = null;
         }
 
+        #region Add Coils
         public void AddCoils(ModbusCoilsData CoilsData)  {
             gCoils = (ModbusCoilsData)AddModbusData(gCoils, CoilsData);
         }
 
         public void AddCoils(int BaseAddr, ushort[] Coils) {
-            gCoils = (ModbusCoilsData)AddModbusData<ModbusCoilsData>(gCoils, BaseAddr, Coils);
+            gCoils = (ModbusCoilsData)AddModbusData(gCoils, new ModbusCoilsData(BaseAddr, Coils));
         }
 
         public void AddDiscreteInputs(ModbusCoilsData CoilsData){
@@ -32,25 +33,59 @@ namespace csModbusLib {
         }
 
         public void AddDiscreteInputs(int BaseAddr, ushort[] Coils) {
-            gDiscreteInputs = (ModbusCoilsData)AddModbusData<ModbusCoilsData>(gDiscreteInputs,BaseAddr, Coils);
+            gDiscreteInputs = (ModbusCoilsData)AddModbusData(gDiscreteInputs, new ModbusCoilsData(BaseAddr, Coils));
         }
+        #endregion
 
+        #region Add InputRegister <RegsData, ushort, short, UInt32 Int32>
         public void AddInputRegisters(ModbusRegsData RegsData){
             gInputRegisters = (ModbusRegsData)AddModbusData(gInputRegisters,RegsData);
         }
-
-        public void AddInputRegisters(int BaseAddr, ushort[] Registers) {
-            gInputRegisters = (ModbusRegsData)AddModbusData<ModbusRegsData>(gInputRegisters,BaseAddr, Registers);
+        public void AddInputRegisters(int BaseAddr, UInt16[] Registers) {
+            gInputRegisters = (ModbusRegsData)AddModbusData(gInputRegisters, new ModbusRegsData (BaseAddr, Registers));
         }
+        public void AddInputRegisters(int BaseAddr, Int16[] Registers)
+        {
+            gInputRegisters = (ModbusRegsData)AddModbusData(gInputRegisters, new ModbusRegsData(BaseAddr, (Int16)(object)Registers));
+        }
+        public void AddInputRegisters(int BaseAddr, UInt32[] Registers)  {
+            gInputRegisters = (ModbusRegsData)AddModbusData(gInputRegisters, new Modbusb32Data<UInt32>(BaseAddr, Registers));
+        }
+        public void AddInputRegisters(int BaseAddr, Int32[] Registers)
+        {
+            gInputRegisters = (ModbusRegsData)AddModbusData(gInputRegisters, new Modbusb32Data<Int32>(BaseAddr, Registers));
+        }
+        public void AddInputRegisters(int BaseAddr, float[] Registers)
+        {
+            gInputRegisters = (ModbusRegsData)AddModbusData(gInputRegisters, new Modbusb32Data<float>(BaseAddr, Registers));
+        }
+        #endregion
 
+        #region Add Holding Register  <RegsData, ushort, short, UInt32 Int32>
         public void AddHoldingRegisters(ModbusRegsData RegsData) {
             gHoldingRegisters = (ModbusRegsData)AddModbusData(gHoldingRegisters,RegsData);
         }
-
-        public void AddHoldingRegisters(int BaseAddr, ushort[] Registers)  {
-            gHoldingRegisters = (ModbusRegsData)AddModbusData<ModbusRegsData>(gHoldingRegisters,BaseAddr, Registers);
+        public void AddHoldingRegisters(int BaseAddr, UInt16[] Registers)  {
+            gHoldingRegisters = (ModbusRegsData)AddModbusData(gHoldingRegisters, new ModbusRegsData(BaseAddr, Registers));
         }
+        public void AddHoldingRegisters(int BaseAddr, Int16[] Registers)
+        {
+            gHoldingRegisters = (ModbusRegsData)AddModbusData(gHoldingRegisters, new ModbusRegsData(BaseAddr, (Int16)(object)Registers));
+        }
+        public void AddHoldingRegisters(int BaseAddr, UInt32[] Registers) {
+            gHoldingRegisters = (ModbusRegsData)AddModbusData(gHoldingRegisters, new Modbusb32Data<UInt32>(BaseAddr, Registers));
+        }
+        public void AddHoldingRegisters(int BaseAddr, Int32[] Registers)
+        {
+            gHoldingRegisters = (ModbusRegsData)AddModbusData(gHoldingRegisters, new Modbusb32Data<Int32>(BaseAddr, Registers));
+        }
+        public void AddHoldingRegisters(int BaseAddr, float[] Registers)
+        {
+            gHoldingRegisters = (ModbusRegsData)AddModbusData(gHoldingRegisters, new Modbusb32Data<float>(BaseAddr, Registers));
+        }
+        #endregion
 
+        #region Dataservice
         protected override bool ReadCoils() {
             return ScannAll4Reading(gCoils);
         }
@@ -105,7 +140,7 @@ namespace csModbusLib {
         }
 
 
-        private ModbusData AddModbusData(ModbusData BaseData, ModbusData AddData)
+        private ModbusData AddModbusData( ModbusData  BaseData, ModbusData AddData)
         {
             if (BaseData == null) {
                 BaseData = AddData;
@@ -114,19 +149,6 @@ namespace csModbusLib {
             }
             return BaseData;
         }
-
-        private ModbusData AddModbusData<ModbusDataT>(ModbusData BaseData, int BaseAddr, ushort[] Data)
-        {
-            if (BaseData == null) {
-                if (typeof(ModbusDataT) == typeof(ModbusCoilsData)) {
-                    BaseData = new ModbusCoilsData();
-                } else {
-                    BaseData = new ModbusRegsData();
-                }
-            }
-            BaseData.AddData(BaseAddr, Data);
-            return BaseData;
-        }
+        #endregion
     }
 }
-

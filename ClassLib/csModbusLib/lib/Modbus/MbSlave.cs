@@ -16,6 +16,10 @@ namespace csModbusLib
         {
             InitInterface(Interface);
         }
+        public void setLongEndianess(B32Endianess Endianess)
+        {
+            Frame.setLongEndianess(Endianess);
+        }
 
         public MbSlave(MbInterface Interface, MbSlaveDataServer DataServer)
         {

@@ -15,6 +15,7 @@ namespace csModbusLib
         ILLEGAL_FUNCTION_CODE,
         CONNECTION_CLOSED,
         MODBUS_EXCEPTION,
+        ILLEGAL_DATA_TYPE
     }
 
     public class ModbusException : Exception
@@ -65,7 +66,7 @@ namespace csModbusLib
      // REPORT_SLAVE_ID = 0x11,             // serial Line only
      // READ_FILE_RECORD = 0x14,
      // WRITE_FILE_RECORD = 0x15,
-        MASK_WRITE_REGISTER = 0x16,         // TODO
+        MASK_WRITE_REGISTER = 0x16,         // TODO MASK_WRITE_REGISTER
         READ_WRITE_MULTIPLE_REGISTERS = 0x17,     
         //READ_FIFO_QUEUE = 0x18,
         //READ_DEVICE_IDENTIFICATION = 0x2B
@@ -93,23 +94,25 @@ namespace csModbusLib
         MEMORY_PARITY_ERROR = 8,    // The slave attempted to read extended memory, but detected a parity error in the memory.  
                                     // The master can retry the request, but service may be required on the slave device. 
     }
-
+        
     #endregion
 
-   #region Modbus Base abstract class
-  
+    #region Modbus Base abstract class
+
     public abstract class MbBase
     {
         public const ushort MAX_FRAME_LEN = 256 + 6;
-        
+
+
+        protected MbInterface gInterface = null;
+        protected bool running = false;
+
         public MbBase() { }
 
         protected void InitInterface(MbInterface Interface)
         {   gInterface = Interface;
         }
 
-        protected MbInterface gInterface = null;
-        protected bool running = false;
     }
 
     #endregion

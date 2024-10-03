@@ -53,10 +53,12 @@
     <Compile Include="lib\Modbus\MbBase.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="lib\Modbus\B32Converter.cs" />
     <Compile Include="lib\Modbus\MbFrame.cs" />
     <Compile Include="lib\Modbus\MbMaster.cs" />
     <Compile Include="lib\Interface\MbRTU.cs" />
     <Compile Include="lib\Interface\MbSerial.cs" />
+    <Compile Include="lib\Modbus\MbMasterEx.cs" />
     <Compile Include="lib\Modbus\MbSlave.cs" />
     <Compile Include="lib\Modbus\MbSlaveStateMachine.cs" />
     <Compile Include="lib\SlaveDataServer\MbSlaveData.cs" />

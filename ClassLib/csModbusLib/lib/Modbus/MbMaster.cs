@@ -7,27 +7,36 @@ namespace csModbusLib
 {
     public class MbMasterBase : MbBase
     {
-        private MBMFrame Frame = new MBMFrame();
+        protected MBMFrame Frame = new MBMFrame();
         private byte Current_SlaveID = 0;
         protected ErrorCodes LastError = ErrorCodes.NO_ERROR;
+
         #region Constructors
 
-        public MbMasterBase()  { }
+        public MbMasterBase() { }
 
-        public MbMasterBase(MbInterface Interface)  {
+        public MbMasterBase(MbInterface Interface)
+        {
             InitInterface(Interface);
         }
 
         #endregion
 
         #region Properties
-        public bool IsConnected {
+        public void setLongEndianess(B32Endianess Endianess)
+        {
+            Frame.setLongEndianess(Endianess);
+        }
+
+        public bool IsConnected
+        {
             get {
                 return running;
             }
         }
 
-        public byte Slave_ID {
+        public byte Slave_ID
+        {
             get {
                 return Current_SlaveID;
             }
@@ -37,7 +46,8 @@ namespace csModbusLib
             }
         }
 
-        public ErrorCodes ErrorCode {
+        public ErrorCodes ErrorCode
+        {
             get {
                 return LastError;
             }
@@ -96,36 +106,81 @@ namespace csModbusLib
             return ExceptionCodes.NO_EXCEPTION;
         }
 
-        protected bool SendSingleRequest(ModbusCodes Fcode, ushort Address, ushort DataOrLen)
+        protected int DataTypeLength<DataT>(int Length)
+        {
+            if (B32Converter.Is16BitType<DataT>())
+                return Length;
+            if (B32Converter.Is32BitType<DataT>())
+                return Length * 2;
+            LastError = ErrorCodes.ILLEGAL_DATA_TYPE;
+            return 0;
+        }
+
+        protected ErrorCodes ExeSingleCoilsRequest(ModbusCodes Fcode, ushort Address, ushort[] DestData, int Length = 0, int DestOffs= 0)
+        {
+            if (Length == 0)
+                Length = DestData.Length;
+            if (SendSingleRequest(Fcode, Address, Length))
+                ReadSlaveBitValues(DestData, DestOffs);
+            return LastError;
+        }
+
+        protected ErrorCodes ExeSingleRegsRequest<DataT>(ModbusCodes Fcode, ushort Address, DataT[] DestData, int Length = 0, int DestOffs = 0)
+        {
+            if (Length == 0)
+                Length = DestData.Length;
+            Length = DataTypeLength<DataT>(Length);
+            if (Length > 0) {
+                if (SendSingleRequest(Fcode, Address, Length))
+                    ReadSlaveRegisterValues(DestData, DestOffs);
+            }
+            return LastError;
+        }
+
+        protected bool SendSingleRequest(ModbusCodes Fcode, ushort Address, int DataOrLen)
         {
             int MsgLen = Frame.BuildRequest(Fcode, Address, DataOrLen);
             return SendRequestMessage(MsgLen);
         }
 
-        protected bool SendMultipleWriteRequest(ModbusCodes Fcode, ushort Address, ushort Length, ushort[] SrcData, int SrcOffs)
+        protected bool WriteMultipleCoilsRequest(ushort Address, ushort[] SrcData, int Length = 0, int SrcOffs = 0)
         {
-            int MsgLen = Frame.BuildMultipleWriteRequest(Fcode, Address, Length, SrcData, SrcOffs);
+            int MsgLen = Frame.BuildMultipleWriteCoilsRequest(Address,  SrcData, Length, SrcOffs);
             return SendRequestMessage(MsgLen);
         }
 
-        protected bool SendMultipleReadWriteRequest(ushort RdAddress, ushort RdLength, ushort WrAddress, ushort WrLength, ushort[] SrcData, int SrcOffs)
+        protected bool WriteMultipleRegsRequest<DataT>(ushort Address,  DataT[] SrcData, int Length, int SrcOffs)
         {
-            int MsgLen = Frame.BuildMultipleReadWriteRequest(RdAddress, RdLength, WrAddress, WrLength, SrcData, SrcOffs);
+            int MsgLen = Frame.BuildMultipleWriteRegsRequest(Address, SrcData, Length, SrcOffs);
+            return SendRequestMessage(MsgLen);
+        }
+
+        protected bool SendMultipleReadWriteRequest<DataT>( ushort RdAddress, int RdLength, 
+                                                            ushort WrAddress, DataT[] SrcData, int WrLength, int SrcOffs)
+        {
+            int MsgLen = Frame.BuildMultipleReadWriteRequest(RdAddress, RdLength, WrAddress, SrcData, WrLength, SrcOffs);
             return SendRequestMessage(MsgLen);
         }
 
         private bool SendRequestMessage(int MsgLen)
         {   // TODO check if connected
+            if (MsgLen <= 0) {
+                LastError = ErrorCodes.ILLEGAL_DATA_TYPE;
+                return false;
+            }
+
             LastError = ErrorCodes.NO_ERROR;
             try {
                 gInterface.SendFrame(MsgLen);
-            } catch (ModbusException ex) {
+            }
+            catch (ModbusException ex) {
                 LastError = ex.ErrorCode;
                 //if (running) {
                 //    gInterface.ReConnect();
                 //}
                 return false;
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 LastError = csModbusLib.ErrorCodes.CONNECTION_ERROR;
                 Debug.Print(ex.Message);
                 return false;
@@ -142,7 +197,7 @@ namespace csModbusLib
             return false;
         }
 
-        protected bool ReadSlaveRegisterValues(UInt16[] DestArray, int DestOffs)
+        protected bool ReadSlaveRegisterValues<DataT>(DataT[] DestArray, int DestOffs)
         {
             if (ReceiveSlaveResponse()) {
                 Frame.ReadSlaveRegisterValues(DestArray, DestOffs);
@@ -156,7 +211,8 @@ namespace csModbusLib
             try {
                 gInterface.ReceiveHeader(MbInterface.ResponseTimeout);
                 Frame.ReceiveSlaveResponse(gInterface);
-            } catch (ModbusException ex) {
+            }
+            catch (ModbusException ex) {
                 //if ((ex.ErrorCode != ErrorCodes.CONNECTION_CLOSED) && (ex.ErrorCode != ErrorCodes.MODBUS_EXCEPTION))
                 //    gInterface.ReConnect();
                 LastError = ex.ErrorCode;
@@ -173,54 +229,16 @@ namespace csModbusLib
         public MbMaster() { }
         public MbMaster(MbInterface Interface) : base(Interface) { }
 
-        public ErrorCodes ReadCoils(ushort Address, ushort[] DestData)
-        {
-            return ReadCoils(Address, (ushort)DestData.Length, DestData);
-        }
+        #region Coil Functions
 
-        public ErrorCodes ReadCoils(ushort Address, ushort Length, ushort[] DestData, int DestOffs = 0)
+        public ErrorCodes ReadCoils(ushort Address, ushort[] DestData, int Length = 0, int DestOffs = 0)
         {
-            if (SendSingleRequest(ModbusCodes.READ_COILS, Address, Length))
-                ReadSlaveBitValues(DestData, DestOffs);
-            return LastError;
+            return ExeSingleCoilsRequest(ModbusCodes.READ_COILS, Address, DestData, Length, DestOffs);
         }
-
-        public ErrorCodes ReadDiscreteInputs(ushort Address, ushort[] DestData)
+        public ErrorCodes ReadDiscreteInputs(ushort Address, ushort[] DestData, int Length = 0, int DestOffs = 0)
         {
-            return ReadDiscreteInputs(Address, (ushort)DestData.Length, DestData);
+            return ExeSingleCoilsRequest(ModbusCodes.READ_DISCRETE_INPUTS, Address, DestData, Length, DestOffs);
         }
-
-        public ErrorCodes ReadDiscreteInputs(ushort Address, ushort Length, ushort[] DestData, int DestOffs = 0)
-        {
-            if (SendSingleRequest(ModbusCodes.READ_DISCRETE_INPUTS, Address, Length))
-                ReadSlaveBitValues(DestData, DestOffs);
-            return LastError;
-        }
-
-        public ErrorCodes ReadHoldingRegisters(ushort Address, ushort[] DestData)
-        {
-            return ReadHoldingRegisters(Address, (ushort)DestData.Length, DestData, 0);
-        }
-
-        public ErrorCodes ReadHoldingRegisters(ushort Address, ushort Length, ushort[] DestData, int DestOffs = 0)
-        {
-            if (SendSingleRequest(ModbusCodes.READ_HOLDING_REGISTERS, Address, Length))
-                ReadSlaveRegisterValues(DestData, DestOffs);
-            return LastError;
-        }
-
-        public ErrorCodes ReadInputRegisters(ushort Address, ushort[] DestData)
-        {
-            return ReadInputRegisters(Address, (ushort)DestData.Length, DestData);
-        }
-
-        public ErrorCodes ReadInputRegisters(ushort Address, ushort Length, ushort[] DestData, int DestOffs = 0)
-        {
-            if (SendSingleRequest(ModbusCodes.READ_INPUT_REGISTERS, Address, Length))
-                ReadSlaveRegisterValues(DestData, DestOffs);
-            return LastError;
-        }
-
         public ErrorCodes WriteSingleCoil(ushort Address, ushort BitData)
         {
             BitData = (ushort)((BitData != 0) ? 0xff00 : 0);
@@ -228,126 +246,73 @@ namespace csModbusLib
                 ReceiveSlaveResponse();
             return LastError;
         }
-
-        public ErrorCodes WriteSingleRegister(ushort Address, ushort Data)
+        public ErrorCodes WriteMultipleCoils(ushort Address, ushort[] SrcData, int Length = 0, int SrcOffs = 0)
         {
-            if (SendSingleRequest(ModbusCodes.WRITE_SINGLE_REGISTER, Address, Data))
+            if (WriteMultipleCoilsRequest(Address,  SrcData, Length, SrcOffs))
                 ReceiveSlaveResponse();
             return LastError;
         }
+        #endregion
 
-        public ErrorCodes WriteMultipleCoils(ushort Address, ushort Length, ushort[] SrcData, int SrcOffs = 0)
-        {   // TODO not yet tested
-            if (SendMultipleWriteRequest(ModbusCodes.WRITE_MULTIPLE_COILS, Address, Length, SrcData, SrcOffs))
-                ReceiveSlaveResponse();
+        #region protected Generic Register Functions
+        protected ErrorCodes ReadHoldingRegisters<DataT>(ushort Address, DataT[] DestData, int Length = 0, int DestOffs = 0)
+        {
+            return ExeSingleRegsRequest(ModbusCodes.READ_HOLDING_REGISTERS, Address, DestData, Length, DestOffs);
+        }
+        protected ErrorCodes ReadInputRegisters<DataT>(ushort Address, DataT[] DestData, int Length = 0, int DestOffs = 0)
+        {
+            return ExeSingleRegsRequest(ModbusCodes.READ_INPUT_REGISTERS, Address, DestData, Length, DestOffs);
+        }
+        protected ErrorCodes WriteSingleRegister<DataT>(ushort Address, DataT Data)
+        {
+            if (B32Converter.Is16BitType<DataT>()) {
+                if (SendSingleRequest(ModbusCodes.WRITE_SINGLE_REGISTER, Address, (dynamic)Data))
+                    ReceiveSlaveResponse();
+            } else {
+                DataT[] srcData = new DataT[] { Data };
+                WriteMultipleRegisters(Address, srcData);
+            }
             return LastError;
         }
-
-        public ErrorCodes WriteMultipleRegisters(ushort Address, ushort[] SrcData)
+        protected ErrorCodes WriteMultipleRegisters<DataT>(ushort Address, DataT[] SrcData, int Length= 0, int SrcOffs = 0)
         {
-            return WriteMultipleRegisters(Address, (ushort) SrcData.Length, SrcData);
-        }
-
-        public ErrorCodes WriteMultipleRegisters(ushort Address, ushort Length, ushort[] SrcData, int SrcOffs = 0)
-        {
-            if (SendMultipleWriteRequest(ModbusCodes.WRITE_MULTIPLE_REGISTERS, Address, Length, SrcData, SrcOffs))
+            if (WriteMultipleRegsRequest(Address,  SrcData, Length, SrcOffs))
                 ReceiveSlaveResponse();
 
             return LastError;
         }
-
-        public ErrorCodes ReadWriteMultipleRegisters(ushort RdAddress, ushort RdLength, ushort[] DestData,
-                                                     ushort WrAddress, ushort WrLength, ushort[] SrcData, int DestOffs = 0, int SrcOffs = 0)
-        {  
-            if (SendMultipleReadWriteRequest(RdAddress, RdLength, WrAddress, WrLength, SrcData, SrcOffs))
+        protected ErrorCodes ReadWriteMultipleRegisters<DataT>(ushort RdAddress, DataT[] DestData, int RdLength,
+                                                               ushort WrAddress, DataT[] SrcData,  int WrLength, int DestOffs = 0, int SrcOffs = 0)
+        {
+            if (SendMultipleReadWriteRequest(RdAddress, RdLength, WrAddress, SrcData, WrLength, SrcOffs))
                 ReadSlaveRegisterValues(DestData, DestOffs);
             return LastError;
         }
-    }
+        #endregion
 
-    public class MbMasterAsync : MbMasterBase
-    {
-        // https://www.dotnetperls.com/async
-        // http://gigi.nullneuron.net/gigilabs/working-with-asynchronous-methods-in-c/
-        // https://docs.microsoft.com/de-de/dotnet/csharp/programming-guide/concepts/async/
-
-        public MbMasterAsync() {}
-        public MbMasterAsync(MbInterface Interface) : base(Interface) {}
-
-        public async Task<ErrorCodes> ReadCoils(ushort Address, ushort Length, ushort[] DestData, int DestOffs = 0)
+        #region <ushort> Register Functions 
+        public ErrorCodes ReadHoldingRegisters(ushort Address, ushort[] DestData, int Length=0, int DestOffs = 0)
         {
-            if (SendSingleRequest(ModbusCodes.READ_COILS, Address, Length)) {
-                await Task.Run(() => ReadSlaveBitValues(DestData, DestOffs));
-            }
-            return LastError;
+            return ReadHoldingRegisters<ushort>(Address, DestData, Length, DestOffs);
         }
-
-        public async Task<ErrorCodes> ReadDiscreteInputs(ushort Address, ushort Length, ushort[] DestData, int DestOffs = 0)
+        public ErrorCodes ReadInputRegisters(ushort Address,  ushort[] DestData, int Length=0, int DestOffs = 0)
         {
-            if (SendSingleRequest(ModbusCodes.READ_DISCRETE_INPUTS, Address, Length)) {
-                await Task.Run(() => ReadSlaveBitValues(DestData, DestOffs));
+            return ReadInputRegisters<ushort>(Address,  DestData, Length, DestOffs);
 
-            }
-            return LastError;
         }
-
-        public async Task<ErrorCodes> ReadHoldingRegisters(ushort Address, ushort Length, ushort[] DestData, int DestOffs = 0)
+        public ErrorCodes WriteSingleRegister(ushort Address, ushort Data)
         {
-            if (SendSingleRequest(ModbusCodes.READ_HOLDING_REGISTERS, Address, Length)) {
-                await Task.Run(() => ReadSlaveRegisterValues(DestData, DestOffs));
-            }
-            return LastError;
+            return WriteSingleRegister<ushort>(Address, Data);
         }
-
-        public async Task<ErrorCodes> ReadInputRegisters(ushort Address, ushort Length, ushort[] DestData, int DestOffs = 0)
+        public ErrorCodes WriteMultipleRegisters(ushort Address, ushort[] SrcData, int Length=0, int SrcOffs = 0)
         {
-            if (SendSingleRequest(ModbusCodes.READ_INPUT_REGISTERS, Address, Length)) {
-                await Task.Run(() => ReadSlaveRegisterValues(DestData, DestOffs));
-            }
-            return LastError;
+            return WriteMultipleRegisters<ushort>(Address, SrcData,Length, SrcOffs);
         }
-
-        public async Task<ErrorCodes> WriteSingleCoil(ushort Address, ushort BitData)
+        public ErrorCodes ReadWriteMultipleRegisters(ushort RdAddress, ushort[] DestData, int RdLength,
+                                                     ushort WrAddress, ushort[] SrcData, int WrLength, int DestOffs = 0, int SrcOffs = 0)
         {
-            BitData = (ushort)((BitData != 0) ? 0xff00 : 0);
-            if (SendSingleRequest(ModbusCodes.WRITE_SINGLE_COIL, Address, BitData)) {
-                await Task.Run(() => ReceiveSlaveResponse());
-            }
-            return LastError;
+            return ReadWriteMultipleRegisters<ushort>(RdAddress, DestData, RdLength, WrAddress, SrcData, WrLength, DestOffs, SrcOffs);
         }
-
-        public async Task<ErrorCodes> WriteSingleRegister(ushort Address, ushort Data)
-        {
-            if (SendSingleRequest(ModbusCodes.WRITE_SINGLE_REGISTER, Address, Data)) {
-                await Task.Run(() => ReceiveSlaveResponse());
-            }
-            return LastError;
-        }
-
-        public async Task<ErrorCodes> WriteMultipleCoils(ushort Address, ushort Length, ushort[] SrcData, int SrcOffs = 0)
-        {
-            if (SendMultipleWriteRequest(ModbusCodes.WRITE_MULTIPLE_COILS, Address, Length, SrcData, SrcOffs)) {
-                await Task.Run(() => ReceiveSlaveResponse());
-            }
-            return LastError;
-        }
-
-        public async Task<ErrorCodes> WriteMultipleRegisters(ushort Address, ushort Length, ushort[] SrcData, int SrcOffs = 0)
-        {
-            if (SendMultipleWriteRequest(ModbusCodes.WRITE_MULTIPLE_REGISTERS, Address, Length, SrcData, SrcOffs)) {
-                await Task.Run(() => ReceiveSlaveResponse());
-            }
-            return LastError;
-        }
-
-        public async Task<ErrorCodes> ReadWriteMultipleRegisters(ushort RdAddress, ushort RdLength, ushort[] DestData,
-                                                     ushort WrAddress, ushort WrLength, ushort[] SrcData, int DestOffs = 0, int SrcOffs = 0)
-        {
-            if (SendMultipleReadWriteRequest(RdAddress, RdLength, WrAddress, WrLength, SrcData, SrcOffs))
-                await Task.Run(() => ReadSlaveRegisterValues(DestData, DestOffs));
-            return LastError;
-        }
+        #endregion
     }
 }
-
-

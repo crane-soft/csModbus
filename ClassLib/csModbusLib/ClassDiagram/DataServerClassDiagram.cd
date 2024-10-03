@@ -38,31 +38,28 @@
       <FileName>lib\SlaveDataServer\MbSlaveStdServer.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
-      <Field Name="gCoils" />
       <Field Name="gDiscreteInputs" />
-      <Field Name="gHoldingRegisters" />
-      <Field Name="gInputRegisters" />
+      <Field Name="gCoils" />
     </ShowAsAssociation>
   </Class>
   <Class Name="csModbusLib.ModbusCoilsData">
-    <Position X="4.75" Y="6.75" Width="1.5" />
+    <Position X="4.25" Y="6.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAEBAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>lib\SlaveDataServer\MbSlaveData.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.ModbusRegsData">
-    <Position X="7.5" Y="9.25" Width="1.5" />
-    <InheritanceLine Type="csModbusLib.ModbusData" ManuallyRouted="true">
-      <Path>
-        <Point X="7" Y="5.967" />
-        <Point X="7" Y="6.447" />
-        <Point X="8.25" Y="6.447" />
-        <Point X="8.25" Y="9.25" />
-      </Path>
-    </InheritanceLine>
+    <Position X="7.25" Y="6.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAEBAAgAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>lib\SlaveDataServer\MbSlaveData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="csModbusLib.Modbusb32Data&lt;DataT&gt;">
+    <Position X="10.25" Y="6.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAAAAAAAAAAAAABAAgAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>lib\SlaveDataServer\MbSlaveData.cs</FileName>
     </TypeIdentifier>
   </Class>
