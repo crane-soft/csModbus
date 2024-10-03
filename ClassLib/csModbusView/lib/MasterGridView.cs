@@ -9,7 +9,7 @@ namespace csModbusView
     public abstract class MasterGridView :  ModbusView
     {
         protected MbMaster MyMaster;
-        protected ErrorCodes ErrCode;
+        protected ErrorCodes gWriteError;
         protected static Mutex mut = new Mutex();
         protected ushort[] ModbusData;
 
@@ -17,6 +17,7 @@ namespace csModbusView
             : base(MbType, Title, true)
         {
             this.SetDataSize(BaseAddr, NumItems, ItemColumns);
+            gWriteError = ErrorCodes.NO_ERROR;
         }
 
         public virtual void InitGridView(MbMaster Master)
@@ -25,18 +26,32 @@ namespace csModbusView
             ModbusData = new ushort[this.DataSize];
         }
 
+        public ErrorCodes CheckError()
+        {
+            ErrorCodes ModbusError;
+            ModbusError = gWriteError;
+            gWriteError = ErrorCodes.NO_ERROR;
+            return ModbusError;
+        }
         public ErrorCodes Update_ModbusData()
         {
+            ErrorCodes ModbusError = CheckError();
+            if (ModbusError != ErrorCodes.NO_ERROR) {
+                return ModbusError;
+            }
+            if (WrOnly)
+                return ErrorCodes.NO_ERROR;
+
             mut.WaitOne();
-            ErrCode = Modbus_ReadData();
+            ModbusError = Modbus_ReadData();
             mut.ReleaseMutex();
-            if (ErrCode == ErrorCodes.NO_ERROR) {
+            if (ModbusError == ErrorCodes.NO_ERROR) {
                 GridView.DisableCellEvents = true;
                 Invoke_UpdateCells();
                 GridView.DisableCellEvents = false;
             }
 
-            return ErrCode;
+            return ModbusError;
         }
         protected abstract ErrorCodes Modbus_ReadData();
 
@@ -101,12 +116,14 @@ namespace csModbusView
 
         private void ModBusSendRegs(ushort Address, ushort[] Data)
         {
+            if (gWriteError != ErrorCodes.NO_ERROR)
+                return;
             mut.WaitOne();
             // TODO Async Call ?
             if (Data.Length == 1) {
-                ErrCode = MyMaster.WriteSingleRegister(Address, Data[0]);
+                gWriteError = MyMaster.WriteSingleRegister(Address, Data[0]);
             } else {
-                ErrCode = MyMaster.WriteMultipleRegisters(Address, Data);
+                gWriteError = MyMaster.WriteMultipleRegisters(Address, Data);
             }
             mut.ReleaseMutex();
         }
@@ -154,9 +171,12 @@ namespace csModbusView
 
         private  void ModbusSendCoil(ushort Address, ushort Value)
         {
+            if (gWriteError != ErrorCodes.NO_ERROR)
+                return;
+
             // TODO Async Call ?
             mut.WaitOne();
-            ErrCode = MyMaster.WriteSingleCoil(Address, Value);
+            gWriteError = MyMaster.WriteSingleCoil(Address, Value);
             mut.ReleaseMutex();
         }
     }

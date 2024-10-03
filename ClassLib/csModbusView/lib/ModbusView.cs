@@ -62,7 +62,7 @@ namespace csModbusView
             this.AutoSizeChanged += ModbusView_AutoSizeChanged;
             AutoSize = true;
             DataType = MbGridView.ModbusDataType.UINT16;
-            Endianes = MbGridView.Endianess.BigEndian;
+            Endianes = B32Endianess.BigEndian;
             EnableRefresh = true;
             _BaseAddrFormat = uintFormat.isdecimal;
             RefreshView();
@@ -229,8 +229,8 @@ namespace csModbusView
         [System.ComponentModel.Category("csModbus")]
         [System.ComponentModel.Browsable(true)]
         [System.ComponentModel.Description("Enianess for 32bit data types")]
-        [System.ComponentModel.DefaultValue(MbGridView.Endianess.BigEndian)]
-        public MbGridView.Endianess Endianes
+        [System.ComponentModel.DefaultValue(B32Endianess.BigEndian)]
+        public B32Endianess Endianes
         {
             get {
                 return mbView.Int32Endianes;
@@ -239,7 +239,6 @@ namespace csModbusView
                 mbView.Int32Endianes = value;
             }
         }
-
 
         [System.ComponentModel.Category("Layout")]
         [System.ComponentModel.DefaultValue(true)]

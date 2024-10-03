@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using csModbusLib;
 
 namespace csModbusView
 {
@@ -29,6 +30,21 @@ namespace csModbusView
 
         public abstract void SetValue(UInt16[] mValue, int idx = 0);
         public abstract UInt16[] GetValue();
+
+        protected UInt32 GetHexValue()
+        {
+            string hexStr = this.Value.ToString().ToLower();
+            if (hexStr.StartsWith("0x")) {
+                hexStr = hexStr.Substring(2);
+            } else {
+                int hend = hexStr.IndexOf("h");
+                if (hend >= 0) {
+                    hexStr = hexStr.Substring(0, hend);
+                }
+            }
+            UInt32 longValue = Convert.ToUInt32(hexStr, 16);
+            return longValue;
+        }
     }
 
     public class UINT16_GridViewCell : ModbusRegGridViewCell
@@ -83,116 +99,100 @@ namespace csModbusView
 
         public override UInt16[] GetValue()
         {
+            UInt32 longValue = GetHexValue();
             UInt16[] mValue = new UInt16[1];
-            string hexStr = this.Value.ToString().ToLower();
-            if (hexStr.StartsWith("0x"))
-                hexStr = hexStr.Substring(2);
-            if (hexStr.EndsWith("h"))
-                hexStr = hexStr.Substring(0,4);
-            mValue[0] = Convert.ToUInt16(hexStr,16);
+            mValue[0] = (UInt16)(longValue & 0xffff);
             return mValue;
         }
     }
 
     public abstract class Regs32_GridViewCell : ModbusRegGridViewCell
     {
-      
-        private int LittleIdx;
-        private int BigIdx;
-        private MbGridView.Endianess _Int32Endianes;
+        protected B32Converter B32Converter;
 
-        public Regs32_GridViewCell(MbGridView GridView, MbGridView.Endianess Int32Endianes)
+        public Regs32_GridViewCell(MbGridView GridView, B32Endianess Int32Endianes = B32Endianess.LittleEndian)
             : base(GridView)
         {
-            _Int32Endianes = Int32Endianes;
-            if (_Int32Endianes == MbGridView.Endianess.LittleEndian) {
-                LittleIdx = 0;
-                BigIdx = 1;
-            } else {
-                LittleIdx = 1;
-                BigIdx = 0;
-            }
-        }
-        protected UInt32 GetLongValue(UInt16[] mValue, int idx)
-        {
-            UInt32 longValue;
-            longValue = (UInt32)mValue[idx + LittleIdx];
-            longValue |= (UInt32)mValue[idx + BigIdx] << 16;
-            return longValue;
-        }
-
-        protected UInt16[] GetModbusData (UInt32 longValue)
-        {
-            UInt16[] modData = new UInt16[2];
-            modData[LittleIdx] = (ushort)(longValue & 0xffff);
-            modData[BigIdx] = (ushort)(longValue >> 16);
-            return modData;
+            B32Converter = new B32Converter(Int32Endianes);
         }
     }
 
     public class UINT32_GridViewCell : Regs32_GridViewCell
     {
-        public UINT32_GridViewCell(MbGridView GridView, MbGridView.Endianess Int32Endianes)
+        public UINT32_GridViewCell(MbGridView GridView, B32Endianess Int32Endianes)
             : base(GridView, Int32Endianes)
         {
         }
 
         public override void SetValue(UInt16[] mValue, int idx = 0)
         {
-            UInt32 longValue = GetLongValue(mValue, idx);
+            UInt32 longValue = B32Converter.getUInt32Value(mValue, idx);
             this.Value = longValue.ToString();
         }
 
         public override UInt16[] GetValue()
         {
             UInt32 longValue = Convert.ToUInt32(this.Value);
-            return GetModbusData(longValue);
+            return B32Converter.getModbusData(longValue);
         }
     }
-    public class INT32_GridViewCell : Regs32_GridViewCell
+
+    public class HEX32_GridViewCell : Regs32_GridViewCell
     {
-        public INT32_GridViewCell(MbGridView GridView, MbGridView.Endianess Int32Endianes)
+        public HEX32_GridViewCell(MbGridView GridView, B32Endianess Int32Endianes)
             : base(GridView, Int32Endianes)
         {
         }
 
         public override void SetValue(UInt16[] mValue, int idx = 0)
         {
-            UInt32 longValue = GetLongValue(mValue, idx);
-            this.Value = unchecked((Int32)longValue);
+            UInt32 longValue = B32Converter.getUInt32Value(mValue, idx);
+            this.Value = longValue.ToString("X8") + "h";
+        }
+
+        public override UInt16[] GetValue()
+        {
+            UInt32 longValue = GetHexValue();
+            return B32Converter.getModbusData(longValue);
+        }
+    }
+
+    public class INT32_GridViewCell : Regs32_GridViewCell
+    {
+        public INT32_GridViewCell(MbGridView GridView, B32Endianess Int32Endianes)
+            : base(GridView, Int32Endianes)
+        {
+        }
+
+        public override void SetValue(UInt16[] mValue, int idx = 0)
+        {
+            Int32 longValue = B32Converter.getInt32Value(mValue, idx);
+            this.Value = longValue;
         }
 
         public override UInt16[] GetValue()
         {
             Int32 iValue = Convert.ToInt32(this.Value);
-            return GetModbusData(unchecked((UInt32)iValue));
+            return B32Converter.getModbusData(iValue);
         }
     }
     public class IEEE754_GridViewCell : Regs32_GridViewCell
     {
-        public IEEE754_GridViewCell(MbGridView GridView, MbGridView.Endianess Int32Endianes)
+        public IEEE754_GridViewCell(MbGridView GridView, B32Endianess Int32Endianes)
             : base(GridView, Int32Endianes)
         {
         }
 
         public override void SetValue(UInt16[] mValue, int idx = 0)
         {
-            UInt32[] bitValue = new UInt32[1];
-            Single[] fValue = new Single[1];
-
-            bitValue[0] = GetLongValue(mValue, idx);
-            Buffer.BlockCopy(bitValue, 0, fValue, 0, 4);
-            this.Value = fValue[0];
+            float fValue = B32Converter.getFloatValue(mValue, idx);
+            this.Value = fValue;
         }
 
         public override UInt16[] GetValue()
         {
-            Single[] fValue = new Single[1];
-            UInt32[] bitValue = new UInt32[1];
-
-            fValue[0] = Convert.ToSingle(this.Value);
-            Buffer.BlockCopy(fValue, 0, bitValue, 0, 4);
-            return GetModbusData(bitValue[0]);
+            float fValue = Convert.ToSingle(this.Value);
+            return B32Converter.getModbusData(fValue);
         }
     }
 

@@ -163,6 +163,7 @@ namespace csModbusView
 
         public override void AddDataToServer(StdDataServer DataSerer)
         {
+            // TODO use new Modbusb32Data<DataT> for 32bit Datatypes
             ModbusRegsData RegsData = new ModbusRegsData(uBaseAddr, DataSize);
             InitData(RegsData);
             DataSerer.AddInputRegisters(RegsData);

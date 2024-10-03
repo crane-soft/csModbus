@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Drawing;
-
+using csModbusLib;
 namespace csModbusView
 {
     [System.ComponentModel.DesignerCategory("")]
@@ -18,12 +18,6 @@ namespace csModbusView
             HEX_32,
             IEEE_754,
             PRO_STUD
-        }
-
-        public enum Endianess
-        {
-            LittleEndian,
-            BigEndian,
         }
 
         private ModbusDataType _DataType;
@@ -107,7 +101,7 @@ namespace csModbusView
                 return _TypeSize;
             }
         }
-        public Endianess Int32Endianes { get; set; }
+        public B32Endianess Int32Endianes { get; set; }
         public void InitGridView()
         {
             if (NumItems == 0)
@@ -168,13 +162,17 @@ namespace csModbusView
                     case ModbusDataType.HEX_16:
                         itemCell = new HEX16_GridViewCell(this);
                         break;
-                    case ModbusDataType.UINT32:
-                    case ModbusDataType.HEX_32:
-                        itemCell = new UINT32_GridViewCell(this, Int32Endianes);
-                        break;
                     case ModbusDataType.INT32:
                         itemCell = new INT32_GridViewCell(this, Int32Endianes);
                         break;
+                    case ModbusDataType.UINT32:
+                        itemCell = new UINT32_GridViewCell(this, Int32Endianes);
+                        break;
+
+                    case ModbusDataType.HEX_32:
+                        itemCell = new HEX32_GridViewCell(this, Int32Endianes);
+                        break;
+
                     case ModbusDataType.IEEE_754:
                         itemCell = new IEEE754_GridViewCell(this, Int32Endianes);
                         break;
@@ -278,8 +276,6 @@ namespace csModbusView
             int CellIdx = BaseIdx / _TypeSize;
             int iRow = CellIdx / ItemColumns;
             int iCol = CellIdx % ItemColumns;
-
-            // bool isLongValue = (typeof(DataT) == typeof(ushort)) && (_TypeSize == 2);
 
             for (int dIdx = BaseIdx; dIdx <= BaseIdx + Size - 1; dIdx += _TypeSize) {
                 DataGridViewCell mbCell = this.Rows[iRow].Cells[iCol];
