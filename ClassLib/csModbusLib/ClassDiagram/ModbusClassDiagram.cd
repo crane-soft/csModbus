@@ -58,7 +58,7 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAABgEwgIAEAEAAEIAAAAAgAABAgAAEAAUQCAAAAAEA=</HashCode>
+      <HashCode>AAABgEwgIAEAEAAEIAAAAAgAABAgAAEgAUQCAAAAAEA=</HashCode>
       <FileName>lib\Modbus\MbFrame.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -91,7 +91,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbMasterEx">
-    <Position X="1.5" Y="15.25" Width="2.5" />
+    <Position X="1.25" Y="15.25" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAIAAAIBAAAAACAAAAAACAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>lib\Modbus\MbMasterEx.cs</FileName>

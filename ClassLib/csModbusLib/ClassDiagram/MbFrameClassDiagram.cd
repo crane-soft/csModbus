@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="csModbusLib.MbFrame">
-    <Position X="3.75" Y="0.5" Width="2" />
+    <Position X="4.5" Y="0.5" Width="2" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>ACAACAUIQIAACAAACAAAIIQAAAAAJAEgQAAARAAIIAE=</HashCode>
+      <HashCode>ACAACAUIQIAACAAACAAAIIQAAAAAJAEAQAAARAAIIAE=</HashCode>
       <FileName>lib\Modbus\MbFrame.cs</FileName>
     </TypeIdentifier>
     <ShowAsAssociation>
@@ -20,7 +20,7 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAABgEwgIAEAEAAEIAAAAAgAABAgAAEAAEQCAAAAAEA=</HashCode>
+      <HashCode>AAABgEwgIAEAEAAEIAAAAAgAABAgAAEgAUQCAAAAAEA=</HashCode>
       <FileName>lib\Modbus\MbFrame.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -30,12 +30,12 @@
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
     <TypeIdentifier>
-      <HashCode>AAAAAAAACAQCAAAAAAAAAgAACAAEAAAAAABACAAAAgI=</HashCode>
+      <HashCode>AAAAAAAACAQAAAAAAAACAgAACAAEAAAgAABACAACAgI=</HashCode>
       <FileName>lib\Modbus\MbFrame.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="csModbusLib.MbRawData">
-    <Position X="6.75" Y="0.5" Width="2.25" />
+    <Position X="7.75" Y="0.5" Width="2.25" />
     <Compartments>
       <Compartment Name="Fields" Collapsed="true" />
     </Compartments>
@@ -47,7 +47,7 @@
   <Class Name="csModbusLib.B32Converter">
     <Position X="0.5" Y="0.5" Width="2.5" />
     <TypeIdentifier>
-      <HashCode>AAAQIAEBAAAgAmAAAAACAAAIQAABAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAQIAEBAAAgImAAAAACAAAIQAABAAAAAAAAAAAAAAA=</HashCode>
       <FileName>lib\Modbus\B32Converter.cs</FileName>
     </TypeIdentifier>
   </Class>

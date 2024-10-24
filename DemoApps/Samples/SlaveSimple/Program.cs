@@ -25,23 +25,33 @@ namespace SlaveSimple
 #endif
 
             const int SlaveID = 1;
-            const int ModbusRegsAddr = 10;
-            const int ModbusInputAddr = 20;
-            const int ModbusCoilsAddr = 10;
 
             // establish a modbus slave dataserver 
             StdDataServer MyDataServer = new StdDataServer(SlaveID);
 
-            // add some data
+            // add some coils data
+            const int ModbusCoilsAddr = 10;
+
+            ushort[] SlaveCoils = new ushort[]  { 1,1,0,1,0,1,0,0};
+            MyDataServer.AddCoils(ModbusCoilsAddr, SlaveCoils);
+            MyDataServer.AddDiscreteInputs(ModbusCoilsAddr, SlaveCoils);
+
+            // add some register data
+            const int ModbusRegsAddr = 10;
+            const int ModbusInputAddr = 20;
+
             ushort[] SlaveRegs = new ushort[] { 502, 703, 114, 137, 178, 199 ,0,0};
             ushort[] SlaveInputs = new ushort[5];
-            ushort[] SlaveCoils = new ushort[4];
 
             MyDataServer.AddHoldingRegisters(ModbusRegsAddr, SlaveRegs);
             MyDataServer.AddInputRegisters(ModbusRegsAddr, SlaveRegs);
             MyDataServer.AddInputRegisters(ModbusInputAddr, SlaveInputs);
-            MyDataServer.AddCoils(ModbusCoilsAddr, SlaveCoils);
-            MyDataServer.AddDiscreteInputs(ModbusCoilsAddr, SlaveCoils);
+
+            // add floatregister data
+            const int ModbusFloatAddr = 40;
+            float[] FloatSlaveRegs = new float[] { 502, 703, 0 };
+            MyDataServer.AddHoldingRegisters(ModbusFloatAddr, FloatSlaveRegs);
+            MyDataServer.AddInputRegisters(ModbusFloatAddr, FloatSlaveRegs);
 
             // create a Modbus slave server 
             MbSlaveServer modSlave = new MbSlaveServer();
@@ -58,6 +68,9 @@ namespace SlaveSimple
                 for (int i = 0; i < SlaveRegs.Length; ++i ) {
                     Console.Write(String.Format("{0} ", SlaveRegs[i]));
                 }
+                Console.Write(" F40: " + FloatSlaveRegs[0].ToString());
+                FloatSlaveRegs[1] = FloatSlaveRegs[0];
+
                 Console.Write("          \r");
                 // change a register readed by a modbus master
                 SlaveRegs[7] += 1;

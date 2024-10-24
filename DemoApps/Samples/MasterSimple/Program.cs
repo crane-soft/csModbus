@@ -8,6 +8,20 @@ namespace MasterSimple
 {
     class Program
     {
+        private static MbMasterEx modMaster = new MbMasterEx();
+
+        static void PrintModbusError(ErrorCodes mbErr)
+        {
+            if (mbErr != ErrorCodes.NO_ERROR) {
+                if (mbErr == ErrorCodes.MODBUS_EXCEPTION) {
+                    ExceptionCodes exCode = modMaster.GetModusException();
+                    Console.WriteLine("MODBUS_EXCEPTION " + exCode);
+                } else {
+                    Console.WriteLine("MODBUS_ERROR " + mbErr);
+                }
+            }
+        }
+       
         static void Main(string[] args)
         {
 #if TCP_INTERFACE
@@ -22,38 +36,60 @@ namespace MasterSimple
             MbInterface MyInterface = new MbRTU(ComPort, Baudrate);
 #endif
             const int SlaveID = 1;
-            const int ModbusRegsAddr = 10;
-            ushort[] SlaveRegs = new ushort[] {5,7,11,13,17,19};
-            ushort[] SlaveCoils = new ushort[] {0,1,1,0 };
 
-            MbMaster modMaster = new MbMaster();
-            modMaster.Connect(MyInterface,SlaveID);
+            modMaster.Connect(MyInterface, SlaveID);
 
-            ErrorCodes mbErr;
+
+            // --- Test coils functions -----------------------------------
+            ushort[] SlaveCoils = new ushort[8] ;
+            const int ModbusCoilsAddr = 10;
+            PrintModbusError ( modMaster.WriteMultipleCoils(ModbusCoilsAddr + 4, new UInt16[] { 1, 1,0,1 }));
+            PrintModbusError (modMaster.ReadCoils(ModbusCoilsAddr, SlaveCoils));
+
+            PrintModbusError(modMaster.WriteSingleCoil(ModbusCoilsAddr, 1));
+            PrintModbusError(modMaster.WriteSingleCoil(ModbusCoilsAddr, 0));
+
+            PrintModbusError(modMaster.ReadDiscreteInputs(ModbusCoilsAddr, SlaveCoils));
+
             // Registerfunctions
-            
-            mbErr = modMaster.WriteSingleRegister(ModbusRegsAddr, SlaveRegs[4]);
-            mbErr = modMaster.WriteMultipleRegisters(ModbusRegsAddr, (ushort)SlaveRegs.Length, SlaveRegs);
-            mbErr = modMaster.ReadHoldingRegisters(ModbusRegsAddr, (ushort) SlaveRegs.Length, SlaveRegs);
-            mbErr = modMaster.ReadInputRegisters(ModbusRegsAddr, (ushort)SlaveRegs.Length, SlaveRegs);
+            const int ModbusRegsAddr = 10;
+            short[] SlaveRegs = new short[] { 5, 7, 11, 13, 17, 19 };
+            PrintModbusError(modMaster.WriteSingleRegister(ModbusRegsAddr, SlaveRegs[4]));
+            PrintModbusError(modMaster.WriteMultipleRegisters(ModbusRegsAddr, SlaveRegs));
+            PrintModbusError(modMaster.WriteMultipleRegisters(ModbusRegsAddr, SlaveRegs));
 
-            // coils functions
-            mbErr = modMaster.ReadCoils(ModbusRegsAddr, (ushort)SlaveCoils.Length,SlaveCoils);
-            mbErr = modMaster.ReadDiscreteInputs(ModbusRegsAddr, (ushort)SlaveCoils.Length, SlaveCoils);
-            mbErr = modMaster.WriteMultipleCoils(ModbusRegsAddr, (ushort)SlaveCoils.Length, SlaveCoils);
-            mbErr = modMaster.WriteSingleCoil(ModbusRegsAddr, SlaveCoils[1]);
-          
+            PrintModbusError(modMaster.ReadInputRegisters(ModbusRegsAddr+10, SlaveRegs,5));
 
-            // read write register
+
+            // -- read write register -------------------------------- 
+
             int RwSize = SlaveRegs.Length / 2;
-            int WrAddr = ModbusRegsAddr + SlaveRegs.Length/2;
+            int WrAddr = ModbusRegsAddr + SlaveRegs.Length / 2;
 
-            mbErr = modMaster.ReadWriteMultipleRegisters(ModbusRegsAddr, 6, SlaveRegs,
-                                               ModbusRegsAddr, 6, SlaveRegs);
+            PrintModbusError(modMaster.ReadWriteMultipleRegisters(ModbusRegsAddr, SlaveRegs, 6,
+                                               ModbusRegsAddr, SlaveRegs, 6));
+
             for (int i = 0; i < SlaveRegs.Length; ++i) {
                 Console.Write(String.Format("{0} ", SlaveRegs[i]));
             }
             Console.WriteLine("");
+
+            // --- Test Float Data -------------------------------------------
+            float[] FloatData = new float[] { 3.14f, 1.41f, 0f };
+            PrintModbusError(modMaster.WriteMultipleRegisters(40, new float[]{ 0,0,0}));
+            PrintModbusError(modMaster.WriteSingleRegister(40, 1.414f));
+            PrintModbusError(modMaster.WriteSingleRegister(42, 3.141f));
+            PrintModbusError(modMaster.WriteSingleRegister(44, 2.718f));
+
+            PrintModbusError(modMaster.ReadInputRegisters(40, FloatData));
+            PrintModbusError(modMaster.ReadInputRegisters(40,  FloatData,2, 1));
+
+            PrintModbusError(modMaster.WriteMultipleRegisters(40, FloatData));
+            PrintModbusError(modMaster.ReadHoldingRegisters(40, FloatData));
+            PrintModbusError(modMaster.ReadHoldingRegisters(40,  FloatData,1 ,2));
+
+            PrintModbusError(modMaster.ReadWriteMultipleRegisters(40, FloatData,3,
+                                               40, new float[] {17.2f,37.8f,99.03f },3));
 
             modMaster.Close();
 

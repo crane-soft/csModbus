@@ -24,3 +24,5 @@
 /ClassLib/csModbusLib/.vs
 /DemoApps/VB.NET/.vs
 /DemoApps/VB.NET/csModSlave/.vs
+/ClassLib/csModbusView/bin/Release
+/ClassLib/csModbusLib/bin/Release
