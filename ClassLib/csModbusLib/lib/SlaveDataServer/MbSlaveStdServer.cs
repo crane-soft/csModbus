@@ -46,7 +46,7 @@ namespace csModbusLib {
         }
         public void AddInputRegisters(int BaseAddr, Int16[] Registers)
         {
-            gInputRegisters = (ModbusRegsData)AddModbusData(gInputRegisters, new ModbusRegsData(BaseAddr, (Int16)(object)Registers));
+            gInputRegisters = (ModbusRegsData)AddModbusData(gInputRegisters, new ModbusRegsData(BaseAddr, (UInt16[])(object)Registers));
         }
         public void AddInputRegisters(int BaseAddr, UInt32[] Registers)  {
             gInputRegisters = (ModbusRegsData)AddModbusData(gInputRegisters, new Modbusb32Data<UInt32>(BaseAddr, Registers));
@@ -70,7 +70,7 @@ namespace csModbusLib {
         }
         public void AddHoldingRegisters(int BaseAddr, Int16[] Registers)
         {
-            gHoldingRegisters = (ModbusRegsData)AddModbusData(gHoldingRegisters, new ModbusRegsData(BaseAddr, (Int16)(object)Registers));
+            gHoldingRegisters = (ModbusRegsData)AddModbusData(gHoldingRegisters, new ModbusRegsData(BaseAddr, (UInt16[])(object)Registers));
         }
         public void AddHoldingRegisters(int BaseAddr, UInt32[] Registers) {
             gHoldingRegisters = (ModbusRegsData)AddModbusData(gHoldingRegisters, new Modbusb32Data<UInt32>(BaseAddr, Registers));

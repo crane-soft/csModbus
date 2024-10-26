@@ -40,8 +40,8 @@ namespace SlaveSimple
             const int ModbusRegsAddr = 10;
             const int ModbusInputAddr = 20;
 
-            ushort[] SlaveRegs = new ushort[] { 502, 703, 114, 137, 178, 199 ,0,0};
-            ushort[] SlaveInputs = new ushort[5];
+            short[] SlaveRegs = new short[] { 502, 703, 114, 137, 178, 199 ,0,0};
+            short[] SlaveInputs = new short[5];
 
             MyDataServer.AddHoldingRegisters(ModbusRegsAddr, SlaveRegs);
             MyDataServer.AddInputRegisters(ModbusRegsAddr, SlaveRegs);
