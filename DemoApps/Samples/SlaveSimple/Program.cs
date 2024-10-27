@@ -38,17 +38,17 @@ namespace SlaveSimple
 
             // add some register data
             const int ModbusRegsAddr = 10;
-            const int ModbusInputAddr = 20;
+            const int ModbusInputAddr = 40;
 
-            short[] SlaveRegs = new short[] { 502, 703, 114, 137, 178, 199 ,0,0};
-            short[] SlaveInputs = new short[5];
+            UInt32[] SlaveRegs = new UInt32[] { 502, 703, 114, 137, 178, 199 ,0,0};
+            int[] SlaveInputs = new int[5];
 
-            MyDataServer.AddHoldingRegisters(ModbusRegsAddr, SlaveRegs);
             MyDataServer.AddInputRegisters(ModbusRegsAddr, SlaveRegs);
+            MyDataServer.AddHoldingRegisters(ModbusRegsAddr, SlaveRegs);
             MyDataServer.AddInputRegisters(ModbusInputAddr, SlaveInputs);
 
             // add floatregister data
-            const int ModbusFloatAddr = 40;
+            const int ModbusFloatAddr = 100;
             float[] FloatSlaveRegs = new float[] { 502, 703, 0 };
             MyDataServer.AddHoldingRegisters(ModbusFloatAddr, FloatSlaveRegs);
             MyDataServer.AddInputRegisters(ModbusFloatAddr, FloatSlaveRegs);
@@ -68,6 +68,11 @@ namespace SlaveSimple
                 for (int i = 0; i < SlaveRegs.Length; ++i ) {
                     Console.Write(String.Format("{0} ", SlaveRegs[i]));
                 }
+
+                for (int i = 0; i < SlaveInputs.Length; ++i) {
+                    SlaveInputs[i] = (int)SlaveRegs[i];
+                }
+
                 Console.Write(" F40: " + FloatSlaveRegs[0].ToString());
                 FloatSlaveRegs[1] = FloatSlaveRegs[0];
 
