@@ -3,4 +3,8 @@
   <PropertyGroup>
     <ProjectView>ProjectFiles</ProjectView>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <StartAction>Program</StartAction>
+    <StartProgram>D:\CraneSoft\Develop\GitHub\csModbus\DemoApps\VB.NET\csModMaster\obj\Debug\csModMaster.exe</StartProgram>
+  </PropertyGroup>
 </Project>

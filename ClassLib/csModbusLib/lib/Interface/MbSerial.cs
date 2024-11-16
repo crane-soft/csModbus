@@ -105,7 +105,7 @@ namespace csModbusLib
         private void WaitFrameStart(int timeout)
         {
             while (StartOfFrameDetected() == false) {
-                Thread.Sleep(10);
+                Thread.Sleep(10);	// TODO better READ with timeout
                 if (timeout != MbInterface.InfiniteTimeout) {
                     timeout -= 10;
                     if (timeout <= 0)

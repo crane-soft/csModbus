@@ -1,5 +1,5 @@
-﻿//#define TCP_INTERFACE
-#define RTU_INTERFACE
+﻿#define TCP_INTERFACE
+//#define RTU_INTERFACE
 
 using System;
 using csModbusLib;
@@ -25,9 +25,10 @@ namespace MasterSimple
         static void Main(string[] args)
         {
 #if TCP_INTERFACE
-            Console.WriteLine("Modbus-TCP master demo");
             const int TCPport = 502;
-            MbInterface MyInterface = new MbTCPSlave(TCPport);
+            const String HostName = "127.0.0.1";
+            Console.WriteLine("Modbus-TCP master demo {0}:{1}", HostName, TCPport);
+            MbInterface MyInterface = new MbTCPMaster(HostName, TCPport);
 #endif
 #if RTU_INTERFACE
             string ComPort = "COM1";
@@ -37,7 +38,10 @@ namespace MasterSimple
 #endif
             const int SlaveID = 1;
 
-            modMaster.Connect(MyInterface, SlaveID);
+            if (modMaster.Connect(MyInterface, SlaveID) == false) {
+                Console.WriteLine("Cannot connect {0}:{1}", HostName, TCPport);
+                return;
+            }
 
 
             // --- Test coils functions -----------------------------------

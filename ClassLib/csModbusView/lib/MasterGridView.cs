@@ -66,7 +66,7 @@ namespace csModbusView
             }
         }
 
-        private void UpdateCellValues()
+        public void UpdateCellValues()
         {
             GridView.UpDateModbusCells(ModbusData);
         }

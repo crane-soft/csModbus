@@ -104,7 +104,7 @@ namespace csModbusLib
         {
             Debug.Print("MbSlaveStateMachine Receive Timout");
             // Delay and frame Start?
-            //WaitFrameStart();
+            //WaitForFrameStart();
         }
 
         private void SerialInterface_DataReceivedEvent(object sender, SerialDataReceivedEventArgs e)

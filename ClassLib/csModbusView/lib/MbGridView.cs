@@ -108,7 +108,7 @@ namespace csModbusView
                 return;
             if (ItemColumns == 0)
                 ItemColumns = 1;
-            ColumnCount = ItemColumns;
+            this.ColumnCount = ItemColumns;
 
             int NumRows = NumItems / ItemColumns;
             int LeftItems = NumItems % ItemColumns;
@@ -121,13 +121,14 @@ namespace csModbusView
 
             DisableCellEvents = true;
             int itemCount = NumItems;
-            for (int i = 0; i <= this.RowCount - 1; i++) {
+            for (int i = 0; i < this.RowCount; i++) {
                 if (ItemNameCount > i)
                     Rows[i].HeaderCell.Value = ItemNames[i];
                 else
                     Rows[i].HeaderCell.Value = "R" + (BaseAddr + i * TypeSize * ItemColumns).ToString();
 
-                for (int itemCol = 0; itemCol <= ItemColumns - 1; itemCol++) {
+
+                for (int itemCol = 0; itemCol < ItemColumns; itemCol++) {
                     itemCount -= 1;
                     if (itemCount >= 0)
                         NewItemCell(i, itemCol);

@@ -4,6 +4,7 @@
     <StartAction>Project</StartAction>
     <StartProgram>
     </StartProgram>
+    <EnableUnmanagedDebugging>true</EnableUnmanagedDebugging>
   </PropertyGroup>
   <PropertyGroup>
     <ProjectView>ProjectFiles</ProjectView>

@@ -16,6 +16,7 @@ Public Class frmModsMaster
     Private CurentAddPos As Point
     Private InterfaceType As csModbusLib.ConnectionType = ConnectionType.NO_CONNECTION
 
+    Private HoldingRegs3
     Public Sub New()
 
         InitializeComponent()
@@ -27,15 +28,18 @@ Public Class frmModsMaster
         ModbusDataList.Add(HoldingRegs2)
 
         ' Views created here
-        CurentAddPos = New Point(HoldingRegs1.Width + 20, 0)
 
-        AddModbusView(New MasterCoilsGridView(10, 20))
-        AddModbusView(New MasterDiscretInputsGridView(20, 20))
+        CurentAddPos = New Point(150, HoldingRegs1.Top)
 
+
+        AddModbusView(New MasterCoilsGridView("Coils", 10, 20, 8))
+        AddModbusView(New MasterDiscretInputsGridView("DiscretInputs", 20, 20, 8))
+        AddModbusView(New MasterHoldingRegsGridView(20, 3))
 
         For Each mbView As MasterGridView In ModbusDataList
             mbView.InitGridView(Me.ModMaster)
         Next
+
 
         sysRefreshTimer = New System.Timers.Timer()
         sysRefreshTimer.Enabled = False
@@ -51,10 +55,12 @@ Public Class frmModsMaster
         MbView.Location = CurentAddPos
         ViewPanel.Controls.Add(MbView)
         ModbusDataList.Add(MbView)
-        CurentAddPos.Y += MbView.Height
+        CurentAddPos.Y += MbView.Height + 5
     End Sub
 
     Private Sub csModsMaster_Load(sender As Object, e As EventArgs) Handles Me.Load
+
+
         InitConnection()
     End Sub
     Private Function MasterConnect() As Boolean
@@ -217,8 +223,8 @@ Public Class frmModsMaster
             Dim rdData As MasterHoldingRegsGridView = HoldingRegs1
             Dim wrData As MasterHoldingRegsGridView = HoldingRegs2
             Dim ErrCode As csModbusLib.ErrorCodes
-            ErrCode = ModMaster.ReadWriteMultipleRegisters(rdData.BaseAddr, rdData.NumItems, rdData.Data,
-                                                           wrData.BaseAddr, wrData.NumItems, wrData.Data)
+            ErrCode = ModMaster.ReadWriteMultipleRegisters(rdData.BaseAddr, rdData.Data, rdData.NumItems,
+                                                           wrData.BaseAddr, wrData.Data, wrData.NumItems)
             DisplayErrorCode(ErrCode)
             If ErrCode = csModbusLib.ErrorCodes.NO_ERROR Then
                 rdData.UpdateCellValues()
@@ -236,4 +242,5 @@ Public Class frmModsMaster
             MasterClose()
         End If
     End Sub
+
 End Class

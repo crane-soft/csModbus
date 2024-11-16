@@ -33,6 +33,7 @@ namespace csModbusView
         private ModbusObjectType _MbType;
         public ModbusView(ModbusObjectType MbType, string Title, bool IsMaster)
         {
+            EnableRefresh = false;
             this._MbType = MbType;
             lbTitle = new Label();
             lbTitle.BackColor = System.Drawing.SystemColors.ControlLight;
@@ -50,6 +51,7 @@ namespace csModbusView
             mbView.Height = this.Height - lbTitle.Height;
             mbView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             mbView.BorderStyle = System.Windows.Forms.BorderStyle.None;
+
             this.Controls.Add(mbView);
             InitModbusType(MbType, IsMaster);
             mbView.MbCellValueChanged += MbView_CellValueChanged;
@@ -59,6 +61,7 @@ namespace csModbusView
             this.NumItems = 1;
             this.ItemColumns = 1;
             this.SizeChanged += ModbusView_SizeChanged;
+            this.Resize += ModbusView_SizeChanged;
             this.AutoSizeChanged += ModbusView_AutoSizeChanged;
             AutoSize = true;
             DataType = MbGridView.ModbusDataType.UINT16;
@@ -310,8 +313,11 @@ namespace csModbusView
         private void RefreshView()
         {
             if (EnableRefresh) {
+                EnableRefresh = false;
+                mbView.Width = this.Width;
                 mbView.InitGridView();
                 AdjustSize();
+                EnableRefresh = true;
             }
         }
 
@@ -329,7 +335,9 @@ namespace csModbusView
 
         private void ModbusView_SizeChanged(object sender, System.EventArgs e)
         {
-            RefreshView();
+            if (EnableRefresh) {
+                RefreshView();
+            }
         }
 
         private void MbView_CellValueChanged(ushort[] data, DataGridViewCellEventArgs e)

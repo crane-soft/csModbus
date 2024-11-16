@@ -36,9 +36,10 @@ Partial Class frmModsMaster
         Me.lbLastError = New System.Windows.Forms.ToolStripStatusLabel()
         Me.LbLastModbusException = New System.Windows.Forms.ToolStripStatusLabel()
         Me.ViewPanel = New System.Windows.Forms.Panel()
+        Me.cmTest = New System.Windows.Forms.Button()
+        Me.DataGridViewTextBoxColumn1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.HoldingRegs2 = New csModbusView.MasterHoldingRegsGridView()
         Me.HoldingRegs1 = New csModbusView.MasterHoldingRegsGridView()
-        Me.cmTest = New System.Windows.Forms.Button()
         Me.MenuStrip1.SuspendLayout()
         Me.StatusStrip1.SuspendLayout()
         Me.ViewPanel.SuspendLayout()
@@ -160,30 +161,6 @@ Partial Class frmModsMaster
         Me.ViewPanel.Size = New System.Drawing.Size(477, 315)
         Me.ViewPanel.TabIndex = 9
         '
-        'HoldingRegs2
-        '
-        Me.HoldingRegs2.BaseAddr = CType(20US, UShort)
-        Me.HoldingRegs2.ItemColumns = 1
-        Me.HoldingRegs2.ItemNames = Nothing
-        Me.HoldingRegs2.Location = New System.Drawing.Point(3, 171)
-        Me.HoldingRegs2.Name = "HoldingRegs2"
-        Me.HoldingRegs2.NumItems = CType(5US, UShort)
-        Me.HoldingRegs2.Size = New System.Drawing.Size(124, 108)
-        Me.HoldingRegs2.TabIndex = 12
-        Me.HoldingRegs2.Title = "Holding Regs 2"
-        '
-        'HoldingRegs1
-        '
-        Me.HoldingRegs1.BaseAddr = CType(10US, UShort)
-        Me.HoldingRegs1.ItemColumns = 1
-        Me.HoldingRegs1.ItemNames = Nothing
-        Me.HoldingRegs1.Location = New System.Drawing.Point(3, 3)
-        Me.HoldingRegs1.Name = "HoldingRegs1"
-        Me.HoldingRegs1.NumItems = CType(8US, UShort)
-        Me.HoldingRegs1.Size = New System.Drawing.Size(124, 162)
-        Me.HoldingRegs1.TabIndex = 11
-        Me.HoldingRegs1.Title = "Holding Regs 1"
-        '
         'cmTest
         '
         Me.cmTest.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
@@ -193,6 +170,35 @@ Partial Class frmModsMaster
         Me.cmTest.TabIndex = 10
         Me.cmTest.Text = "RD Regs 1 / WR Regs 2"
         Me.cmTest.UseVisualStyleBackColor = True
+        '
+        'DataGridViewTextBoxColumn1
+        '
+        Me.DataGridViewTextBoxColumn1.HeaderText = "Column1"
+        Me.DataGridViewTextBoxColumn1.Name = "DataGridViewTextBoxColumn1"
+        '
+        'HoldingRegs2
+        '
+        Me.HoldingRegs2.BaseAddr = "20"
+        Me.HoldingRegs2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.HoldingRegs2.Location = New System.Drawing.Point(3, 173)
+        Me.HoldingRegs2.Name = "HoldingRegs2"
+        Me.HoldingRegs2.NumItems = CType(5US, UShort)
+        Me.HoldingRegs2.Size = New System.Drawing.Size(125, 110)
+        Me.HoldingRegs2.TabIndex = 12
+        Me.HoldingRegs2.Title = "Holding Regs 2"
+        Me.HoldingRegs2.uBaseAddr = CType(20US, UShort)
+        '
+        'HoldingRegs1
+        '
+        Me.HoldingRegs1.BaseAddr = "10"
+        Me.HoldingRegs1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.HoldingRegs1.Location = New System.Drawing.Point(3, 3)
+        Me.HoldingRegs1.Name = "HoldingRegs1"
+        Me.HoldingRegs1.NumItems = CType(8US, UShort)
+        Me.HoldingRegs1.Size = New System.Drawing.Size(125, 164)
+        Me.HoldingRegs1.TabIndex = 11
+        Me.HoldingRegs1.Title = "Holding Regs 1"
+        Me.HoldingRegs1.uBaseAddr = CType(10US, UShort)
         '
         'frmModsMaster
         '
@@ -215,6 +221,7 @@ Partial Class frmModsMaster
         Me.StatusStrip1.ResumeLayout(False)
         Me.StatusStrip1.PerformLayout()
         Me.ViewPanel.ResumeLayout(False)
+        Me.ViewPanel.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -236,4 +243,5 @@ Partial Class frmModsMaster
     Friend WithEvents HoldingRegs1 As csModbusView.MasterHoldingRegsGridView
     Friend WithEvents lbLastError As ToolStripStatusLabel
     Friend WithEvents LbLastModbusException As ToolStripStatusLabel
+    Friend WithEvents DataGridViewTextBoxColumn1 As DataGridViewTextBoxColumn
 End Class

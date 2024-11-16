@@ -1,5 +1,5 @@
-﻿//#define TCP_INTERFACE
-#define RTU_INTERFACE
+﻿#define TCP_INTERFACE
+//#define RTU_INTERFACE
 
 using System;
 using System.Threading;
