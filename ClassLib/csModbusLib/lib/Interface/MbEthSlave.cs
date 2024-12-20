@@ -205,13 +205,20 @@ namespace csModbusLib {
 
             public void BeginReadFrameData(AsyncCallback callback)
             {
-                if (closed == false)
+                if (closed == false) {
                     Stream.BeginRead(FrameBuffer.Data, ReadIndex, Bytes2Read, callback, this);
+                }
             }
 
             public bool EndReceive(IAsyncResult ar)
             {
-                int readed = Stream.EndRead(ar);
+                int readed = 0;
+                try {
+                    readed = Stream.EndRead(ar);
+                } catch (Exception ex) {
+                    Debug.WriteLine(ex.Message);
+                    readed = 0;
+                }
                 if ((readed == 0) || (Client.Connected == false)) {
                     // Connection closed
                     Debug.WriteLine(String.Format("Client disconnected {0}", Client.Client.RemoteEndPoint.ToString()));
@@ -238,9 +245,9 @@ namespace csModbusLib {
                 return true;
             }
 
-            public void CopyRxData(MbRawData RxData)
+            public void CopyRxData(MbRawData DestData)
             {
-                RxData.CopyFrom(FrameBuffer);
+                DestData.CopyFrom(FrameBuffer);
             }
 
         }
